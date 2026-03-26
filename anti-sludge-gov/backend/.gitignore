@@ -1,0 +1,6 @@
+.env
+tests/
+pycache/
+*.pyc
+__pycache__/
+*.pyo

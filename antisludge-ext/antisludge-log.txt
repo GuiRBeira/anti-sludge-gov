@@ -1,0 +1,12 @@
+timestamp,event,domain,duration
+1773193852878,tab_switch,www.instagram.com,11452
+1773193864330,tab_switch,extensions,343
+1773193864673,tab_switch,www.instagram.com,663
+1773193865336,tab_switch,extensions,776
+1773193866112,tab_switch,chatgpt.com,537
+1773193866649,tab_switch,www.heroui.pro,2109
+1773193868758,tab_switch,localhost,313
+1773193869071,tab_switch,chatgpt.com,350
+1773193869421,tab_switch,extensions,280
+1773193869701,tab_switch,www.instagram.com,355
+1773193870056,tab_switch,extensions,290
