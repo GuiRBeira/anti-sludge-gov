@@ -1,0 +1,3 @@
+cada barreira tem perguntas diferentes pra responder
+add: campo "nao se aplica" nas respostas
+add: campo discurssivo nas respostas TAMBEM
