@@ -1,0 +1,8 @@
+# Temporary Office files
+~$*
+!~$*.xlsx
+!~$*.docx
+
+# Large files if needed (optional)
+# *.pdf
+# *.xlsx
