@@ -5,8 +5,7 @@
 
 export {}
 
-import iconOn from "data-base64:~assets/icon.png"
-import iconOff from "data-base64:~assets/icon-off.png"
+import Icon from "@/assets/icon.png"
 
 // --- Types ---
 interface Page {
@@ -115,7 +114,7 @@ async function activate() {
   isActive = true;
   session = createSession();
   await chrome.storage.local.set({ isActive: true, currentSession: session });
-  chrome.action.setIcon({ path: iconOn });
+  chrome.action.setIcon({ path: Icon });
   chrome.action.setBadgeText({ text: "ON" });
   chrome.action.setBadgeBackgroundColor({ color: "#00AA66" });
 }
@@ -137,7 +136,7 @@ async function deactivate() {
   session = null;
 
   await chrome.storage.local.set({ isActive: false, currentSession: null });
-  chrome.action.setIcon({ path: iconOff });
+  chrome.action.setIcon({ path: Icon });
   chrome.action.setBadgeText({ text: "" });
 }
 
@@ -212,7 +211,7 @@ chrome.runtime.onStartup.addListener(async () => {
   if (data.isActive) {
     isActive = true;
     session = data.currentSession;
-    chrome.action.setIcon({ path: iconOn });
+    chrome.action.setIcon({ path: Icon });
     chrome.action.setBadgeText({ text: "ON" });
     chrome.action.setBadgeBackgroundColor({ color: "#00AA66" });
   }
@@ -223,6 +222,6 @@ chrome.runtime.onInstalled.addListener(async () => {
   const data = await chrome.storage.local.get(["isActive"]);
   if (!data.isActive) {
     await chrome.storage.local.set({ isActive: false, currentSession: null });
-    chrome.action.setIcon({ path: iconOff });
+    chrome.action.setIcon({ path: Icon });
   }
 });

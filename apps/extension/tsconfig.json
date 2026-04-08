@@ -5,12 +5,8 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["chrome", "node"],
     "paths": {
-      "~*": [
-        "./src/*"
-      ],
-      "~assets/*": [
-        "./assets/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/assets/*": ["./assets/*"]
     }
   },
   "include": [

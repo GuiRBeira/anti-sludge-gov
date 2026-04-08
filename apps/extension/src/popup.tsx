@@ -1,6 +1,16 @@
-import { useEffect, useState } from "react"
-import { BrHeader, BrSwitch, BrBadge, BrItem, BrList } from "@govbr-ds/webcomponents-react"
-import "./popup.css"
+import { useEffect, useState } from "react";
+import {
+  BrHeader,
+  BrSwitch,
+  BrTag,
+  BrItem,
+  BrList,
+  BrCard,
+  BrHeaderLogo,
+  BrIcon,
+} from "@govbr-ds/webcomponents-react";
+import "./popup.css";
+import logo from "@/assets/icon.png";
 
 // --- Types ---
 interface Page {
@@ -25,111 +35,126 @@ interface Session {
 }
 
 export default function IndexPopup() {
-  const [isActive, setIsActive] = useState(false)
-  const [session, setSession] = useState<Session | null>(null)
-  const [timer, setTimer] = useState("00:00")
-  const [showFinishedBanner, setShowFinishedBanner] = useState(false)
+  const [isActive, setIsActive] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [timer, setTimer] = useState("00:00");
+  const [showFinishedBanner, setShowFinishedBanner] = useState(false);
 
   // --- Fetch state ---
   const updateState = () => {
     chrome.runtime.sendMessage({ type: "GET_STATE" }, (response) => {
       if (response) {
-        setIsActive(response.isActive)
-        setSession(response.session)
+        setIsActive(response.isActive);
+        setSession(response.session);
       }
-    })
-  }
+    });
+  };
 
   // --- Toggle ---
   const handleToggle = () => {
     chrome.runtime.sendMessage({ type: "TOGGLE" }, (response) => {
       if (response) {
-        setIsActive(response.isActive)
+        setIsActive(response.isActive);
         if (!response.isActive) {
-          setShowFinishedBanner(true)
+          setShowFinishedBanner(true);
           setTimeout(() => {
-            setSession(null)
-          }, 100)
+            setSession(null);
+          }, 100);
         } else {
-          setShowFinishedBanner(false)
+          setShowFinishedBanner(false);
         }
       }
-    })
-  }
+    });
+  };
 
   // --- State Polling ---
   useEffect(() => {
-    updateState()
-    const interval = setInterval(updateState, 2000)
-    return () => clearInterval(interval)
-  }, [])
+    updateState();
+    const interval = setInterval(updateState, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   // --- Timer logic ---
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-    
+    let interval: NodeJS.Timeout | null = null;
+
     if (isActive && session?.startTime) {
-      const startTime = new Date(session.startTime).getTime()
-      
+      const startTime = new Date(session.startTime).getTime();
+
       const updateTimer = () => {
-        const elapsed = Date.now() - startTime
-        const totalSec = Math.floor(elapsed / 1000)
-        const min = Math.floor(totalSec / 60).toString().padStart(2, "0")
-        const sec = (totalSec % 60).toString().padStart(2, "0")
-        setTimer(`${min}:${sec}`)
-      }
-      
-      updateTimer()
-      interval = setInterval(updateTimer, 1000)
+        const elapsed = Date.now() - startTime;
+        const totalSec = Math.floor(elapsed / 1000);
+        const min = Math.floor(totalSec / 60)
+          .toString()
+          .padStart(2, "0");
+        const sec = (totalSec % 60).toString().padStart(2, "0");
+        setTimer(`${min}:${sec}`);
+      };
+
+      updateTimer();
+      interval = setInterval(updateTimer, 1000);
     } else {
-      setTimer("00:00")
+      setTimer("00:00");
     }
-    
+
     return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [isActive, session?.startTime])
+      if (interval) clearInterval(interval);
+    };
+  }, [isActive, session?.startTime]);
 
   const formatUrl = (urlStr: string) => {
     try {
-      const u = new URL(urlStr)
-      let displayUrl = u.hostname + u.pathname
-      if (displayUrl.length > 50) {
-        displayUrl = displayUrl.substring(0, 47) + "..."
+      const u = new URL(urlStr);
+      let displayUrl = u.hostname + u.pathname;
+      if (displayUrl.length > 40) {
+        displayUrl = displayUrl.substring(0, 37) + "...";
       }
-      return displayUrl
+      return displayUrl;
     } catch (e) {
-      return urlStr
+      return urlStr;
     }
-  }
+  };
 
   const getPageDuration = (page: Page) => {
-    if (page.duration) return page.duration
+    if (page.duration) return page.duration;
     if (page.enteredAt) {
-      const elapsed = Date.now() - new Date(page.enteredAt).getTime()
-      const sec = Math.floor(elapsed / 1000)
-      const min = Math.floor(sec / 60)
-      if (min > 0) return `${min}min ${sec % 60}s`
-      return `${sec}s`
+      const elapsed = Date.now() - new Date(page.enteredAt).getTime();
+      const sec = Math.floor(elapsed / 1000);
+      const min = Math.floor(sec / 60);
+      if (min > 0) return `${min}m ${sec % 60}s`;
+      return `${sec}s`;
     }
-    return "agora"
-  }
+    return "agora";
+  };
 
   return (
     <div className="popup-container">
-      {/* DSGOV Header */}
-      <BrHeader 
-        title="AntiSludge" 
-      />
+      {/* 1. Header Section */}
+      <div className="header-wrapper">
+        <BrHeader 
+          caption="AntiSludge" 
+          subcaption="Auditoria de Fricção Digital"
+        >
+          <div slot="header-logo">
+            <BrHeaderLogo>
+              <img src={logo} alt="AntiSludge Logo" className="header-logo-img" />
+            </BrHeaderLogo>
+          </div>
+        </BrHeader>
+      </div>
 
-      {/* Control Bar */}
-      <div className="main-content" style={{ padding: '8px 16px', background: 'white' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-             <span style={{ fontSize: '14px', fontWeight: 600 }}>Status:</span>
-             <BrBadge type={isActive ? "success" : "danger"}>
-               {isActive ? "Ativo" : "Inativo"}
-             </BrBadge>
+      {/* 2. Dashboard Section */}
+      <div className="dashboard-card">
+        <div className="dashboard-header">
+          <div className="status-indicator">
+            <span className="status-label">Monitoramento</span>
+            <BrTag color={isActive ? "success" : "danger"}>
+              <BrIcon
+                className={`fas fa-circle ${isActive ? "fa-pulse" : ""}`}
+                style={{ marginRight: "6px", fontSize: "8px" }}
+              ></BrIcon>
+              {isActive ? "Ativo" : "Inativo"}
+            </BrTag>
           </div>
           <BrSwitch 
             label={isActive ? "Parar" : "Iniciar"} 
@@ -137,69 +162,79 @@ export default function IndexPopup() {
             onClick={handleToggle}
           />
         </div>
+
+        <div className="stats-grid">
+          <div className="stat-item">
+            <div className="stat-header">
+              <BrIcon className="far fa-clock stat-icon"></BrIcon>
+              <span className="stat-label">Tempo Total</span>
+            </div>
+            <span className="stat-value">{timer}</span>
+          </div>
+          <div className="stat-item">
+             <div className="stat-header">
+              <BrIcon className="far fa-file-alt stat-icon"></BrIcon>
+              <span className="stat-label">Páginas</span>
+            </div>
+            <span className="stat-value">{session?.pages?.length || 0}</span>
+          </div>
+        </div>
       </div>
 
-      {/* Finished Banner */}
+      {/* 3. Notifications */}
       {showFinishedBanner && (
         <div className="finished-banner">
-          <i className="fas fa-check-circle"></i> Sessão finalizada — log baixado
+          <BrIcon className="fas fa-check-circle" style={{ color: "var(--success)" }}></BrIcon>
+          <span>Sessão finalizada. Log baixado.</span>
         </div>
       )}
 
-      {/* Session Info Bar */}
-      {isActive && (
-        <div className="session-info-bar">
-          <span>Tempo decorrido: <span className="timer-text">{timer}</span></span>
-          <span>{session?.pages?.length || 0} página(s)</span>
+      {/* 4. Timeline Section */}
+      <div className="timeline-section">
+        <div className="timeline-title">
+          <BrIcon className="fas fa-history"></BrIcon> Jornada do Cidadão
         </div>
-      )}
-
-      {/* Content Area */}
-      <div className="main-content">
-        {!isActive && !session?.pages?.length && (
-          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🛡️</div>
-            <p style={{ fontWeight: 600 }}>Monitoramento desativado</p>
-            <p style={{ fontSize: '12px' }}>Inicie para rastrear sua jornada.</p>
+        
+        {!isActive && !session?.pages?.length ? (
+          <div className="empty-state">
+            <div className="empty-icon">🛡️</div>
+            <p style={{ fontWeight: 600, fontSize: "14px", marginBottom: "4px" }}>Pronto para Auditar</p>
+            <p style={{ fontSize: "12px" }}>Inicie para capturar pontos de fricção.</p>
           </div>
-        )}
-
-        {isActive && (!session?.pages || session.pages.length === 0) && (
-          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
-            <p style={{ fontWeight: 600 }}>Aguardando primeira página...</p>
-          </div>
-        )}
-
-        {session?.pages && session.pages.length > 0 && (
-          <div className="timeline-list">
-            {session.pages.map((page, index) => (
-              <div key={index} className="timeline-item-custom">
-                <div className="card-title">{page.title}</div>
-                <div className="card-url">{formatUrl(page.url)}</div>
-                <div className="card-tags">
-                  <BrBadge type="info" style={{ fontSize: '9px' }}>
-                    <i className="fas fa-clock"></i> {getPageDuration(page)}
-                  </BrBadge>
-                  <BrBadge type="warning" style={{ fontSize: '9px' }}>
-                    <i className="fas fa-mouse-pointer"></i> {page.clicks} cliques
-                  </BrBadge>
-                  {page.scrolled && (
-                    <BrBadge type="success" style={{ fontSize: '9px' }}>
-                      <i className="fas fa-arrows-alt-v"></i> scroll
-                    </BrBadge>
-                  )}
-                </div>
-              </div>
+        ) : (
+          <BrList>
+            {(session?.pages || []).map((page, index) => (
+              <BrCard key={index} className="timeline-card">
+                <BrItem>
+                  <div className="timeline-item-content">
+                    <div className="page-title">{page.title}</div>
+                    <span className="page-url">{formatUrl(page.url)}</span>
+                    <div className="page-metrics">
+                      <BrTag color="info">
+                        <BrIcon className="far fa-clock" style={{marginRight: '4px'}}></BrIcon>
+                        {getPageDuration(page)}
+                      </BrTag>
+                      <BrTag color="warning">
+                        <BrIcon className="far fa-hand-point-up" style={{marginRight: '4px'}}></BrIcon>
+                        {page.clicks} cliques
+                      </BrTag>
+                      {page.scrolled && (
+                        <BrTag color="success">
+                          <BrIcon className="fas fa-arrows-alt-v" style={{marginRight: '4px'}}></BrIcon>
+                          scroll
+                        </BrTag>
+                      )}
+                    </div>
+                  </div>
+                </BrItem>
+              </BrCard>
             ))}
-          </div>
+          </BrList>
         )}
       </div>
 
-      {/* Simplified Footer */}
-      <div className="footer-simple">
-        AntiSludge v1.0 — Transparência Digital
-      </div>
+      {/* 5. Footer */}
+      <div className="footer-simple">Versão 1.0.0 — UTFPR & CINCO/MGI</div>
     </div>
-  )
+  );
 }
