@@ -1,0 +1,22 @@
+{
+  "extends": "plasmo/templates/tsconfig.base",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["chrome", "node"],
+    "paths": {
+      "~*": [
+        "./src/*"
+      ],
+      "~assets/*": [
+        "./assets/*"
+      ]
+    }
+  },
+  "include": [
+    ".plasmo/index.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.css"
+  ]
+}

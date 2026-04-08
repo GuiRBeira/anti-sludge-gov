@@ -1,0 +1,133 @@
+/* Import DSGOV Core Styles */
+@import "@govbr-ds/core/dist/core.min.css";
+
+/* Google Fonts - Raleway (Alternative to Rawline) */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
+
+/* Font Awesome 5 for DSGOV Icons */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+:root {
+  --primary-blue: #1351b4;
+  --white: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Raleway', sans-serif;
+  width: 400px;
+  min-height: 350px;
+  max-height: 600px;
+  overflow-x: hidden;
+  background-color: var(--white);
+  color: #333;
+}
+
+/* Custom Scrollbar to match DSGOV feel */
+body::-webkit-scrollbar {
+  width: 8px;
+}
+body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+body::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+/* Extension Specific Overrides */
+.popup-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.main-content {
+  flex: 1;
+  padding: 16px;
+  background-color: #f8f8f8;
+}
+
+.session-info-bar {
+  background: var(--primary-blue);
+  color: white;
+  padding: 8px 16px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timer-text {
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Timeline Customizations */
+.timeline-list {
+  list-style: none;
+  padding: 0;
+}
+
+.timeline-item-custom {
+  margin-bottom: 12px;
+  border-left: 3px solid var(--primary-blue);
+  padding-left: 12px;
+  background: white;
+  padding: 12px;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: var(--primary-blue);
+}
+
+.card-url {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.card-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-simple {
+  padding: 12px;
+  text-align: center;
+  font-size: 11px;
+  color: #666;
+  border-top: 1px solid #eee;
+  background: white;
+}
+
+/* DSGOV Component Adaptations for Popup */
+br-header {
+  --header-padding: 8px 16px;
+}
+
+br-switch {
+  margin-top: 4px;
+}
+
+.finished-banner {
+  background: #d4edda;
+  color: #155724;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+  border-bottom: 1px solid #c3e6cb;
+}

@@ -1,0 +1,39 @@
+{
+  "name": "anti-sludge",
+  "displayName": "AntiSludge",
+  "version": "1.0.0",
+  "description": "Rastreador de jornada em serviços digitais do governo",
+  "author": "GuiRBeira",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package"
+  },
+  "dependencies": {
+    "@govbr-ds/core": "^3.7.0",
+    "@govbr-ds/webcomponents": "^2.0.0-next.66",
+    "@govbr-ds/webcomponents-react": "^2.0.0-next.66",
+    "plasmo": "0.90.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.0.263",
+    "@types/node": "20.11.24",
+    "@types/react": "18.2.61",
+    "@types/react-dom": "18.2.19",
+    "typescript": "5.3.3"
+  },
+  "manifest": {
+    "permissions": [
+      "tabs",
+      "storage",
+      "activeTab",
+      "webNavigation",
+      "downloads"
+    ],
+    "host_permissions": [
+      "<all_urls>"
+    ]
+  }
+}
