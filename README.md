@@ -19,14 +19,12 @@ O projeto visa combater o "sludge digital" — fricções desnecessárias que di
 - **Framework**: FastAPI (Python)
 - **Banco de Dados**: PostgreSQL
 - **ORM**: SQLAlchemy
-- **Autenticação**: JWT + bcrypt
-- **Modelos de IA**: Transformers (Hugging Face)
+- **Autenticação**: 
 
 ### Frontend
-- **Framework**: React 19
+- **Framework**: Next.js
 - **Linguagem**: TypeScript
-- **Estilização**: Tailwind CSS
-- **Gerenciamento de Estado**: TanStack Query
+- **Gerenciamento de Estado**: 
 - **UI Components**: DSGov 
 
 ### Extensão de Navegador
