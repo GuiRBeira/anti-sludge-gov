@@ -5,7 +5,7 @@ from typing import List
 
 from app.core.database import get_db
 from app.core.crud import CRUDBase
-from app.features.observations.models import JornadaObservada, TempoEtapa
+from app.models.observation_model import JornadaObservada, TempoEtapa
 from app.features.observations import schemas
 
 router = APIRouter()

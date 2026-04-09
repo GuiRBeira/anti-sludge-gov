@@ -5,7 +5,7 @@ from typing import List
 
 from app.core.database import get_db
 from app.core.crud import CRUDBase
-from app.features.analysis_results.models import CriterioBarreira, CriterioImpacto, ResultadoAnalise
+from app.models.analysis_model import CriterioBarreira, CriterioImpacto, ResultadoAnalise
 from app.features.analysis_results import schemas
 
 router = APIRouter()
