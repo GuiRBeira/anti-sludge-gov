@@ -7,7 +7,7 @@ from typing import List
 
 from app.core.database import get_db
 from app.core.crud import CRUDBase
-from app.features.processes.models import Processo, Etapa
+from app.models.process_model import Processo, Etapa
 from app.features.processes import schemas
 
 router = APIRouter()

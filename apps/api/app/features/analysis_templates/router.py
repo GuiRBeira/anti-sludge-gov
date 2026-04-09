@@ -5,7 +5,8 @@ from typing import List
 
 from app.core.database import get_db
 from app.core.crud import CRUDBase
-from app.features.analysis_templates.models import GrupoAnalise, CriterioTemplate, TipoCriterio, EscalaAvaliacao
+from app.models.catalog_model import GrupoAnalise, CriterioTemplate, TipoCriterio, EscalaAvaliacao
+from app.models.observation_model import Observador, JornadaObservada, TempoEtapa
 from app.features.analysis_templates import schemas
 
 router = APIRouter()

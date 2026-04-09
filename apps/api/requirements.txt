@@ -1,6 +1,18 @@
+# =========================
+# WEB FRAMEWORK
+# =========================
 fastapi==0.128.5
 uvicorn==0.40.0
+
+# =========================
+# DATABASE / PERSISTENCE
+# =========================
 SQLAlchemy==2.0.46
+# Driver assíncrono para PostgreSQL
 psycopg[binary]==3.3.2
+
+# =========================
+# CONFIGURATION / VALIDATION
+# =========================
 pydantic==2.12.5
 pydantic-settings==2.12.0

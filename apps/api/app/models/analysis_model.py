@@ -1,4 +1,4 @@
-# app/features/analysis_results/models.py
+# app/models/analysis_model.py
 from __future__ import annotations
 from datetime import datetime
 from typing import Optional, List, TYPE_CHECKING
@@ -11,9 +11,9 @@ from sqlalchemy import Enum as SAEnum
 from app.models.base_model import Base, CriterioImpactoEnum, TipoEvidenciaEnum
 
 if TYPE_CHECKING:
-    from app.features.processes.models import Processo, Etapa
-    from app.features.observations.models import JornadaObservada
-    from app.features.catalog.models import CriterioTemplate
+    from app.models.process_model import Processo, Etapa
+    from app.models.observation_model import JornadaObservada, TempoEtapa
+    from app.models.catalog_model import CriterioTemplate
 
 class CriterioBarreira(Base):
     __tablename__ = "criterio_barreira"
@@ -71,7 +71,7 @@ class AvaliacaoBarreira(Base):
     data_avaliacao: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp(), nullable=False)
 
     criterio_barreira: Mapped["CriterioBarreira"] = relationship(back_populates="avaliacoes")
-    jornada_observada: Mapped[Optional["JornadaObservada"]] = relationship("JornadaObservada", back_populates="avaliacoes_barreira")
+    jornada: Mapped[Optional["JornadaObservada"]] = relationship("JornadaObservada", back_populates="avaliacoes_barreiras")
 
 class AvaliacaoImpacto(Base):
     __tablename__ = "avaliacao_impacto"
@@ -90,7 +90,7 @@ class AvaliacaoImpacto(Base):
     data_avaliacao: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp(), nullable=False)
 
     criterio_impacto: Mapped["CriterioImpacto"] = relationship(back_populates="avaliacoes")
-    jornada_observada: Mapped[Optional["JornadaObservada"]] = relationship("JornadaObservada", back_populates="avaliacoes_impacto")
+    jornada: Mapped[Optional["JornadaObservada"]] = relationship("JornadaObservada", back_populates="avaliacoes_impactos")
 
 class ResultadoAnalise(Base):
     __tablename__ = "resultado_analise"
@@ -111,7 +111,3 @@ class ResultadoAnalise(Base):
 
     processo: Mapped["Processo"] = relationship("Processo", back_populates="resultados")
     etapa: Mapped[Optional["Etapa"]] = relationship("Etapa", back_populates="resultados")
-    
-    # Adicionando relacionamento com TempoEtapa se necessário
-    tempo_etapa_id: Mapped[Optional[int]] = mapped_column(ForeignKey("tempo_etapa.id", ondelete="SET NULL"), nullable=True)
-    tempo_etapa: Mapped[Optional["TempoEtapa"]] = relationship("TempoEtapa", back_populates="resultados")
