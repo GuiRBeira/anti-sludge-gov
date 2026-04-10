@@ -1,5 +1,8 @@
 import time
 import logging
+import json
+from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,10 +14,21 @@ from app.core.exceptions import APIException, ErrorResponse, ErrorDetail
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def get_version() -> str:
+    """Lê a versão do arquivo version.json"""
+    try:
+        package_json_path = Path(__file__).parent.parent.parent / "package.json"
+        with open(package_json_path, "r") as f:
+            package_data = json.load(f)
+            return package_data.get("version", "0.0.0")
+    except Exception as e:
+        logger.error(f"Erro ao ler versão: {e}")
+        return "0.0.0"
+
 app = FastAPI(
     title="Anti-Sludge Gov API",
     description="API para análise e redução de carga administrativa (Sludge) no governo.",
-    version="0.1.0"
+    version=get_version()
 )
 
 # =========================
