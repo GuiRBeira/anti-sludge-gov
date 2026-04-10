@@ -1,0 +1,77 @@
+// apps/web/services/process-service.ts
+import { apiFetch } from "@/lib/api-client";
+
+export enum EsferaGoverno {
+  FEDERAL = "Federal",
+  ESTADUAL = "Estadual",
+  MUNICIPAL = "Municipal",
+}
+
+export enum Abrangencia {
+  PUBLICO_GERAL = "Público Geral",
+  PUBLICO_ESPECIFICO = "Público Específico",
+}
+
+export interface Etapa {
+  id: number;
+  processo_id: number;
+  categoria_id: number;
+  tipo_comportamento_id: number;
+  numero?: string;
+  comportamento: string;
+  e_obrigatorio: boolean;
+  repeticoes?: string;
+  tempo_planejado?: string; // ISO 8601 duration or string representation
+  tempo_padrao?: string;
+  ordem: number;
+  duracao_media_observada?: string;
+  created_at: string;
+}
+
+export interface Processo {
+  id: number;
+  uuid: string;
+  nome: string;
+  descricao?: string;
+  objetivo?: string;
+  esfera_governo?: EsferaGoverno;
+  abrangencia?: Abrangencia;
+  publico_alvo?: string;
+  usuarios_estimados_ano?: number;
+  perfil_foco_mapeamento?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProcessoDetail extends Processo {
+  etapas: Etapa[];
+}
+
+export interface CreateProcessoDTO {
+  nome: string;
+  descricao?: string;
+  objetivo?: string;
+  esfera_governo?: EsferaGoverno;
+  abrangencia?: Abrangencia;
+  publico_alvo?: string;
+  usuarios_estimados_ano?: number;
+  status?: string;
+}
+
+export const processService = {
+  async list(): Promise<Processo[]> {
+    return apiFetch<Processo[]>("/processos");
+  },
+
+  async getById(id: number): Promise<ProcessoDetail> {
+    return apiFetch<ProcessoDetail>(`/processos/${id}`);
+  },
+
+  async create(data: CreateProcessoDTO): Promise<Processo> {
+    return apiFetch<Processo>("/processos", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+};
