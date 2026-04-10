@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import logo from "data-base64:../assets/icon.png"
+import govbr from "data-base64:../assets/govbr.png"
 import { 
   BrHeader, 
   BrTag, 
@@ -43,6 +43,31 @@ const getPageDuration = (page: PageInfo) => {
   const minutes = Math.floor(durationSec / 60)
   const seconds = durationSec % 60
   return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`
+}
+
+function CustomHeader({ title, subTitle, logo, signature }: { title: string, subTitle: string, logo: string, signature: string }) {
+  return (
+    <header className="tw:bg-white tw:p-4 tw:shadow-xs tw:z-30 tw:border-b tw:border-slate-100">
+      <div className="tw:flex tw:items-center tw:gap-3">
+        {/* Simplified Logo */}
+        <div className="tw:p-1">
+          <img src={logo} alt="GovBR" className="tw:h-6 tw:w-auto" />
+        </div>
+        
+        {/* Minimalist Title Content */}
+        <div className="tw:flex-1">
+          <h1 className="tw:text-sm tw:font-black tw:text-slate-800 tw:tracking-tight tw:leading-none">{title}</h1>
+          <div className="tw:flex tw:items-center tw:gap-2 tw:mt-1">
+            <span className="tw:text-[9px] tw:font-bold tw:text-slate-300 tw:uppercase tw:tracking-widest">{signature}</span>
+            <div className="tw:h-2 tw:w-px tw:bg-slate-100"></div>
+            <span className="tw:text-[9px] tw:font-bold tw:text-slate-400">{subTitle}</span>
+          </div>
+        </div>
+        
+        <BrTag type="icon" icon="fas fa-shield-halved" size="small" className="tw:text-slate-200 tw:bg-transparent tw:border-none" />
+      </div>
+    </header>
+  );
 }
 
 function StatCard({ label, value, icon, color }: { label: string, value: string, icon: string, color: string }) {
@@ -121,12 +146,11 @@ export default function IndexPopup() {
 
   return (
     <div className="tw:flex tw:flex-col tw:h-screen tw:bg-slate-50">
-      <BrHeader
+      <CustomHeader
+        signature="UTFPR / CINCO MGI"
         title="AntiSludge Auditor"
-        subTitle="Painel de Monitoramento"
-        urlLogo={logo}
-        className="tw:shadow-lg tw:z-30"
-        density="large"
+        subTitle="Transparência em Serviços Digitais"
+        logo={govbr}
       />
 
       <div className="tw:flex-1 tw:overflow-y-auto tw:p-4 tw:space-y-6">
@@ -134,7 +158,7 @@ export default function IndexPopup() {
         <div className="tw:space-y-4">
           <header className="tw:flex tw:justify-between tw:items-end">
             <div>
-              <h1 className="tw:text-2xl tw:font-black tw:text-slate-800 tw:tracking-tight">Monitoramento</h1>
+              <h3 className="tw:text-2xl tw:font-black tw:tracking-tight">Monitoramento</h3>
               <p className="tw:text-[11px] tw:text-slate-500">Controle a gravação de fricção digital.</p>
             </div>
             <BrSwitch
@@ -149,9 +173,9 @@ export default function IndexPopup() {
             <BrTag
               type="status"
               color={isActive ? "success" : "danger"}
-              value={isActive ? "SESSÃO ATIVA" : "SESSÃO INATIVA"}
+              value={isActive ? " Ativa" : " Inativa"}
               icon={isActive ? "fas fa-sync fa-spin" : "fas fa-shield-alt"}
-              className="tw:text-[10px] tw:font-black tw:tracking-widest"
+              className="tw:pb-2 tw:font-black tw:tracking-widest"
             />
           </div>
 
