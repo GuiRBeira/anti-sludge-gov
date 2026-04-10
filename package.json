@@ -15,7 +15,8 @@
     "dev:extension": "pnpm --filter anti-sludge dev",
     "build:extension": "pnpm --filter anti-sludge build",
     "dev:all": "pnpm run dev:web & pnpm run dev:extension",
-    "clean": "pnpm -r exec rm -rf node_modules .next .plasmo && rm -rf node_modules pnpm-lock.yaml"
+    "clean": "pnpm -r exec rm -rf node_modules .next .plasmo && rm -rf node_modules pnpm-lock.yaml",
+    "postinstall": "bash scripts/patch-node-prefixes.sh"
   },
   "engines": {
     "node": ">=24.0.0",

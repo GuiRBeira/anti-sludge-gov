@@ -1,240 +1,248 @@
-import { useEffect, useState } from "react";
-import {
-  BrHeader,
+import React, { useState, useEffect } from "react"
+import logo from "data-base64:../assets/icon.png"
+import { 
+  BrHeader, 
+  BrTag, 
+  BrList, 
+  BrItem, 
+  BrCard, 
   BrSwitch,
-  BrTag,
-  BrItem,
-  BrList,
-  BrCard,
-  BrHeaderLogo,
-  BrIcon,
-} from "@govbr-ds/webcomponents-react";
-import "./popup.css";
-import logo from "@/assets/icon.png";
+  Icon
+} from "@govbr-ds/react-components"
+import "./popup.css"
 
-// --- Types ---
-interface Page {
-  order: number;
-  url: string;
-  title: string;
-  enteredAt: string;
-  leftAt: string | null;
-  duration: string | null;
-  durationMs: number;
-  clicks: number;
-  scrolled: boolean;
+interface PageInfo {
+  url: string
+  title: string
+  startTime: number
+  endTime?: number
+  clicks: number
+  scrolled: boolean
 }
 
 interface Session {
-  sessionId: string;
-  startTime: string;
-  endTime: string | null;
-  totalDuration: string | null;
-  totalDurationMs: number;
-  pages: Page[];
+  id: string
+  startTime: number
+  pages: PageInfo[]
+}
+
+const formatUrl = (url: string) => {
+  try {
+    const parsed = new URL(url)
+    return parsed.hostname + (parsed.pathname !== "/" ? parsed.pathname : "")
+  } catch {
+    return url
+  }
+}
+
+const getPageDuration = (page: PageInfo) => {
+  const end = page.endTime || Date.now()
+  const durationMs = end - page.startTime
+  const seconds = Math.floor(durationMs / 1000)
+  const minutes = Math.floor(seconds / 60)
+  return minutes > 0 ? `${minutes}m ${seconds % 60}s` : `${seconds}s`
+}
+
+// Adapted StatCard from Boilerplate
+function StatCard({ label, value, icon, color }: { label: string, value: string, icon: string, color: string }) {
+  return (
+    <div className="tw:bg-white tw:p-3 tw:rounded-2xl tw:shadow-sm tw:border tw:border-slate-100 tw:flex tw:items-center tw:gap-3 tw:transition-all tw:duration-300 hover-lift">
+      {/* Usando BrTag com tipo icon para o container do ícone */}
+      <BrTag
+        type="icon"
+        icon={icon}
+        size="large"
+        className={`tw:!w-10 tw:!h-10 tw:rounded-xl tw:bg-gradient-to-br ${color} tw:flex tw:items-center tw:justify-center tw:text-white tw:shadow-lg tw:!border-none`}
+      />
+      <div className="tw:min-w-0">
+        <div className="tw:text-[9px] tw:font-bold tw:text-slate-400 tw:uppercase tw:tracking-wider tw:truncate">{label}</div>
+        <div className="tw:text-lg tw:font-black tw:text-slate-800 tw:leading-none">{value}</div>
+      </div>
+    </div>
+  );
 }
 
 export default function IndexPopup() {
-  const [isActive, setIsActive] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
-  const [timer, setTimer] = useState("00:00");
-  const [showFinishedBanner, setShowFinishedBanner] = useState(false);
+  const [isActive, setIsActive] = useState(false)
+  const [session, setSession] = useState<Session | null>(null)
+  const [timer, setTimer] = useState("00:00")
+  const [showFinishedBanner, setShowFinishedBanner] = useState(false)
 
-  // --- Fetch state ---
-  const updateState = () => {
-    chrome.runtime.sendMessage({ type: "GET_STATE" }, (response) => {
-      if (response) {
-        setIsActive(response.isActive);
-        setSession(response.session);
-      }
-    });
-  };
-
-  // --- Toggle ---
-  const handleToggle = () => {
-    chrome.runtime.sendMessage({ type: "TOGGLE" }, (response) => {
-      if (response) {
-        setIsActive(response.isActive);
-        if (!response.isActive) {
-          setShowFinishedBanner(true);
-          setTimeout(() => {
-            setSession(null);
-          }, 100);
-        } else {
-          setShowFinishedBanner(false);
-        }
-      }
-    });
-  };
-
-  // --- State Polling ---
   useEffect(() => {
-    updateState();
-    const interval = setInterval(updateState, 2000);
-    return () => clearInterval(interval);
-  }, []);
+    chrome.storage.local.get(["isActive", "currentSession"], (result) => {
+      setIsActive(result.isActive || false)
+      setSession(result.currentSession || null)
+    })
 
-  // --- Timer logic ---
+    const handleStorageChange = (changes) => {
+      if (changes.isActive) setIsActive(changes.isActive.newValue)
+      if (changes.currentSession) setSession(changes.currentSession.newValue)
+    }
+
+    chrome.storage.onChanged.addListener(handleStorageChange)
+    return () => chrome.storage.onChanged.removeListener(handleStorageChange)
+  }, [])
+
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-
-    if (isActive && session?.startTime) {
-      const startTime = new Date(session.startTime).getTime();
-
-      const updateTimer = () => {
-        const elapsed = Date.now() - startTime;
-        const totalSec = Math.floor(elapsed / 1000);
-        const min = Math.floor(totalSec / 60)
-          .toString()
-          .padStart(2, "0");
-        const sec = (totalSec % 60).toString().padStart(2, "0");
-        setTimer(`${min}:${sec}`);
-      };
-
-      updateTimer();
-      interval = setInterval(updateTimer, 1000);
+    let interval: NodeJS.Timeout
+    if (isActive && session) {
+      interval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - session.startTime) / 1000)
+        const mins = Math.floor(elapsed / 60).toString().padStart(2, "0")
+        const secs = (elapsed % 60).toString().padStart(2, "0")
+        setTimer(`${mins}:${secs}`)
+      }, 1000)
     } else {
-      setTimer("00:00");
+      setTimer("00:00")
     }
+    return () => clearInterval(interval)
+  }, [isActive, session])
 
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isActive, session?.startTime]);
-
-  const formatUrl = (urlStr: string) => {
-    try {
-      const u = new URL(urlStr);
-      let displayUrl = u.hostname + u.pathname;
-      if (displayUrl.length > 40) {
-        displayUrl = displayUrl.substring(0, 37) + "...";
-      }
-      return displayUrl;
-    } catch (e) {
-      return urlStr;
+  const handleToggle = () => {
+    const newState = !isActive
+    if (newState) {
+      chrome.runtime.sendMessage({ action: "startSession" })
+      setShowFinishedBanner(false)
+    } else {
+      chrome.runtime.sendMessage({ action: "stopSession" })
+      setShowFinishedBanner(true)
+      setTimeout(() => setShowFinishedBanner(false), 5000)
     }
-  };
-
-  const getPageDuration = (page: Page) => {
-    if (page.duration) return page.duration;
-    if (page.enteredAt) {
-      const elapsed = Date.now() - new Date(page.enteredAt).getTime();
-      const sec = Math.floor(elapsed / 1000);
-      const min = Math.floor(sec / 60);
-      if (min > 0) return `${min}m ${sec % 60}s`;
-      return `${sec}s`;
-    }
-    return "agora";
-  };
+  }
 
   return (
-    <div className="popup-container">
-      {/* 1. Header Section */}
-      <div className="header-wrapper">
-        <BrHeader 
-          caption="AntiSludge" 
-          subcaption="Auditoria de Fricção Digital"
-        >
-          <div slot="header-logo">
-            <BrHeaderLogo>
-              <img src={logo} alt="AntiSludge Logo" className="header-logo-img" />
-            </BrHeaderLogo>
-          </div>
-        </BrHeader>
-      </div>
+    <div className="tw:flex tw:flex-col tw:h-screen tw:bg-slate-50">
+      {/* 1. Boilerplate-Style Header */}
+      <BrHeader
+        title="AntiSludge Auditor"
+        subTitle="Painel de Monitoramento"
+        urlLogo={logo}
+        className="tw:shadow-lg tw:z-30"
+        density="small"
+        compact={true}
+        showLoginButton
+      />
 
-      {/* 2. Dashboard Section */}
-      <div className="dashboard-card">
-        <div className="dashboard-header">
-          <div className="status-indicator">
-            <span className="status-label">Monitoramento</span>
-            <BrTag color={isActive ? "success" : "danger"}>
-              <BrIcon
-                className={`fas fa-circle ${isActive ? "fa-pulse" : ""}`}
-                style={{ marginRight: "6px", fontSize: "8px" }}
-              ></BrIcon>
-              {isActive ? "Ativo" : "Inativo"}
-            </BrTag>
-          </div>
-          <BrSwitch 
-            label={isActive ? "Parar" : "Iniciar"} 
-            checked={isActive} 
-            onClick={handleToggle}
-          />
-        </div>
-
-        <div className="stats-grid">
-          <div className="stat-item">
-            <div className="stat-header">
-              <BrIcon className="far fa-clock stat-icon"></BrIcon>
-              <span className="stat-label">Tempo Total</span>
-            </div>
-            <span className="stat-value">{timer}</span>
-          </div>
-          <div className="stat-item">
-             <div className="stat-header">
-              <BrIcon className="far fa-file-alt stat-icon"></BrIcon>
-              <span className="stat-label">Páginas</span>
-            </div>
-            <span className="stat-value">{session?.pages?.length || 0}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Notifications */}
-      {showFinishedBanner && (
-        <div className="finished-banner">
-          <BrIcon className="fas fa-check-circle" style={{ color: "var(--success)" }}></BrIcon>
-          <span>Sessão finalizada. Log baixado.</span>
-        </div>
-      )}
-
-      {/* 4. Timeline Section */}
-      <div className="timeline-section">
-        <div className="timeline-title">
-          <BrIcon className="fas fa-history"></BrIcon> Jornada do Cidadão
-        </div>
+      <div className="tw:flex-1 tw:overflow-y-auto tw:p-4 tw:space-y-6">
         
-        {!isActive && !session?.pages?.length ? (
-          <div className="empty-state">
-            <div className="empty-icon">🛡️</div>
-            <p style={{ fontWeight: 600, fontSize: "14px", marginBottom: "4px" }}>Pronto para Auditar</p>
-            <p style={{ fontSize: "12px" }}>Inicie para capturar pontos de fricção.</p>
+        {/* 2. Monitoramento Hero Section */}
+        <div className="tw:space-y-4">
+          <header className="tw:flex tw:justify-between tw:items-end">
+            <div>
+              <h1 className="tw:text-2xl tw:font-black tw:text-slate-800 tw:tracking-tight">Monitoramento</h1>
+              <p className="tw:text-[11px] tw:text-slate-500">Controle a gravação de fricção digital.</p>
+            </div>
+            <BrSwitch
+              checked={isActive}
+              onChange={handleToggle}
+              label={isActive ? "Parar" : "Iniciar"}
+              className="tw:!mb-0"
+            />
+          </header>
+
+          <div className="tw:flex tw:items-center">
+            <BrTag
+              type="status"
+              color={isActive ? "success" : "danger"}
+              value={isActive ? "SESSÃO ATIVA" : "SESSÃO INATIVA"}
+              icon={isActive ? "fas fa-sync fa-spin" : "fas fa-shield-alt"}
+              className="tw:text-[10px] tw:font-black tw:tracking-widest"
+              size="small"
+            />
           </div>
-        ) : (
-          <BrList>
-            {(session?.pages || []).map((page, index) => (
-              <BrCard key={index} className="timeline-card">
-                <BrItem>
-                  <div className="timeline-item-content">
-                    <div className="page-title">{page.title}</div>
-                    <span className="page-url">{formatUrl(page.url)}</span>
-                    <div className="page-metrics">
-                      <BrTag color="info">
-                        <BrIcon className="far fa-clock" style={{marginRight: '4px'}}></BrIcon>
-                        {getPageDuration(page)}
-                      </BrTag>
-                      <BrTag color="warning">
-                        <BrIcon className="far fa-hand-point-up" style={{marginRight: '4px'}}></BrIcon>
-                        {page.clicks} cliques
-                      </BrTag>
-                      {page.scrolled && (
-                        <BrTag color="success">
-                          <BrIcon className="fas fa-arrows-alt-v" style={{marginRight: '4px'}}></BrIcon>
-                          scroll
-                        </BrTag>
-                      )}
-                    </div>
-                  </div>
-                </BrItem>
-              </BrCard>
-            ))}
-          </BrList>
+
+          {/* 3. Stats Grid (2-Column Boilerplate Style) */}
+          <div className="tw:grid tw:grid-cols-2 tw:gap-4">
+            <StatCard 
+              label="Tempo Total" 
+              value={timer} 
+              icon="far fa-clock" 
+              color="tw:from-blue-500 tw:to-blue-700" 
+            />
+            <StatCard 
+              label="Páginas" 
+              value={(session?.pages?.length || 0).toString()} 
+              icon="far fa-file-alt" 
+              color="tw:from-emerald-500 tw:to-emerald-700" 
+            />
+          </div>
+        </div>
+
+        {/* 4. Session Finished Banner */}
+        {showFinishedBanner && (
+          <div className="tw:p-4 tw:bg-white tw:rounded-2xl tw:shadow-sm tw:border tw:border-emerald-100 tw:text-emerald-700 tw:text-xs tw:flex tw:items-center tw:gap-3 tw:animate-slide-down">
+            <BrTag
+              type="icon"
+              icon="fas fa-check"
+              size="medium"
+              color="success"
+              className="tw:!bg-emerald-100 tw:!text-emerald-700 tw:rounded-full tw:!border-none"
+            />
+            <span className="tw:font-bold">Relatório exportado com sucesso!</span>
+          </div>
         )}
+
+        {/* 5. Jornada Section (Table-like List) */}
+        <div className="tw:bg-white tw:rounded-2xl tw:shadow-sm tw:border tw:border-slate-100 tw:overflow-hidden">
+          <div className="tw:px-5 tw:py-4 tw:border-b tw:border-slate-100 tw:flex tw:items-center tw:justify-between">
+            <h3 className="tw:text-sm tw:font-black tw:text-slate-800 tw:uppercase tw:tracking-tighter">Jornada do Cidadão</h3>
+            <BrTag type="icon" icon="fas fa-history" size="small" className="tw:!text-slate-300 tw:!bg-transparent tw:!border-none" />
+          </div>
+
+          <div className="tw:p-2 tw:space-y-2">
+            {!isActive && !session?.pages?.length ? (
+              <div className="tw:py-10 tw:text-center tw:text-slate-400 tw:flex tw:flex-col tw:items-center tw:gap-3">
+                <BrTag type="icon" icon="fas fa-search" size="large" className="tw:opacity-20 tw:!bg-transparent tw:!border-none" />
+                <p className="tw:text-xs tw:font-bold">Nenhuma atividade recente encontrada.</p>
+              </div>
+            ) : (
+              <BrList>
+                {(session?.pages || []).slice().reverse().map((page, index) => (
+                  <BrItem key={index} className="tw:!p-3 tw:hover:bg-slate-50 tw:rounded-xl tw:transition-colors">
+                    <div className="tw:w-full">
+                      <div className="tw:flex tw:justify-between tw:items-start tw:mb-1">
+                        <div className="tw:text-[13px] tw:font-black tw:text-slate-800 tw:truncate tw:max-w-[180px]">
+                          {page.title}
+                        </div>
+                        <div className="tw:text-[10px] tw:font-bold tw:text-blue-600 tw:bg-blue-50 tw:px-2 tw:py-0.5 tw:rounded-full">
+                          {getPageDuration(page)}
+                        </div>
+                      </div>
+                      <div className="tw:text-[10px] tw:text-slate-400 tw:mb-3 tw:truncate">{formatUrl(page.url)}</div>
+                      
+                      <div className="tw:flex tw:gap-2">
+                        <BrTag
+                          type="text"
+                          color="warning"
+                          icon="far fa-hand-point-up"
+                          value={`${page.clicks} CLIQUES`}
+                          className="tw:text-[9px] tw:font-black tw:rounded-lg tw:!py-1 tw:!px-2"
+                        />
+                        {page.scrolled && (
+                          <BrTag
+                            type="text"
+                            color="success"
+                            icon="fas fa-arrows-alt-v"
+                            value="SCROLL"
+                            className="tw:text-[9px] tw:font-black tw:rounded-lg tw:!py-1 tw:!px-2"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </BrItem>
+                ))}
+              </BrList>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* 5. Footer */}
-      <div className="footer-simple">Versão 1.0.0 — UTFPR & CINCO/MGI</div>
+      {/* 6. Footer */}
+      <div className="tw:px-4 tw:py-3 tw:bg-white tw:border-t tw:border-slate-100 tw:text-center">
+        <div className="tw:text-[9px] tw:font-black tw:text-slate-300 tw:uppercase tw:tracking-widest">
+          UTFPR & CINCO/MGI — Auditoria v1.0
+        </div>
+      </div>
     </div>
-  );
+  )
 }

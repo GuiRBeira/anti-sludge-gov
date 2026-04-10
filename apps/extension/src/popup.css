@@ -1,240 +1,72 @@
-/* Import DSGOV Core Styles */
+/* 1. Importa fontes oficiais do Gov */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.cdnfonts.com/css/rawline');
+
+/* 2. Importa estilos do GovBR-DS e ícones locais */
 @import "@govbr-ds/core/dist/core.min.css";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 
-/* Google Fonts - Raleway (Alternative to Rawline) */
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
+/* 3. Tailwind CSS v4 com prefixo */
+@import "tailwindcss" prefix(tw);
 
-/* Font Awesome 5 for DSGOV Icons */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
-
-:root {
-  --primary-blue: #1351B4;
-  --secondary-blue: #0C326F;
-  --bg-gray: #F8F8F8;
-  --white: #FFFFFF;
-  --success: #168821;
-  --danger: #E52207;
-  --warning: #FFCD07;
-  --info: #155BCB;
+@theme {
+  /* Slate Theme Inspired by Boilerplate */
+  --color-bg-slate: #f8fafc; /* slate-50 */
+  --color-pure-white: #ffffff;
+  
+  /* Custom Shadows & Radii */
+  --shadow-sm-slate: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+  --shadow-md-premium: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --radius-2xl: 1rem;
 }
 
-* {
+/* 4. Global Resets & Constraints */
+html, body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  overflow: hidden;
+  background-color: var(--color-bg-slate);
 }
 
 body {
   font-family: 'Raleway', sans-serif;
   width: 400px;
-  min-height: 450px;
+  max-width: 400px;
+  height: 580px;
   max-height: 600px;
-  overflow-x: hidden;
-  background-color: var(--bg-gray);
-  color: #333;
+  color: #1e293b; /* slate-800 */
 }
 
-/* Custom Scrollbar */
+* {
+  box-sizing: border-box;
+}
+
+/* 5. Modern Scrollbar (Matching Slate Theme) */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-gray);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* slate-400 */
 }
 
-.popup-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+/* 6. DSGOV Component Polish */
+.br-header {
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: var(--shadow-sm-slate) !important;
 }
 
-/* Header Tweaks */
-.header-wrapper {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  z-index: 10;
-  padding: 4px 0;
+/* 7. Hover scales for StatCards */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.header-logo-img {
-  max-height: 80px;
-  width: auto;
-  object-fit: contain;
-}
-
-br-header-logo {
-  display: flex;
-  align-items: center;
-  height: 80px;
-}
-
-/* Dashboard Card */
-.dashboard-card {
-  margin: 12px;
-  padding: 16px;
-  background: var(--white);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-
-.status-indicator {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.status-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #666;
-  font-weight: 700;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  border-top: 1px solid #eee;
-  padding-top: 12px;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 2px;
-}
-
-.stat-icon {
-  color: var(--primary-blue);
-  font-size: 12px;
-}
-
-.stat-value {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--secondary-blue);
-}
-
-.stat-label {
-  font-size: 11px;
-  color: #888;
-}
-
-/* Timeline/List Integration */
-.timeline-section {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 12px 12px 12px;
-}
-
-.timeline-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #555;
-  margin: 8px 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Nested Card spacing */
-.timeline-card {
-  margin-bottom: 8px !important;
-  border-radius: 8px !important;
-  overflow: hidden;
-}
-
-.timeline-item-content {
-  width: 100%;
-}
-
-.page-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--primary-blue);
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.page-url {
-  font-size: 10px;
-  color: #888;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.page-metrics {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-/* DSGOV Tag Overrides */
-br-tag {
-  --tag-font-size: 10px;
-  --tag-height: 24px;
-}
-
-/* Finished Banner */
-.finished-banner {
-  background: #E7F6E7;
-  border: 1px solid #C3E6CB;
-  color: #155724;
-  margin: 0 12px 12px 12px;
-  padding: 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-  from { transform: translateY(-10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.footer-simple {
-  padding: 10px;
-  text-align: center;
-  font-size: 10px;
-  color: #999;
-  background: #f0f0f0;
-  font-weight: 500;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  text-align: center;
-  color: #888;
-}
-
-.empty-icon {
-  font-size: 40px;
-  margin-bottom: 12px;
-  opacity: 0.5;
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md-premium);
 }
