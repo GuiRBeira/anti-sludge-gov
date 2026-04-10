@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/v1.1.0...v1.2.0) (2026-04-10)
+
+### Features
+
+* implement dashboard layout with process management modal and hydration-safe GovTag component ([d0a5394](https://github.com/GuiRBeira/anti-sludge-gov/commit/d0a53946ccc5e18d7fc0786d891c1579203d929d))
+
 ## [1.1.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/v1.0.0...v1.1.0) (2026-04-10)
 
 ### Features
