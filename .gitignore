@@ -50,7 +50,6 @@ env/
 .env/
 bin/
 include/
-lib/
 share/
 pywrapcl/
 .gemini/
