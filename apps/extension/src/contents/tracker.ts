@@ -6,83 +6,61 @@ export const config: PlasmoCSConfig = {
 }
 
 // ============================================================
-// AntiSludge — Content Script
-// Captures clicks and scroll activity on each page
+// AntiSludge — Content Script (Reconstructed)
+// Reports activity (clicks/scroll) to background
 // ============================================================
 
-let clickCount = 0;
-let hasScrolled = false;
-let isTracking = false;
+let isActive = false;
+let clicks = 0;
+let scrolled = false;
 
-// Check if extension is active
+// Initialize state
 chrome.storage.local.get(["isActive"], (data) => {
-  isTracking = data.isActive || false;
-
-  if (isTracking) {
-    startTracking();
-  }
+  isActive = data.isActive || false;
 });
 
-// Listen for changes to active state
+// Watch for state changes
 chrome.storage.onChanged.addListener((changes) => {
   if (changes.isActive) {
-    isTracking = changes.isActive.newValue;
-    if (isTracking) {
-      startTracking();
-    }
+    isActive = changes.isActive.newValue;
   }
 });
 
-function startTracking() {
-  // Reset counters for this page
-  clickCount = 0;
-  hasScrolled = false;
+// Reporting function
+function reportStats() {
+  if (!isActive) return;
+  chrome.runtime.sendMessage({
+    type: "PAGE_STATS",
+    url: window.location.href,
+    clicks: clicks,
+    scrolled: scrolled
+  }).catch(() => {
+    // Background might be suspended or context invalidated
+  });
 }
 
-// --- Click tracking ---
+// Event Listeners
 document.addEventListener("click", () => {
-  if (!isTracking) return;
-  clickCount++;
-  sendStats();
+  if (!isActive) return;
+  clicks++;
+  reportStats();
 });
 
-// --- Scroll tracking ---
 let scrollTimeout: NodeJS.Timeout | null = null;
 document.addEventListener("scroll", () => {
-  if (!isTracking) return;
-  if (!hasScrolled) {
-    hasScrolled = true;
-    sendStats();
+  if (!isActive) return;
+  if (!scrolled) {
+    scrolled = true;
   }
-  // Debounce additional scroll reports
+  
   if (scrollTimeout) clearTimeout(scrollTimeout);
-  scrollTimeout = setTimeout(sendStats, 2000);
+  scrollTimeout = setTimeout(reportStats, 1000);
 }, { passive: true });
 
-// --- Send stats to background ---
-function sendStats() {
-  if (!isTracking) return;
-  try {
-    chrome.runtime.sendMessage({
-      type: "PAGE_STATS",
-      url: window.location.href,
-      clicks: clickCount,
-      scrolled: hasScrolled
-    });
-  } catch (e) {
-    // Extension context may have been invalidated
-  }
-}
+// Final report before unload
+window.addEventListener("beforeunload", reportStats);
 
-// --- Send final stats before leaving page ---
-window.addEventListener("beforeunload", () => {
-  if (!isTracking) return;
-  sendStats();
-});
-
-// --- Periodic stats update (every 5s) ---
+// Heartbeat report every 10s if active
 setInterval(() => {
-  if (isTracking && (clickCount > 0 || hasScrolled)) {
-    sendStats();
-  }
-}, 5000);
+  if (isActive) reportStats();
+}, 10000);

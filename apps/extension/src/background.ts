@@ -1,6 +1,6 @@
 // ============================================================
-// AntiSludge — Background Service Worker
-// Manages session tracking, navigation events, and auto-download
+// AntiSludge — Background Service Worker (Reconstructed)
+// Single Source of Truth: chrome.storage.local
 // ============================================================
 
 export {}
@@ -8,143 +8,68 @@ export {}
 import Icon from "@/assets/icon.png"
 
 // --- Types ---
-interface Page {
-  order: number;
+interface PageInfo {
   url: string;
   title: string;
-  enteredAt: string;
-  leftAt: string | null;
-  duration: string | null;
-  durationMs: number;
+  startTime: number; // Seconds
+  endTime?: number;  // Seconds
   clicks: number;
   scrolled: boolean;
 }
 
 interface Session {
-  sessionId: string;
-  startTime: string;
-  endTime: string | null;
-  totalDuration: string | null;
-  totalDurationMs: number;
-  pages: Page[];
+  id: string;
+  startTime: number; // Seconds
+  pages: PageInfo[];
 }
 
-// --- State ---
-let isActive = false;
-let session: Session | null = null;
-
-// --- Helpers ---
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+interface AppState {
+  isActive: boolean;
+  currentSession: Session | null;
 }
 
-function formatDuration(ms: number) {
-  const totalSec = Math.floor(ms / 1000);
-  const min = Math.floor(totalSec / 60);
-  const sec = totalSec % 60;
-  if (min === 0) return `${sec}s`;
-  return `${min}min ${sec}s`;
-}
+// --- Utils ---
+const nowSeconds = () => Math.floor(Date.now() / 1000);
 
-function isoNow() {
-  return new Date().toISOString();
-}
+const generateId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
-// --- Session Management ---
-function createSession(): Session {
+// Get current state from storage
+async function getAppState(): Promise<AppState> {
+  const data = await chrome.storage.local.get(["isActive", "currentSession"]);
   return {
-    sessionId: generateId(),
-    startTime: isoNow(),
-    endTime: null,
-    totalDuration: null,
-    totalDurationMs: 0,
-    pages: []
+    isActive: data.isActive || false,
+    currentSession: data.currentSession || null
   };
 }
 
-function finalizeCurrentPage() {
-  if (!session || session.pages.length === 0) return;
-  const page = session.pages[session.pages.length - 1];
-  if (!page.leftAt) {
-    page.leftAt = isoNow();
-    page.durationMs = new Date(page.leftAt).getTime() - new Date(page.enteredAt).getTime();
-    page.duration = formatDuration(page.durationMs);
+// Save state to storage
+async function saveAppState(state: AppState) {
+  await chrome.storage.local.set(state);
+  
+  // Update badge and icon
+  if (state.isActive) {
+    chrome.action.setBadgeText({ text: "ON" });
+    chrome.action.setBadgeBackgroundColor({ color: "#00AA66" });
+  } else {
+    chrome.action.setBadgeText({ text: "" });
   }
 }
 
-async function addPage(url: string, title?: string) {
-  if (!session || !isActive) return;
-
-  // Don't track chrome:// or extension pages
-  if (url.startsWith("chrome://") || url.startsWith("chrome-extension://")) return;
-
-  // Don't add duplicate consecutive pages
-  if (session.pages.length > 0) {
-    const lastPage = session.pages[session.pages.length - 1];
-    if (lastPage.url === url) return;
-  }
-
-  // Finalize previous page
-  finalizeCurrentPage();
-
-  const page: Page = {
-    order: session.pages.length + 1,
-    url: url,
-    title: title || url,
-    enteredAt: isoNow(),
-    leftAt: null,
-    duration: null,
-    durationMs: 0,
-    clicks: 0,
-    scrolled: false
-  };
-
-  session.pages.push(page);
-  saveSession();
+// Placeholder for future API integration
+async function sendToApi(sessionData: Session) {
+  console.log("AntiSludge: Pre-prepared for API endpoint", sessionData);
+  // Example:
+  // fetch('https://api.colab.utfpr.edu.br/v1/sessions', {
+  //   method: 'POST',
+  //   body: JSON.stringify(sessionData)
+  // });
 }
 
-function saveSession() {
-  if (session) {
-    chrome.storage.local.set({ currentSession: session });
-  }
-}
-
-// --- Toggle ---
-async function activate() {
-  isActive = true;
-  session = createSession();
-  await chrome.storage.local.set({ isActive: true, currentSession: session });
-  chrome.action.setIcon({ path: Icon });
-  chrome.action.setBadgeText({ text: "ON" });
-  chrome.action.setBadgeBackgroundColor({ color: "#00AA66" });
-}
-
-async function deactivate() {
-  // Finalize last page
-  finalizeCurrentPage();
-
-  if (session) {
-    session.endTime = isoNow();
-    session.totalDurationMs = new Date(session.endTime).getTime() - new Date(session.startTime).getTime();
-    session.totalDuration = formatDuration(session.totalDurationMs);
-
-    // Auto-download the session log
-    await downloadSession(session);
-  }
-
-  isActive = false;
-  session = null;
-
-  await chrome.storage.local.set({ isActive: false, currentSession: null });
-  chrome.action.setIcon({ path: Icon });
-  chrome.action.setBadgeText({ text: "" });
-}
-
+// Download session as JSON
 async function downloadSession(sessionData: Session) {
   const json = JSON.stringify(sessionData, null, 2);
   const blob = new Blob([json], { type: "application/json" });
-
-  // Convert blob to data URL using a simpler way for MV3 service worker
+  
   const buffer = await blob.arrayBuffer();
   const base64 = btoa(new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ''));
   const dataUrl = `data:application/json;base64,${base64}`;
@@ -159,69 +84,124 @@ async function downloadSession(sessionData: Session) {
   });
 }
 
-// --- Navigation Listener ---
-chrome.webNavigation.onCompleted.addListener(async (details) => {
-  if (!isActive || !session) return;
-  if (details.frameId !== 0) return; // Only main frame
+// --- Core Actions ---
 
+async function startSession() {
+  const state = await getAppState();
+  if (state.isActive) return;
+
+  state.isActive = true;
+  state.currentSession = {
+    id: generateId(),
+    startTime: nowSeconds(),
+    pages: []
+  };
+
+  await saveAppState(state);
+}
+
+async function stopSession() {
+  const state = await getAppState();
+  if (!state.isActive || !state.currentSession) return;
+
+  // Finalize last page
+  if (state.currentSession.pages.length > 0) {
+    const lastPage = state.currentSession.pages[state.currentSession.pages.length - 1];
+    if (!lastPage.endTime) lastPage.endTime = nowSeconds();
+  }
+
+  // Export
+  await downloadSession(state.currentSession);
+  await sendToApi(state.currentSession);
+
+  // Clear state
+  state.isActive = false;
+  state.currentSession = null;
+  await saveAppState(state);
+}
+
+async function addPage(url: string, title?: string) {
+  const state = await getAppState();
+  if (!state.isActive || !state.currentSession) return;
+
+  // Filter internal pages
+  if (url.startsWith("chrome://") || url.startsWith("chrome-extension://")) return;
+
+  // Avoid duplicates
+  if (state.currentSession.pages.length > 0) {
+    const lastPage = state.currentSession.pages[state.currentSession.pages.length - 1];
+    if (lastPage.url === url) return;
+    
+    // Finalize previous page duration
+    if (!lastPage.endTime) lastPage.endTime = nowSeconds();
+  }
+
+  const newPage: PageInfo = {
+    url,
+    title: title || url,
+    startTime: nowSeconds(),
+    clicks: 0,
+    scrolled: false
+  };
+
+  state.currentSession.pages.push(newPage);
+  await saveAppState(state);
+}
+
+async function updateStats(url: string, clicks: number, scrolled: boolean) {
+  const state = await getAppState();
+  if (!state.isActive || !state.currentSession || state.currentSession.pages.length === 0) return;
+
+  const currentPage = state.currentSession.pages[state.currentSession.pages.length - 1];
+  if (currentPage.url === url) {
+    currentPage.clicks = clicks;
+    currentPage.scrolled = scrolled || currentPage.scrolled;
+    await saveAppState(state);
+  }
+}
+
+// --- Listeners ---
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  const action = message.action || message.type;
+
+  if (action === "startSession") {
+    startSession().then(() => sendResponse({ ok: true }));
+    return true;
+  }
+  if (action === "stopSession") {
+    stopSession().then(() => sendResponse({ ok: true }));
+    return true;
+  }
+  if (action === "PAGE_STATS") {
+    updateStats(message.url, message.clicks, message.scrolled).then(() => sendResponse({ ok: true }));
+    return true;
+  }
+  if (action === "GET_STATE") {
+    getAppState().then(sendResponse);
+    return true;
+  }
+});
+
+chrome.webNavigation.onCompleted.addListener(async (details) => {
+  if (details.frameId !== 0) return;
   try {
     const tab = await chrome.tabs.get(details.tabId);
     if (tab && tab.url) {
-      addPage(tab.url, tab.title);
+      await addPage(tab.url, tab.title);
     }
   } catch (e) {
-    // Tab may have been closed
+    // Tab might be gone
   }
 });
 
-// --- Message Listener (from content script and popup) ---
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "TOGGLE") {
-    if (isActive) {
-      deactivate().then(() => sendResponse({ isActive: false }));
-    } else {
-      activate().then(() => sendResponse({ isActive: true }));
-    }
-    return true; // async response
-  }
-
-  if (message.type === "GET_STATE") {
-    sendResponse({ isActive, session });
-    return;
-  }
-
-  if (message.type === "PAGE_STATS") {
-    // Update clicks and scroll for the current page
-    if (session && session.pages.length > 0 && isActive) {
-      const currentPage = session.pages[session.pages.length - 1];
-      if (message.url === currentPage.url) {
-        currentPage.clicks = message.clicks || currentPage.clicks;
-        currentPage.scrolled = message.scrolled || currentPage.scrolled;
-        saveSession();
-      }
-    }
-    sendResponse({ ok: true });
-    return;
-  }
-});
-
-// --- Restore state on startup ---
-chrome.runtime.onStartup.addListener(async () => {
-  const data = await chrome.storage.local.get(["isActive", "currentSession"]);
-  if (data.isActive) {
-    isActive = true;
-    session = data.currentSession;
-    chrome.action.setIcon({ path: Icon });
-    chrome.action.setBadgeText({ text: "ON" });
-    chrome.action.setBadgeBackgroundColor({ color: "#00AA66" });
-  }
-});
-
-// Also restore on install/update
+// Initialize on install or startup
 chrome.runtime.onInstalled.addListener(async () => {
-  const data = await chrome.storage.local.get(["isActive"]);
-  if (!data.isActive) {
-    await chrome.storage.local.set({ isActive: false, currentSession: null });
-    chrome.action.setIcon({ path: Icon });
-  }
+  const state = await getAppState();
+  await saveAppState(state); // Sync manifest badges
+});
+
+chrome.runtime.onStartup.addListener(async () => {
+  const state = await getAppState();
+  await saveAppState(state); // Sync manifest badges
 });

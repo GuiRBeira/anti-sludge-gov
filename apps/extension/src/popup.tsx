@@ -5,26 +5,28 @@ import {
   BrTag, 
   BrList, 
   BrItem, 
-  BrCard, 
-  BrSwitch,
-  Icon
+  BrSwitch
 } from "@govbr-ds/react-components"
 import "./popup.css"
 
+// --- Types ---
 interface PageInfo {
   url: string
   title: string
-  startTime: number
-  endTime?: number
+  startTime: number // Seconds
+  endTime?: number  // Seconds
   clicks: number
   scrolled: boolean
 }
 
 interface Session {
   id: string
-  startTime: number
+  startTime: number // Seconds
   pages: PageInfo[]
 }
+
+// --- Utils ---
+const nowSeconds = () => Math.floor(Date.now() / 1000)
 
 const formatUrl = (url: string) => {
   try {
@@ -36,23 +38,21 @@ const formatUrl = (url: string) => {
 }
 
 const getPageDuration = (page: PageInfo) => {
-  const end = page.endTime || Date.now()
-  const durationMs = end - page.startTime
-  const seconds = Math.floor(durationMs / 1000)
-  const minutes = Math.floor(seconds / 60)
-  return minutes > 0 ? `${minutes}m ${seconds % 60}s` : `${seconds}s`
+  const end = page.endTime || nowSeconds()
+  const durationSec = Math.max(0, end - page.startTime)
+  const minutes = Math.floor(durationSec / 60)
+  const seconds = durationSec % 60
+  return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`
 }
 
-// Adapted StatCard from Boilerplate
 function StatCard({ label, value, icon, color }: { label: string, value: string, icon: string, color: string }) {
   return (
     <div className="tw:bg-white tw:p-3 tw:rounded-2xl tw:shadow-sm tw:border tw:border-slate-100 tw:flex tw:items-center tw:gap-3 tw:transition-all tw:duration-300 hover-lift">
-      {/* Usando BrTag com tipo icon para o container do ícone */}
       <BrTag
         type="icon"
         icon={icon}
         size="large"
-        className={`tw:!w-10 tw:!h-10 tw:rounded-xl tw:bg-gradient-to-br ${color} tw:flex tw:items-center tw:justify-center tw:text-white tw:shadow-lg tw:!border-none`}
+        className={`tw:w-10 tw:h-10 tw:rounded-xl tw:bg-linear-to-br ${color} tw:flex tw:items-center tw:justify-center tw:text-white tw:shadow-lg tw:border-none`}
       />
       <div className="tw:min-w-0">
         <div className="tw:text-[9px] tw:font-bold tw:text-slate-400 tw:uppercase tw:tracking-wider tw:truncate">{label}</div>
@@ -62,19 +62,21 @@ function StatCard({ label, value, icon, color }: { label: string, value: string,
   );
 }
 
+// --- Main Component ---
 export default function IndexPopup() {
   const [isActive, setIsActive] = useState(false)
   const [session, setSession] = useState<Session | null>(null)
   const [timer, setTimer] = useState("00:00")
   const [showFinishedBanner, setShowFinishedBanner] = useState(false)
 
+  // Load initial state
   useEffect(() => {
     chrome.storage.local.get(["isActive", "currentSession"], (result) => {
       setIsActive(result.isActive || false)
       setSession(result.currentSession || null)
     })
 
-    const handleStorageChange = (changes) => {
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
       if (changes.isActive) setIsActive(changes.isActive.newValue)
       if (changes.currentSession) setSession(changes.currentSession.newValue)
     }
@@ -83,24 +85,31 @@ export default function IndexPopup() {
     return () => chrome.storage.onChanged.removeListener(handleStorageChange)
   }, [])
 
+  // Timer logic
   useEffect(() => {
     let interval: NodeJS.Timeout
     if (isActive && session) {
-      interval = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - session.startTime) / 1000)
+      const updateTimer = () => {
+        const elapsed = Math.max(0, nowSeconds() - session.startTime)
         const mins = Math.floor(elapsed / 60).toString().padStart(2, "0")
         const secs = (elapsed % 60).toString().padStart(2, "0")
         setTimer(`${mins}:${secs}`)
-      }, 1000)
+      }
+      updateTimer()
+      interval = setInterval(updateTimer, 1000)
     } else {
       setTimer("00:00")
     }
     return () => clearInterval(interval)
   }, [isActive, session])
 
-  const handleToggle = () => {
-    const newState = !isActive
-    if (newState) {
+  const handleToggle = (nextState?: boolean) => {
+    const targetState = typeof nextState === 'boolean' ? nextState : !isActive
+    if (targetState === isActive) return
+    
+    setIsActive(targetState)
+    
+    if (targetState) {
       chrome.runtime.sendMessage({ action: "startSession" })
       setShowFinishedBanner(false)
     } else {
@@ -112,20 +121,16 @@ export default function IndexPopup() {
 
   return (
     <div className="tw:flex tw:flex-col tw:h-screen tw:bg-slate-50">
-      {/* 1. Boilerplate-Style Header */}
       <BrHeader
         title="AntiSludge Auditor"
         subTitle="Painel de Monitoramento"
         urlLogo={logo}
         className="tw:shadow-lg tw:z-30"
-        density="small"
-        compact={true}
-        showLoginButton
+        density="large"
       />
 
       <div className="tw:flex-1 tw:overflow-y-auto tw:p-4 tw:space-y-6">
         
-        {/* 2. Monitoramento Hero Section */}
         <div className="tw:space-y-4">
           <header className="tw:flex tw:justify-between tw:items-end">
             <div>
@@ -133,10 +138,10 @@ export default function IndexPopup() {
               <p className="tw:text-[11px] tw:text-slate-500">Controle a gravação de fricção digital.</p>
             </div>
             <BrSwitch
-              checked={isActive}
               onChange={handleToggle}
+              checked={isActive}
               label={isActive ? "Parar" : "Iniciar"}
-              className="tw:!mb-0"
+              className="tw:mb-0"
             />
           </header>
 
@@ -147,11 +152,9 @@ export default function IndexPopup() {
               value={isActive ? "SESSÃO ATIVA" : "SESSÃO INATIVA"}
               icon={isActive ? "fas fa-sync fa-spin" : "fas fa-shield-alt"}
               className="tw:text-[10px] tw:font-black tw:tracking-widest"
-              size="small"
             />
           </div>
 
-          {/* 3. Stats Grid (2-Column Boilerplate Style) */}
           <div className="tw:grid tw:grid-cols-2 tw:gap-4">
             <StatCard 
               label="Tempo Total" 
@@ -168,7 +171,6 @@ export default function IndexPopup() {
           </div>
         </div>
 
-        {/* 4. Session Finished Banner */}
         {showFinishedBanner && (
           <div className="tw:p-4 tw:bg-white tw:rounded-2xl tw:shadow-sm tw:border tw:border-emerald-100 tw:text-emerald-700 tw:text-xs tw:flex tw:items-center tw:gap-3 tw:animate-slide-down">
             <BrTag
@@ -176,29 +178,28 @@ export default function IndexPopup() {
               icon="fas fa-check"
               size="medium"
               color="success"
-              className="tw:!bg-emerald-100 tw:!text-emerald-700 tw:rounded-full tw:!border-none"
+              className="tw:bg-emerald-100! tw:text-emerald-700 tw:rounded-full tw:border-none"
             />
             <span className="tw:font-bold">Relatório exportado com sucesso!</span>
           </div>
         )}
 
-        {/* 5. Jornada Section (Table-like List) */}
         <div className="tw:bg-white tw:rounded-2xl tw:shadow-sm tw:border tw:border-slate-100 tw:overflow-hidden">
           <div className="tw:px-5 tw:py-4 tw:border-b tw:border-slate-100 tw:flex tw:items-center tw:justify-between">
             <h3 className="tw:text-sm tw:font-black tw:text-slate-800 tw:uppercase tw:tracking-tighter">Jornada do Cidadão</h3>
-            <BrTag type="icon" icon="fas fa-history" size="small" className="tw:!text-slate-300 tw:!bg-transparent tw:!border-none" />
+            <BrTag type="icon" icon="fas fa-history" size="small" className="tw:text-slate-300 tw:bg-transparent tw:border-none" />
           </div>
 
           <div className="tw:p-2 tw:space-y-2">
             {!isActive && !session?.pages?.length ? (
               <div className="tw:py-10 tw:text-center tw:text-slate-400 tw:flex tw:flex-col tw:items-center tw:gap-3">
-                <BrTag type="icon" icon="fas fa-search" size="large" className="tw:opacity-20 tw:!bg-transparent tw:!border-none" />
+                <BrTag type="icon" icon="fas fa-search" size="large" className="tw:opacity-20 tw:bg-transparent tw:border-none" />
                 <p className="tw:text-xs tw:font-bold">Nenhuma atividade recente encontrada.</p>
               </div>
             ) : (
               <BrList>
                 {(session?.pages || []).slice().reverse().map((page, index) => (
-                  <BrItem key={index} className="tw:!p-3 tw:hover:bg-slate-50 tw:rounded-xl tw:transition-colors">
+                  <BrItem key={index} className="tw:p-3 tw:hover:bg-slate-50 tw:rounded-xl tw:transition-colors">
                     <div className="tw:w-full">
                       <div className="tw:flex tw:justify-between tw:items-start tw:mb-1">
                         <div className="tw:text-[13px] tw:font-black tw:text-slate-800 tw:truncate tw:max-w-[180px]">
@@ -216,7 +217,7 @@ export default function IndexPopup() {
                           color="warning"
                           icon="far fa-hand-point-up"
                           value={`${page.clicks} CLIQUES`}
-                          className="tw:text-[9px] tw:font-black tw:rounded-lg tw:!py-1 tw:!px-2"
+                          className="tw:text-[9px] tw:font-black tw:rounded-lg tw:py-1 tw:px-2"
                         />
                         {page.scrolled && (
                           <BrTag
@@ -224,7 +225,7 @@ export default function IndexPopup() {
                             color="success"
                             icon="fas fa-arrows-alt-v"
                             value="SCROLL"
-                            className="tw:text-[9px] tw:font-black tw:rounded-lg tw:!py-1 tw:!px-2"
+                            className="tw:text-[9px] tw:font-black tw:rounded-lg tw:py-1 tw:px-2"
                           />
                         )}
                       </div>
@@ -237,7 +238,6 @@ export default function IndexPopup() {
         </div>
       </div>
 
-      {/* 6. Footer */}
       <div className="tw:px-4 tw:py-3 tw:bg-white tw:border-t tw:border-slate-100 tw:text-center">
         <div className="tw:text-[9px] tw:font-black tw:text-slate-300 tw:uppercase tw:tracking-widest">
           UTFPR & CINCO/MGI — Auditoria v1.0
