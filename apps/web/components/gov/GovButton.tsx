@@ -13,7 +13,7 @@ const BrButton = dynamic(() => import("@govbr-ds/react-components").then(m => m.
 interface GovButtonProps {
   children?: React.ReactNode;
   type?: "primary" | "secondary" | "tertiary" | "magic";
-  size?: "small" | "medium" | "large";
+  size?: "small" | "large";
   circle?: boolean;
   icon?: string;
   onClick?: () => void;

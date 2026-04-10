@@ -12,7 +12,7 @@ interface GovTagProps {
   color?: "success" | "warning" | "danger" | "info" | "neutral";
   value?: string | number;
   icon?: string;
-  size?: "small" | "medium" | "large";
+  size?: "small" | "large";
   className?: string;
 }
 
