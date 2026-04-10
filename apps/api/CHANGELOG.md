@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/v1.2.0...v1.3.0) (2026-04-10)
+
+### Features
+
+* implement apiFetch utility and update gitignore to track lib directory ([0341222](https://github.com/GuiRBeira/anti-sludge-gov/commit/03412222f9e80e4fe89526702c7581f178895227))
+
 ## [1.2.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/v1.1.0...v1.2.0) (2026-04-10)
 
 ### Features
