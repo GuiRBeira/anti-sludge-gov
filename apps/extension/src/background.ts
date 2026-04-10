@@ -55,19 +55,40 @@ async function saveAppState(state: AppState) {
   }
 }
 
+// Helper to transform session for export
+function transformSession(sessionData: Session) {
+  const endTime = nowSeconds();
+  const totalTime = endTime - sessionData.startTime;
+
+  return {
+    id: sessionData.id,
+    totalTime: totalTime,
+    pages: sessionData.pages.map(p => ({
+      url: p.url,
+      title: p.title,
+      clicks: p.clicks,
+      scrolled: p.scrolled,
+      time: (p.endTime || endTime) - p.startTime
+    }))
+  };
+}
+
 // Placeholder for future API integration
 async function sendToApi(sessionData: Session) {
-  console.log("AntiSludge: Pre-prepared for API endpoint", sessionData);
+  const exportedData = transformSession(sessionData);
+  console.log("AntiSludge: Pre-prepared for API endpoint", exportedData);
   // Example:
   // fetch('https://api.colab.utfpr.edu.br/v1/sessions', {
   //   method: 'POST',
-  //   body: JSON.stringify(sessionData)
+  //   body: JSON.stringify(exportedData)
   // });
 }
 
-// Download session as JSON
+// Download session as JSON with simplified structure
 async function downloadSession(sessionData: Session) {
-  const json = JSON.stringify(sessionData, null, 2);
+  const exportedData = transformSession(sessionData);
+
+  const json = JSON.stringify(exportedData, null, 2);
   const blob = new Blob([json], { type: "application/json" });
   
   const buffer = await blob.arrayBuffer();
