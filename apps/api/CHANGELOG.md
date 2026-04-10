@@ -1,3 +1,9 @@
+## [1.1.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/v1.0.0...v1.1.0) (2026-04-10)
+
+### Features
+
+* integrate DSGOV design system components and implement process management service ([7323294](https://github.com/GuiRBeira/anti-sludge-gov/commit/73232946aa84214a7bad3b35f474b168607d903b))
+
 ## 1.0.0 (2026-04-10)
 
 ### Features
