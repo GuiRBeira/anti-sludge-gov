@@ -16,7 +16,8 @@
     "build:extension": "pnpm --filter anti-sludge build",
     "dev:all": "pnpm run dev:web & pnpm run dev:extension",
     "clean": "pnpm -r exec rm -rf node_modules .next .plasmo && rm -rf node_modules pnpm-lock.yaml",
-    "postinstall": "bash scripts/patch-node-prefixes.sh"
+    "postinstall": "bash scripts/patch-node-prefixes.sh",
+    "release": "semantic-release-npm-workspaces-monorepo"
   },
   "engines": {
     "node": ">=24.0.0",
@@ -25,5 +26,16 @@
   "packageManager": "pnpm@10.32.1",
   "keywords": [],
   "author": "GuiRBeira",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "semantic-release-npm-workspaces-monorepo": "^3.2.1"
+  },
+  "workspaceRelease": {
+    "npmRelease": false,
+    "changelogCommit": true,
+    "release": {
+      "extends": "semantic-release-npm-workspaces-monorepo",
+      "branches": ["main"]
+    }
+  }
 }
