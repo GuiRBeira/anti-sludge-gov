@@ -1,25 +1,65 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import dynamic from "next/dynamic";
 import React from "react";
+import clsx from "clsx";
 
-const BrInput = dynamic(() => import("@govbr-ds/react-components").then(m => m.BrInput as any), { 
-  ssr: false 
-}) as any;
+/**
+ * Skeleton para o BrInput renderizado no Servidor.
+ */
+function GovInputSkeleton({
+  label,
+  placeholder,
+  size,
+  className,
+}: GovInputProps) {
+  return (
+    <div
+      className={clsx(
+        "br-input",
+        size, // small ou large caso existam classes CSS
+        className,
+      )}
+    >
+      {label && <label>{label}</label>}
+      <input type="text" placeholder={placeholder} disabled />
+    </div>
+  );
+}
 
-interface GovInputProps {
-  label?: string;
-  placeholder?: string;
-  value?: string | number;
-  onChange?: (e: any) => void;
-  type?: string;
-  required?: boolean;
-  className?: string;
+const BrInput = dynamic(
+  () => import("@govbr-ds/react-components").then((m) => m.BrInput as any),
+  {
+    ssr: false,
+  },
+) as React.ElementType;
+
+interface GovInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: React.ReactNode;
+  de?: "small" | "medium" | "large";
+  icon?: string;
+  status?: "success" | "danger" | "info" | "warning";
+  feedbackText?: string;
+  mask?: string;
+  numeric?: boolean | unknown;
+  inline?: boolean;
+  highlight?: boolean;
 }
 
 /**
- * Abstração do BrInput.
+ * Abstração Isomórfica do BrInput com Hydration Guard.
  */
-export function GovInput(props: GovInputProps) {
-  return <BrInput {...props} />;
+export function GovInput({ size, ...props }: GovInputProps) {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <GovInputSkeleton size={size} {...props} />;
+  }
+
+  return <BrInput density={size} {...props} />;
 }
