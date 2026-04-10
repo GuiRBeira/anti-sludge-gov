@@ -3,3 +3,4 @@ export * from "./GovIcon";
 export * from "./GovTag";
 export * from "./GovInput";
 export * from "./GovSelect";
+export * from "./GovCard";
