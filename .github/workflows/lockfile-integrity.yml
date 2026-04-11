@@ -1,0 +1,54 @@
+name: 🔐 Lockfile Integrity
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'pnpm-lock.yaml'
+      - '**/package.json'
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    name: 🔄 Reconcile Lockfile
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')" # Avoid infinite loops
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: 🛠️ Reconcile Lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 📝 Check for changes
+        id: git-check
+        run: |
+          git add pnpm-lock.yaml
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🚀 Commit & Push fixed lockfile
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -m "chore: reconcile lockfile [skip ci]"
+          git push
