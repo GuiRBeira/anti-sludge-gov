@@ -1,3 +1,10 @@
+## [1.1.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.0.0...extension-1.1.0) (2026-04-11)
+
+### Features
+
+* configure Vitest with JSDOM and testing utilities for web and extension apps ([5f1d0da](https://github.com/GuiRBeira/anti-sludge-gov/commit/5f1d0dad4dad6f7e48bb49f6f5e68a62febdcc48))
+* initialize API backend project structure and add health check tests with updated CI workflow ([98e2325](https://github.com/GuiRBeira/anti-sludge-gov/commit/98e232558fb8f7ebd4c41a96d1cab23ca1c6b9e4))
+
 ## 1.0.0 (2026-04-11)
 
 ### Features
