@@ -8,7 +8,47 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install JS deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'    
+
+      - name: Install Python deps
+        run: pip install -r apps/api/requirements.txt
+
+      - name: Lint & Test Backend
+        run: |
+          cd apps/api
+          ruff check .
+          pytest
+
+      - name: Lint & Test Frontend
+        run: |
+          cd apps/web
+          pnpm lint
+          pnpm test
+
+      - name: Lint Extension
+        run: |
+          cd apps/extension
+          pnpm lint
+
   release:
+    needs: quality
     runs-on: ubuntu-latest
     permissions:
       contents: write
