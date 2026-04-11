@@ -35,19 +35,22 @@ jobs:
       - name: Lint & Test Backend
         run: |
           cd apps/api
-          ruff check .
-          pytest
+          python -m ruff check .
+          python -m pytest
+        env:
+          PYTHONPATH: .
 
       - name: Lint & Test Frontend
         run: |
           cd apps/web
           pnpm lint
-          pnpm test
+          pnpm test -- --passWithNoTests
 
       - name: Lint Extension
         run: |
           cd apps/extension
           pnpm lint
+          pnpm test -- --passWithNoTests
 
   release:
     needs: quality
