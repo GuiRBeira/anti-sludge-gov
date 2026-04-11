@@ -1,3 +1,12 @@
+## [1.1.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-v1.0.0...web-1.1.0) (2026-04-11)
+
+### Features
+
+* implement apiFetch utility and update gitignore to track lib directory ([0341222](https://github.com/GuiRBeira/anti-sludge-gov/commit/03412222f9e80e4fe89526702c7581f178895227))
+* implement conditional deployment triggers for web and API services and add project status badges to README ([3156f89](https://github.com/GuiRBeira/anti-sludge-gov/commit/3156f89c9db9f443b0b95397d486f1ba17da28d3))
+* implement dashboard layout with process management modal and hydration-safe GovTag component ([d0a5394](https://github.com/GuiRBeira/anti-sludge-gov/commit/d0a53946ccc5e18d7fc0786d891c1579203d929d))
+* integrate DSGOV design system components and implement process management service ([7323294](https://github.com/GuiRBeira/anti-sludge-gov/commit/73232946aa84214a7bad3b35f474b168607d903b))
+
 # web-v1.0.0 (2026-04-10)
 
 
