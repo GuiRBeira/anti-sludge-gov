@@ -7,6 +7,8 @@
 pytest==9.0.2
 Faker==40.4.0
 psycopg-pool==3.3.0
+httpx==0.28.1
+anyio==4.13.0
 
 # =========================
 # LINTING / FORMATTING
