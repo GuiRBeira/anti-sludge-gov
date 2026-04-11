@@ -9,6 +9,11 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      "eslint-comments/no-unused-disable": "off"
+    },
+  },
 ]);
 
 export default eslintConfig;

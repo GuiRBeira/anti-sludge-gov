@@ -33,6 +33,7 @@ export default tseslint.config(
 			"react/react-in-jsx-scope": "off", // Not needed with modern React
 			"@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
 			"no-console": ["warn", { allow: ["warn", "error", "log"] }],
+      "eslint-comments/no-unused-disable": "off"
 		},
 		settings: {
 			react: {
