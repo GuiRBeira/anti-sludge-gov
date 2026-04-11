@@ -129,7 +129,7 @@ export default function IndexPopup() {
       updateTimer()
       interval = setInterval(updateTimer, 1000)
     } else {
-      setTimer("00:00")
+      setTimeout(() => setTimer("00:00"), 0)
     }
     return () => clearInterval(interval)
   }, [isActive, session])

@@ -5,7 +5,7 @@
 
 export {}
 
-import Icon from "@/assets/icon.png"
+// export {} -- Removed unused Icon import
 
 // --- Types ---
 interface PageInfo {
@@ -211,7 +211,7 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
     if (tab && tab.url) {
       await addPage(tab.url, tab.title);
     }
-  } catch (e) {
+  } catch {
     // Tab might be gone
   }
 });
