@@ -10,7 +10,7 @@ env:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -28,7 +28,9 @@ jobs:
           python-version: '3.13'    
 
       - name: Install Python deps
-        run: pip install -r apps/api/requirements.txt
+        run: |
+          cd apps/api
+          pip install -r requirements-dev.txt
 
       - name: Lint & Test Backend
         run: |
