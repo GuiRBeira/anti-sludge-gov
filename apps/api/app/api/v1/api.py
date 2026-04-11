@@ -1,12 +1,12 @@
 # app/api/v1/api.py
-from fastapi import APIRouter
-from app.features.processes.router import router as processes_router
-from app.features.catalog.router import router as catalog_router
-from app.features.analysis_templates.router import router as analysis_templates_router
-from app.features.observations.router import router as observations_router
-from app.features.analysis_results.router import router as analysis_results_router
 from app.api.v1.endpoints.health import router as health_router
 from app.api.v1.endpoints.version import router as version_router
+from app.features.analysis_results.router import router as analysis_results_router
+from app.features.analysis_templates.router import router as analysis_templates_router
+from app.features.catalog.router import router as catalog_router
+from app.features.observations.router import router as observations_router
+from app.features.processes.router import router as processes_router
+from fastapi import APIRouter
 
 router = APIRouter()
 

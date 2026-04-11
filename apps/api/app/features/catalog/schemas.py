@@ -1,23 +1,24 @@
 # app/features/catalog/schemas.py
 from datetime import datetime
-from typing import Optional, List
+
 from pydantic import BaseModel, ConfigDict
+
 
 # =========================
 # Categoria
 # =========================
 class CategoriaBase(BaseModel):
     nome: str
-    conceito: Optional[str] = None
-    exemplos: Optional[str] = None
-    descricao: Optional[str] = None
+    conceito: str | None = None
+    exemplos: str | None = None
+    descricao: str | None = None
     quantidade_tipos: int = 0
 
 class CategoriaCreate(CategoriaBase):
     pass
 
 class CategoriaUpdate(CategoriaBase):
-    nome: Optional[str] = None
+    nome: str | None = None
 
 class CategoriaOut(CategoriaBase):
     id: int
@@ -31,9 +32,9 @@ class TipoComportamentoBase(BaseModel):
     categoria_id: int
     nome: str
     codigo_referencia: str
-    conceito: Optional[str] = None
-    exemplos: Optional[str] = None
-    descricao: Optional[str] = None
+    conceito: str | None = None
+    exemplos: str | None = None
+    descricao: str | None = None
     num_criterios: int = 0
     ordem_na_categoria: int = 1
 
@@ -41,9 +42,9 @@ class TipoComportamentoCreate(TipoComportamentoBase):
     pass
 
 class TipoComportamentoUpdate(TipoComportamentoBase):
-    categoria_id: Optional[int] = None
-    nome: Optional[str] = None
-    codigo_referencia: Optional[str] = None
+    categoria_id: int | None = None
+    nome: str | None = None
+    codigo_referencia: str | None = None
 
 class TipoComportamentoOut(TipoComportamentoBase):
     id: int
@@ -55,15 +56,15 @@ class TipoComportamentoOut(TipoComportamentoBase):
 # =========================
 class GlossarioBase(BaseModel):
     termo: str
-    grupo: Optional[str] = None
+    grupo: str | None = None
     definicao: str
 
 class GlossarioCreate(GlossarioBase):
     pass
 
 class GlossarioUpdate(GlossarioBase):
-    termo: Optional[str] = None
-    definicao: Optional[str] = None
+    termo: str | None = None
+    definicao: str | None = None
 
 class GlossarioOut(GlossarioBase):
     id: int

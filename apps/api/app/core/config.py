@@ -1,6 +1,7 @@
 # app/core/config.py
 import json
 from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -27,7 +28,7 @@ class Settings(BaseSettings):
     # Pool Settings
     DATABASE_POOL_SIZE: int = 5
     DATABASE_MAX_OVERFLOW: int = 10
-    
+
     DEBUG: bool = False
 
     @property
@@ -35,7 +36,7 @@ class Settings(BaseSettings):
         """Lê a versão do package.json na raiz do projeto."""
         try:
             package_json_path = PROJECT_ROOT / "package.json"
-            with open(package_json_path, "r") as f:
+            with open(package_json_path) as f:
                 data = json.load(f)
                 return data.get("version", "0.0.0")
         except Exception:

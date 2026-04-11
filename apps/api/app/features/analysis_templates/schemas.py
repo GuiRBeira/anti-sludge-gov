@@ -1,7 +1,8 @@
 # app/features/analysis_templates/schemas.py
 from datetime import datetime
-from typing import Optional, List
+
 from pydantic import BaseModel, ConfigDict
+
 
 # =========================
 # GrupoAnalise
@@ -9,14 +10,14 @@ from pydantic import BaseModel, ConfigDict
 class GrupoAnaliseBase(BaseModel):
     nome: str
     descricao: str
-    criterios_considerados: Optional[str] = None
+    criterios_considerados: str | None = None
 
 class GrupoAnaliseCreate(GrupoAnaliseBase):
     pass
 
 class GrupoAnaliseUpdate(GrupoAnaliseBase):
-    nome: Optional[str] = None
-    descricao: Optional[str] = None
+    nome: str | None = None
+    descricao: str | None = None
 
 class GrupoAnaliseOut(GrupoAnaliseBase):
     id: int
@@ -29,14 +30,14 @@ class GrupoAnaliseOut(GrupoAnaliseBase):
 class CriterioTemplateBase(BaseModel):
     nome: str
     conceito: str
-    grupo_analise_id: Optional[int] = None
+    grupo_analise_id: int | None = None
 
 class CriterioTemplateCreate(CriterioTemplateBase):
     pass
 
 class CriterioTemplateUpdate(CriterioTemplateBase):
-    nome: Optional[str] = None
-    conceito: Optional[str] = None
+    nome: str | None = None
+    conceito: str | None = None
 
 class CriterioTemplateOut(CriterioTemplateBase):
     id: int
@@ -55,7 +56,7 @@ class TipoCriterioCreate(TipoCriterioBase):
     pass
 
 class TipoCriterioUpdate(TipoCriterioBase):
-    ordem: Optional[int] = None
+    ordem: int | None = None
 
 class TipoCriterioOut(TipoCriterioBase):
     id: int
@@ -66,20 +67,20 @@ class TipoCriterioOut(TipoCriterioBase):
 # EscalaAvaliacao
 # =========================
 class EscalaAvaliacaoBase(BaseModel):
-    criterio_template_id: Optional[int] = None
-    tipo_comportamento_id: Optional[int] = None
+    criterio_template_id: int | None = None
+    tipo_comportamento_id: int | None = None
     pergunta: str
     texto_nota_1: str
-    texto_nota_2: Optional[str] = None
-    texto_nota_3: Optional[str] = None
-    texto_nota_4: Optional[str] = None
+    texto_nota_2: str | None = None
+    texto_nota_3: str | None = None
+    texto_nota_4: str | None = None
     texto_nota_5: str
 
 class EscalaAvaliacaoCreate(EscalaAvaliacaoBase):
     pass
 
 class EscalaAvaliacaoUpdate(EscalaAvaliacaoBase):
-    pergunta: Optional[str] = None
+    pergunta: str | None = None
 
 class EscalaAvaliacaoOut(EscalaAvaliacaoBase):
     id: int

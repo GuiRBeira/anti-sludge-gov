@@ -1,11 +1,12 @@
 # app/models/base.py
 from __future__ import annotations
 
-from enum import Enum
 from datetime import datetime
+from enum import Enum
 
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import DateTime, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
 
 # =========================
 # SQLAlchemy Declarative Base

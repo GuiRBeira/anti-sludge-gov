@@ -1,26 +1,26 @@
 from __future__ import annotations
 
+import logging
+import os
 from datetime import date, timedelta
-from random import randint, choice, random
-from faker import Faker
-
-from sqlalchemy import select, func
-from sqlalchemy.orm import Session
+from random import choice, randint, random
 
 from app.core.database import SessionLocal
-from app.models.base_model import CriterioImpactoEnum, TipoEvidenciaEnum
-from app.models.catalog_model import Categoria, TipoComportamento, CriterioTemplate
-from app.models.process_model import Processo, Etapa
-from app.models.observation_model import Observador, JornadaObservada, TempoEtapa
 from app.models.analysis_model import (
-    CriterioBarreira,
-    CriterioImpacto,
     AvaliacaoBarreira,
     AvaliacaoImpacto,
+    CriterioBarreira,
+    CriterioImpacto,
     ResultadoAnalise,
 )
-import os
-import logging
+from app.models.base_model import CriterioImpactoEnum, TipoEvidenciaEnum
+from app.models.catalog_model import Categoria, CriterioTemplate, TipoComportamento
+from app.models.observation_model import JornadaObservada, Observador, TempoEtapa
+from app.models.process_model import Etapa, Processo
+from faker import Faker
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
 
 def setup_logging():
     level = logging.INFO if os.getenv("DEBUG", "0") == "1" else logging.WARNING

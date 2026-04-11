@@ -1,19 +1,30 @@
 # app/models/analysis_model.py
 from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional, List, TYPE_CHECKING
-from sqlalchemy import (
-    String, Text, Integer, SmallInteger, Boolean, DateTime,
-    ForeignKey, Index, Numeric, CheckConstraint, func
-)
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Enum as SAEnum
+from typing import TYPE_CHECKING
+
 from app.models.base_model import Base, CriterioImpactoEnum, TipoEvidenciaEnum
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    Numeric,
+    SmallInteger,
+    String,
+    Text,
+    func,
+)
+from sqlalchemy import Enum as SAEnum
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-    from app.models.process_model import Processo, Etapa
-    from app.models.observation_model import JornadaObservada, TempoEtapa
     from app.models.catalog_model import CriterioTemplate
+    from app.models.observation_model import JornadaObservada
+    from app.models.process_model import Etapa, Processo
 
 class CriterioBarreira(Base):
     __tablename__ = "criterio_barreira"
@@ -23,18 +34,18 @@ class CriterioBarreira(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     etapa_id: Mapped[int] = mapped_column(ForeignKey("etapa.id", ondelete="CASCADE"), nullable=False)
-    criterio_template_id: Mapped[Optional[int]] = mapped_column(ForeignKey("criterio_template.id", ondelete="SET NULL"), nullable=True)
+    criterio_template_id: Mapped[int | None] = mapped_column(ForeignKey("criterio_template.id", ondelete="SET NULL"), nullable=True)
 
     nome: Mapped[str] = mapped_column(String(100), nullable=False)
     pergunta: Mapped[str] = mapped_column(Text, nullable=False)
-    texto_nota_1: Mapped[Optional[str]] = mapped_column(Text)
-    texto_nota_5: Mapped[Optional[str]] = mapped_column(Text)
+    texto_nota_1: Mapped[str | None] = mapped_column(Text)
+    texto_nota_5: Mapped[str | None] = mapped_column(Text)
     ordem: Mapped[int] = mapped_column(Integer, server_default="1", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp(), nullable=False)
 
-    etapa: Mapped["Etapa"] = relationship("Etapa", back_populates="criterios_barreira")
-    criterio_template: Mapped[Optional["CriterioTemplate"]] = relationship("CriterioTemplate")
-    avaliacoes: Mapped[List["AvaliacaoBarreira"]] = relationship(back_populates="criterio_barreira", cascade="all, delete-orphan", passive_deletes=True)
+    etapa: Mapped[Etapa] = relationship("Etapa", back_populates="criterios_barreira")
+    criterio_template: Mapped[CriterioTemplate | None] = relationship("CriterioTemplate")
+    avaliacoes: Mapped[list[AvaliacaoBarreira]] = relationship(back_populates="criterio_barreira", cascade="all, delete-orphan", passive_deletes=True)
 
 class CriterioImpacto(Base):
     __tablename__ = "criterio_impacto"
@@ -46,13 +57,13 @@ class CriterioImpacto(Base):
     etapa_id: Mapped[int] = mapped_column(ForeignKey("etapa.id", ondelete="CASCADE"), nullable=False)
     nome: Mapped[CriterioImpactoEnum] = mapped_column(SAEnum(CriterioImpactoEnum, name="criterio_impacto_enum"), nullable=False)
     pergunta: Mapped[str] = mapped_column(Text, nullable=False)
-    texto_nota_1: Mapped[Optional[str]] = mapped_column(Text)
-    texto_nota_5: Mapped[Optional[str]] = mapped_column(Text)
+    texto_nota_1: Mapped[str | None] = mapped_column(Text)
+    texto_nota_5: Mapped[str | None] = mapped_column(Text)
     ordem: Mapped[int] = mapped_column(Integer, server_default="1", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp(), nullable=False)
 
-    etapa: Mapped["Etapa"] = relationship("Etapa", back_populates="criterios_impacto")
-    avaliacoes: Mapped[List["AvaliacaoImpacto"]] = relationship(back_populates="criterio_impacto", cascade="all, delete-orphan", passive_deletes=True)
+    etapa: Mapped[Etapa] = relationship("Etapa", back_populates="criterios_impacto")
+    avaliacoes: Mapped[list[AvaliacaoImpacto]] = relationship(back_populates="criterio_impacto", cascade="all, delete-orphan", passive_deletes=True)
 
 class AvaliacaoBarreira(Base):
     __tablename__ = "avaliacao_barreira"
@@ -64,14 +75,14 @@ class AvaliacaoBarreira(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     criterio_barreira_id: Mapped[int] = mapped_column(ForeignKey("criterio_barreira.id", ondelete="CASCADE"), nullable=False)
-    jornada_observada_id: Mapped[Optional[int]] = mapped_column(ForeignKey("jornada_observada.id", ondelete="SET NULL"), nullable=True)
-    nota: Mapped[Optional[int]] = mapped_column(SmallInteger)
-    tipo_evidencia: Mapped[Optional[TipoEvidenciaEnum]] = mapped_column(SAEnum(TipoEvidenciaEnum, name="tipo_evidencia_enum"), nullable=True)
-    observacao: Mapped[Optional[str]] = mapped_column(Text)
+    jornada_observada_id: Mapped[int | None] = mapped_column(ForeignKey("jornada_observada.id", ondelete="SET NULL"), nullable=True)
+    nota: Mapped[int | None] = mapped_column(SmallInteger)
+    tipo_evidencia: Mapped[TipoEvidenciaEnum | None] = mapped_column(SAEnum(TipoEvidenciaEnum, name="tipo_evidencia_enum"), nullable=True)
+    observacao: Mapped[str | None] = mapped_column(Text)
     data_avaliacao: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp(), nullable=False)
 
-    criterio_barreira: Mapped["CriterioBarreira"] = relationship(back_populates="avaliacoes")
-    jornada: Mapped[Optional["JornadaObservada"]] = relationship("JornadaObservada", back_populates="avaliacoes_barreiras")
+    criterio_barreira: Mapped[CriterioBarreira] = relationship(back_populates="avaliacoes")
+    jornada: Mapped[JornadaObservada | None] = relationship("JornadaObservada", back_populates="avaliacoes_barreiras")
 
 class AvaliacaoImpacto(Base):
     __tablename__ = "avaliacao_impacto"
@@ -83,14 +94,14 @@ class AvaliacaoImpacto(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     criterio_impacto_id: Mapped[int] = mapped_column(ForeignKey("criterio_impacto.id", ondelete="CASCADE"), nullable=False)
-    jornada_observada_id: Mapped[Optional[int]] = mapped_column(ForeignKey("jornada_observada.id", ondelete="SET NULL"), nullable=True)
-    nota: Mapped[Optional[int]] = mapped_column(SmallInteger)
-    tipo_evidencia: Mapped[Optional[TipoEvidenciaEnum]] = mapped_column(SAEnum(TipoEvidenciaEnum, name="tipo_evidencia_enum"), nullable=True)
-    observacao: Mapped[Optional[str]] = mapped_column(Text)
+    jornada_observada_id: Mapped[int | None] = mapped_column(ForeignKey("jornada_observada.id", ondelete="SET NULL"), nullable=True)
+    nota: Mapped[int | None] = mapped_column(SmallInteger)
+    tipo_evidencia: Mapped[TipoEvidenciaEnum | None] = mapped_column(SAEnum(TipoEvidenciaEnum, name="tipo_evidencia_enum"), nullable=True)
+    observacao: Mapped[str | None] = mapped_column(Text)
     data_avaliacao: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp(), nullable=False)
 
-    criterio_impacto: Mapped["CriterioImpacto"] = relationship(back_populates="avaliacoes")
-    jornada: Mapped[Optional["JornadaObservada"]] = relationship("JornadaObservada", back_populates="avaliacoes_impactos")
+    criterio_impacto: Mapped[CriterioImpacto] = relationship(back_populates="avaliacoes")
+    jornada: Mapped[JornadaObservada | None] = relationship("JornadaObservada", back_populates="avaliacoes_impactos")
 
 class ResultadoAnalise(Base):
     __tablename__ = "resultado_analise"
@@ -100,14 +111,14 @@ class ResultadoAnalise(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     processo_id: Mapped[int] = mapped_column(ForeignKey("processo.id", ondelete="CASCADE"), nullable=False)
-    etapa_id: Mapped[Optional[int]] = mapped_column(ForeignKey("etapa.id", ondelete="SET NULL"), nullable=True)
-    media_barreiras: Mapped[Optional[float]] = mapped_column(Numeric(3, 2))
-    media_impactos: Mapped[Optional[float]] = mapped_column(Numeric(3, 2))
-    indice_sludge: Mapped[Optional[float]] = mapped_column(Numeric(5, 2))
-    prioridade: Mapped[Optional[int]] = mapped_column(Integer)
+    etapa_id: Mapped[int | None] = mapped_column(ForeignKey("etapa.id", ondelete="SET NULL"), nullable=True)
+    media_barreiras: Mapped[float | None] = mapped_column(Numeric(3, 2))
+    media_impactos: Mapped[float | None] = mapped_column(Numeric(3, 2))
+    indice_sludge: Mapped[float | None] = mapped_column(Numeric(5, 2))
+    prioridade: Mapped[int | None] = mapped_column(Integer)
     e_sludge: Mapped[bool] = mapped_column(Boolean, server_default="false", nullable=False)
-    recomendacoes: Mapped[Optional[str]] = mapped_column(Text)
+    recomendacoes: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp(), nullable=False)
 
-    processo: Mapped["Processo"] = relationship("Processo", back_populates="resultados")
-    etapa: Mapped[Optional["Etapa"]] = relationship("Etapa", back_populates="resultados")
+    processo: Mapped[Processo] = relationship("Processo", back_populates="resultados")
+    etapa: Mapped[Etapa | None] = relationship("Etapa", back_populates="resultados")

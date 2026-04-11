@@ -1,23 +1,24 @@
 # app/features/observations/schemas.py
 from datetime import datetime, timedelta
-from typing import Optional, List
+
 from pydantic import BaseModel, ConfigDict
+
 
 # =========================
 # JornadaObservada
 # =========================
 class JornadaObservadaBase(BaseModel):
     processo_id: int
-    perfil_usuario: Optional[str] = None
+    perfil_usuario: str | None = None
     data_observacao: datetime = datetime.now()
-    duracao_total: Optional[timedelta] = None
-    observacoes_gerais: Optional[str] = None
+    duracao_total: timedelta | None = None
+    observacoes_gerais: str | None = None
 
 class JornadaObservadaCreate(JornadaObservadaBase):
     pass
 
 class JornadaObservadaUpdate(JornadaObservadaBase):
-    processo_id: Optional[int] = None
+    processo_id: int | None = None
 
 class JornadaObservadaOut(JornadaObservadaBase):
     id: int
@@ -32,13 +33,13 @@ class TempoEtapaBase(BaseModel):
     etapa_id: int
     duracao: timedelta
     e_sucesso: bool = True
-    observacoes: Optional[str] = None
+    observacoes: str | None = None
 
 class TempoEtapaCreate(TempoEtapaBase):
     pass
 
 class TempoEtapaUpdate(TempoEtapaBase):
-    duracao: Optional[timedelta] = None
+    duracao: timedelta | None = None
 
 class TempoEtapaOut(TempoEtapaBase):
     id: int

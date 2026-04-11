@@ -1,23 +1,25 @@
 # app/core/exceptions.py
+from typing import Any
+
 from fastapi import status
 from pydantic import BaseModel
-from typing import Any, Optional
+
 
 class ErrorDetail(BaseModel):
     message: str
-    code: Optional[str] = None
-    details: Optional[Any] = None
+    code: str | None = None
+    details: Any | None = None
 
 class ErrorResponse(BaseModel):
     error: ErrorDetail
 
 class APIException(Exception):
     def __init__(
-        self, 
-        message: str, 
+        self,
+        message: str,
         status_code: int = status.HTTP_400_BAD_REQUEST,
-        code: Optional[str] = None,
-        details: Optional[Any] = None
+        code: str | None = None,
+        details: Any | None = None
     ):
         self.message = message
         self.status_code = status_code
@@ -34,7 +36,7 @@ class ResourceNotFoundException(APIException):
         )
 
 class ValidationException(APIException):
-    def __init__(self, message: str, details: Optional[Any] = None):
+    def __init__(self, message: str, details: Any | None = None):
         super().__init__(
             message=message,
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

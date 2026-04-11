@@ -1,12 +1,15 @@
 # app/features/analysis_results/router.py
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
 
-from app.core.database import get_db
 from app.core.crud import CRUDBase
-from app.models.analysis_model import CriterioBarreira, CriterioImpacto, ResultadoAnalise
+from app.core.database import get_db
 from app.features.analysis_results import schemas
+from app.models.analysis_model import (
+    CriterioBarreira,
+    CriterioImpacto,
+    ResultadoAnalise,
+)
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -22,7 +25,7 @@ crud_resultado = CRUDBase(ResultadoAnalise)
 async def create_criterio_barreira(obj_in: schemas.CriterioBarreiraCreate, db: AsyncSession = Depends(get_db)):
     return await crud_barreira.create(db, obj_in=obj_in.model_dump())
 
-@router.get("/criterios-barreira", response_model=List[schemas.CriterioBarreiraOut])
+@router.get("/criterios-barreira", response_model=list[schemas.CriterioBarreiraOut])
 async def list_criterios_barreira(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
     return await crud_barreira.get_multi(db, skip=skip, limit=limit)
 
@@ -33,7 +36,7 @@ async def list_criterios_barreira(skip: int = 0, limit: int = 100, db: AsyncSess
 async def create_criterio_impacto(obj_in: schemas.CriterioImpactoCreate, db: AsyncSession = Depends(get_db)):
     return await crud_impacto.create(db, obj_in=obj_in.model_dump())
 
-@router.get("/criterios-impacto", response_model=List[schemas.CriterioImpactoOut])
+@router.get("/criterios-impacto", response_model=list[schemas.CriterioImpactoOut])
 async def list_criterios_impacto(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
     return await crud_impacto.get_multi(db, skip=skip, limit=limit)
 
@@ -44,6 +47,6 @@ async def list_criterios_impacto(skip: int = 0, limit: int = 100, db: AsyncSessi
 async def create_resultado(obj_in: schemas.ResultadoAnaliseCreate, db: AsyncSession = Depends(get_db)):
     return await crud_resultado.create(db, obj_in=obj_in.model_dump())
 
-@router.get("/resultados", response_model=List[schemas.ResultadoAnaliseOut])
+@router.get("/resultados", response_model=list[schemas.ResultadoAnaliseOut])
 async def list_resultados(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
     return await crud_resultado.get_multi(db, skip=skip, limit=limit)

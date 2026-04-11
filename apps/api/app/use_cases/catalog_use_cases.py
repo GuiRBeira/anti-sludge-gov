@@ -1,6 +1,7 @@
 # app/use_cases/catalog_use_cases.py
 from app.repositories.catalog_repository import CatalogRepository
 
+
 class CatalogUseCases:
     def __init__(self, repository: CatalogRepository):
         self.repository = repository

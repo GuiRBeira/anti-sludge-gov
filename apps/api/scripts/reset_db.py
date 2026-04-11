@@ -1,10 +1,9 @@
 # scripts/reset_db.py
 from __future__ import annotations
 
-from sqlalchemy import text
-from app.core.database import SessionLocal
 from app.core.config import settings
-
+from app.core.database import SessionLocal
+from sqlalchemy import text
 
 TRUNCATE_SQL = """
 TRUNCATE
@@ -67,7 +66,7 @@ def main() -> None:
         print("Counts AFTER: ", dict(after))
 
         print("✅ Reset concluído com sucesso.")
-    except Exception as e:
+    except Exception:
         db.rollback()
         print("❌ Erro ao resetar o banco. Fiz rollback.")
         raise

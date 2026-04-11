@@ -10,7 +10,6 @@ ignore = ["E501"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "tab"
-tab-size = 4
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

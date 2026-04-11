@@ -1,13 +1,16 @@
 # app/features/analysis_templates/router.py
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
 
-from app.core.database import get_db
 from app.core.crud import CRUDBase
-from app.models.catalog_model import GrupoAnalise, CriterioTemplate, TipoCriterio, EscalaAvaliacao
-from app.models.observation_model import Observador, JornadaObservada, TempoEtapa
+from app.core.database import get_db
 from app.features.analysis_templates import schemas
+from app.models.catalog_model import (
+    CriterioTemplate,
+    EscalaAvaliacao,
+    GrupoAnalise,
+    TipoCriterio,
+)
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -24,7 +27,7 @@ crud_escala_avaliacao = CRUDBase(EscalaAvaliacao)
 async def create_grupo_analise(obj_in: schemas.GrupoAnaliseCreate, db: AsyncSession = Depends(get_db)):
     return await crud_grupo_analise.create(db, obj_in=obj_in.model_dump())
 
-@router.get("/grupos-analise", response_model=List[schemas.GrupoAnaliseOut])
+@router.get("/grupos-analise", response_model=list[schemas.GrupoAnaliseOut])
 async def list_grupos_analise(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
     return await crud_grupo_analise.get_multi(db, skip=skip, limit=limit)
 
@@ -35,7 +38,7 @@ async def list_grupos_analise(skip: int = 0, limit: int = 100, db: AsyncSession 
 async def create_criterio_template(obj_in: schemas.CriterioTemplateCreate, db: AsyncSession = Depends(get_db)):
     return await crud_criterio_template.create(db, obj_in=obj_in.model_dump())
 
-@router.get("/criterios-template", response_model=List[schemas.CriterioTemplateOut])
+@router.get("/criterios-template", response_model=list[schemas.CriterioTemplateOut])
 async def list_criterios_template(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
     return await crud_criterio_template.get_multi(db, skip=skip, limit=limit)
 
@@ -46,7 +49,7 @@ async def list_criterios_template(skip: int = 0, limit: int = 100, db: AsyncSess
 async def create_tipo_criterio(obj_in: schemas.TipoCriterioCreate, db: AsyncSession = Depends(get_db)):
     return await crud_tipo_criterio.create(db, obj_in=obj_in.model_dump())
 
-@router.get("/tipos-criterio", response_model=List[schemas.TipoCriterioOut])
+@router.get("/tipos-criterio", response_model=list[schemas.TipoCriterioOut])
 async def list_tipos_criterio(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
     return await crud_tipo_criterio.get_multi(db, skip=skip, limit=limit)
 
@@ -57,6 +60,6 @@ async def list_tipos_criterio(skip: int = 0, limit: int = 100, db: AsyncSession 
 async def create_escala_avaliacao(obj_in: schemas.EscalaAvaliacaoCreate, db: AsyncSession = Depends(get_db)):
     return await crud_escala_avaliacao.create(db, obj_in=obj_in.model_dump())
 
-@router.get("/escalas-avaliacao", response_model=List[schemas.EscalaAvaliacaoOut])
+@router.get("/escalas-avaliacao", response_model=list[schemas.EscalaAvaliacaoOut])
 async def list_escalas_avaliacao(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
     return await crud_escala_avaliacao.get_multi(db, skip=skip, limit=limit)

@@ -1,21 +1,22 @@
 # app/core/crud.py
-from typing import Generic, TypeVar, Type, Optional, List, Any
-from sqlalchemy import select, update, delete
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any, Generic, TypeVar
+
 from app.models.base_model import Base
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 ModelType = TypeVar("ModelType", bound=Base)
 
 class CRUDBase(Generic[ModelType]):
-    def __init__(self, model: Type[ModelType]):
+    def __init__(self, model: type[ModelType]):
         self.model = model
 
-    async def get(self, db: AsyncSession, id: Any) -> Optional[ModelType]:
+    async def get(self, db: AsyncSession, id: Any) -> ModelType | None:
         stmt = select(self.model).where(self.model.id == id)
         result = await db.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_multi(self, db: AsyncSession, *, skip: int = 0, limit: int = 100) -> List[ModelType]:
+    async def get_multi(self, db: AsyncSession, *, skip: int = 0, limit: int = 100) -> list[ModelType]:
         stmt = select(self.model).offset(skip).limit(limit)
         result = await db.execute(stmt)
         return list(result.scalars().all())
@@ -36,7 +37,7 @@ class CRUDBase(Generic[ModelType]):
         await db.refresh(db_obj)
         return db_obj
 
-    async def remove(self, db: AsyncSession, *, id: int) -> Optional[ModelType]:
+    async def remove(self, db: AsyncSession, *, id: int) -> ModelType | None:
         stmt = select(self.model).where(self.model.id == id)
         result = await db.execute(stmt)
         obj = result.scalar_one_or_none()

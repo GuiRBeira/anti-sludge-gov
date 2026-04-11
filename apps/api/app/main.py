@@ -1,13 +1,12 @@
-import time
 import logging
-
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
+import time
 
 from app.api.v1.api import router as api_router
 from app.core.config import settings
-from app.core.exceptions import APIException, ErrorResponse, ErrorDetail
+from app.core.exceptions import APIException, ErrorDetail, ErrorResponse
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)

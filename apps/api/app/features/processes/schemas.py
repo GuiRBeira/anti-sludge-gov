@@ -1,9 +1,10 @@
 # app/features/processes/schemas.py
 import uuid
 from datetime import datetime, timedelta
-from typing import Optional, List
-from pydantic import BaseModel, ConfigDict, Field
-from app.models.base_model import EsferaGovernoEnum, AbrangenciaEnum
+
+from app.models.base_model import AbrangenciaEnum, EsferaGovernoEnum
+from pydantic import BaseModel, ConfigDict
+
 
 # =========================
 # Etapa
@@ -12,23 +13,23 @@ class EtapaBase(BaseModel):
     processo_id: int
     categoria_id: int
     tipo_comportamento_id: int
-    numero: Optional[str] = None
+    numero: str | None = None
     comportamento: str
     e_obrigatorio: bool = False
-    repeticoes: Optional[str] = None
-    tempo_planejado: Optional[timedelta] = None
-    tempo_padrao: Optional[timedelta] = None
+    repeticoes: str | None = None
+    tempo_planejado: timedelta | None = None
+    tempo_padrao: timedelta | None = None
     ordem: int
-    duracao_media_observada: Optional[timedelta] = None
+    duracao_media_observada: timedelta | None = None
 
 class EtapaCreate(EtapaBase):
     pass
 
 class EtapaUpdate(EtapaBase):
-    processo_id: Optional[int] = None
-    categoria_id: Optional[int] = None
-    tipo_comportamento_id: Optional[int] = None
-    ordem: Optional[int] = None
+    processo_id: int | None = None
+    categoria_id: int | None = None
+    tipo_comportamento_id: int | None = None
+    ordem: int | None = None
 
 class EtapaOut(EtapaBase):
     id: int
@@ -40,27 +41,27 @@ class EtapaOut(EtapaBase):
 # =========================
 class ProcessoBase(BaseModel):
     nome: str
-    descricao: Optional[str] = None
-    objetivo: Optional[str] = None
-    esfera_governo: Optional[EsferaGovernoEnum] = None
-    abrangencia: Optional[AbrangenciaEnum] = None
-    publico_alvo: Optional[str] = None
-    usuarios_estimados_ano: Optional[int] = None
-    perfil_foco_mapeamento: Optional[str] = None
-    jornada_planejada_descricao: Optional[str] = None
-    necessidade_usuario: Optional[str] = None
-    tempo_medio_estimado: Optional[str] = None
-    indicadores_desempenho: Optional[str] = None
-    hipoteses_dificuldades: Optional[str] = None
-    registros_reclamacao: Optional[str] = None
-    registros_satisfacao: Optional[str] = None
+    descricao: str | None = None
+    objetivo: str | None = None
+    esfera_governo: EsferaGovernoEnum | None = None
+    abrangencia: AbrangenciaEnum | None = None
+    publico_alvo: str | None = None
+    usuarios_estimados_ano: int | None = None
+    perfil_foco_mapeamento: str | None = None
+    jornada_planejada_descricao: str | None = None
+    necessidade_usuario: str | None = None
+    tempo_medio_estimado: str | None = None
+    indicadores_desempenho: str | None = None
+    hipoteses_dificuldades: str | None = None
+    registros_reclamacao: str | None = None
+    registros_satisfacao: str | None = None
     status: str = "Em Andamento"
 
 class ProcessoCreate(ProcessoBase):
     pass
 
 class ProcessoUpdate(ProcessoBase):
-    nome: Optional[str] = None
+    nome: str | None = None
 
 class ProcessoOut(ProcessoBase):
     id: int
@@ -70,4 +71,4 @@ class ProcessoOut(ProcessoBase):
     model_config = ConfigDict(from_attributes=True)
 
 class ProcessoDetailOut(ProcessoOut):
-    etapas: List[EtapaOut] = []
+    etapas: list[EtapaOut] = []
