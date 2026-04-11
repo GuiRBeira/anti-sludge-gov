@@ -9,12 +9,39 @@ env:
 
 jobs:
   # ---------------------------------------------------------
-  # JOB 1: Qualidade (Linting & Testes)
+  # JOB: Quality Check - Backend (API)
   # ---------------------------------------------------------
-  quality:
-    name: 🧹 Quality Check
+  quality-backend:
+    name: 🐍 Backend Quality
     runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
 
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: 🧱 Install Python Dependencies
+        run: |
+          cd apps/api
+          pip install -r requirements-dev.txt
+
+      - name: 🔍 Lint & Test Backend
+        run: |
+          cd apps/api
+          python -m ruff check .
+          python -m pytest
+        env:
+          PYTHONPATH: .
+
+  # ---------------------------------------------------------
+  # JOB: Quality Check - Frontend (Web)
+  # ---------------------------------------------------------
+  quality-frontend:
+    name: 🌐 Web Quality
+    runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
@@ -28,32 +55,36 @@ jobs:
           node-version: '24'
           cache: 'pnpm'
 
-      - name: 🛠️ Install JavaScript Dependencies
+      - name: 🛠️ Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.13'    
-
-      - name: 🧱 Install Python Dependencies
-        run: |
-          cd apps/api
-          pip install -r requirements-dev.txt
-
-      - name: 🐍 Lint & Test Backend (API)
-        run: |
-          cd apps/api
-          python -m ruff check .
-          python -m pytest
-        env:
-          PYTHONPATH: .
-
-      - name: 🌐 Lint & Test Frontend (Web)
+      - name: 🌐 Lint & Test Web
         run: |
           cd apps/web
           pnpm lint
           pnpm test --passWithNoTests
+
+  # ---------------------------------------------------------
+  # JOB: Quality Check - Extension
+  # ---------------------------------------------------------
+  quality-extension:
+    name: 🧩 Extension Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: 🛠️ Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: 🧩 Lint & Test Extension
         run: |
@@ -62,11 +93,11 @@ jobs:
           pnpm test --passWithNoTests
 
   # ---------------------------------------------------------
-  # JOB 2: Release & Deploy
+  # JOB: Release & Deploy
   # ---------------------------------------------------------
   release:
     name: 🚀 Semantic Release & Deploy
-    needs: quality
+    needs: [quality-backend, quality-frontend, quality-extension]
     runs-on: ubuntu-latest
     permissions:
       contents: write
