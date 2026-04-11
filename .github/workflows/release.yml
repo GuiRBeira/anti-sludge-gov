@@ -1,4 +1,4 @@
-name: Release
+name: 🚀 Release & Quality
 
 on:
   push:
@@ -8,31 +8,40 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  # ---------------------------------------------------------
+  # JOB 1: Qualidade (Linting & Testes)
+  # ---------------------------------------------------------
   quality:
+    name: 🧹 Quality Check
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'pnpm'
 
-      - name: Install JS deps
+      - name: 🛠️ Install JavaScript Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Setup Python
+      - name: 🐍 Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'    
 
-      - name: Install Python deps
+      - name: 🧱 Install Python Dependencies
         run: |
           cd apps/api
           pip install -r requirements-dev.txt
 
-      - name: Lint & Test Backend
+      - name: 🐍 Lint & Test Backend (API)
         run: |
           cd apps/api
           python -m ruff check .
@@ -40,70 +49,75 @@ jobs:
         env:
           PYTHONPATH: .
 
-      - name: Lint & Test Frontend
+      - name: 🌐 Lint & Test Frontend (Web)
         run: |
           cd apps/web
           pnpm lint
-          pnpm test -- --passWithNoTests
+          pnpm test --passWithNoTests
 
-      - name: Lint Extension
+      - name: 🧩 Lint & Test Extension
         run: |
           cd apps/extension
           pnpm lint
-          pnpm test -- --passWithNoTests
+          pnpm test --passWithNoTests
 
+  # ---------------------------------------------------------
+  # JOB 2: Release & Deploy
+  # ---------------------------------------------------------
   release:
+    name: 🚀 Semantic Release & Deploy
     needs: quality
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
+
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Setup pnpm
+      - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - name: Setup Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: 🛠️ Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run releases (create tags & GitHub releases)
+      - name: 🏷️ Run Semantic Release
         run: ./scripts/release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # =============================================
-      # DEPLOYS CONDICIONAIS (só se o respectivo app mudou)
-      # =============================================
+      # =========================================================
+      # DEPLOYS ESTRATÉGICOS
+      # =========================================================
 
-      - name: Check if Web (Next.js) changed
+      - name: 🔍 Check Web Changes
         id: web-changed
         run: |
           if git diff-tree --no-commit-id --name-only -r HEAD | grep -q '^apps/web/'; then
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Deploy Web to Vercel (if changed)
+      - name: 🚀 Deploy Web to Vercel
         if: steps.web-changed.outputs.changed == 'true'
         run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
 
-      - name: Check if API (FastAPI) changed
+      - name: 🔍 Check API Changes
         id: api-changed
         run: |
           if git diff-tree --no-commit-id --name-only -r HEAD | grep -q '^apps/api/'; then
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Deploy API to Render (if changed)
+      - name: 🚀 Deploy API to Render
         if: steps.api-changed.outputs.changed == 'true'
         run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
