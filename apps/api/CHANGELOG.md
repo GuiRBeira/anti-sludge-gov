@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.2.1...api-1.3.0) (2026-04-11)
+
+### Features
+
+* integrate Turbo, Husky, and lint-staged, and configure Dependabot and CI workflows ([247dd12](https://github.com/GuiRBeira/anti-sludge-gov/commit/247dd12cd305210f8245d2e0eb2c43f5b8fd79a3))
+
 ## [1.2.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.2.0...api-1.2.1) (2026-04-11)
 
 ## [1.2.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.1.0...api-1.2.0) (2026-04-11)
