@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.1.1...extension-1.2.0) (2026-04-11)
+
+### Features
+
+* integrate Turbo, Husky, and lint-staged, and configure Dependabot and CI workflows ([247dd12](https://github.com/GuiRBeira/anti-sludge-gov/commit/247dd12cd305210f8245d2e0eb2c43f5b8fd79a3))
+
 ## [1.1.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.1.0...extension-1.1.1) (2026-04-11)
 
 ## [1.1.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.0.0...extension-1.1.0) (2026-04-11)
