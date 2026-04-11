@@ -85,7 +85,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 🛠️ Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🧩 Lint & Test Extension
         run: |
@@ -120,7 +120,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 🛠️ Install Dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: 🏷️ Run Semantic Release
         run: ./scripts/release.sh
