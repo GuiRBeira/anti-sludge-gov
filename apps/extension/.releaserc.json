@@ -1,3 +1,5 @@
 {
-  "extends": "../../release.config.base.js"
+  "extends": "../../release.config.base.js",
+  "branches": ["main"],
+  "tagFormat": "extension-${version}"
 }
