@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.2.0...extension-1.3.0) (2026-04-11)
+
+### Features
+
+* add automated label creation workflow and downgrade GitHub Actions versions for stability ([fab3b39](https://github.com/GuiRBeira/anti-sludge-gov/commit/fab3b3959ca529f97f854e1561bae8734d01f7de))
+
 ## [1.2.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.1.1...extension-1.2.0) (2026-04-11)
 
 ### Features
