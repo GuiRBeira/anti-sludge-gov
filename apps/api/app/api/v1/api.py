@@ -6,10 +6,12 @@ from app.features.analysis_templates.router import router as analysis_templates_
 from app.features.observations.router import router as observations_router
 from app.features.analysis_results.router import router as analysis_results_router
 from app.api.v1.endpoints.health import router as health_router
+from app.api.v1.endpoints.version import router as version_router
 
 router = APIRouter()
 
 router.include_router(health_router, tags=["System"])
+router.include_router(version_router, tags=["System"])
 router.include_router(processes_router, tags=["Processes"])
 router.include_router(catalog_router, tags=["Catalog"])
 router.include_router(analysis_templates_router, tags=["Analysis Templates"])
