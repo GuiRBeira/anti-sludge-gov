@@ -1,3 +1,5 @@
+## [1.1.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.1.0...extension-1.1.1) (2026-04-11)
+
 ## [1.1.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.0.0...extension-1.1.0) (2026-04-11)
 
 ### Features
