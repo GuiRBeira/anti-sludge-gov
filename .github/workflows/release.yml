@@ -120,7 +120,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 🛠️ Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🏷️ Run Semantic Release
         run: ./scripts/release.sh
