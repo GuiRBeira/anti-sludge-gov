@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.3.1...extension-1.4.0) (2026-04-11)
+
+### Features
+
+* add GitHub Action to automatically reconcile pnpm lockfile on changes ([25d207c](https://github.com/GuiRBeira/anti-sludge-gov/commit/25d207c1f70806703af560eaf72b76427603295c))
+
 ## [1.3.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.3.0...extension-1.3.1) (2026-04-11)
 
 ### Bug Fixes
