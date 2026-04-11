@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.3.0...extension-1.3.1) (2026-04-11)
+
+### Bug Fixes
+
+* correct pnpm install flags in release workflow jobs ([1d28e66](https://github.com/GuiRBeira/anti-sludge-gov/commit/1d28e66aea1adfb2bddab33c9c066f7f260e0fd0))
+* remove frozen-lockfile flag from pnpm install in release workflow ([805108b](https://github.com/GuiRBeira/anti-sludge-gov/commit/805108b4b40d17d12e6f35cd365a109368ab1619))
+
 ## [1.3.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.2.0...extension-1.3.0) (2026-04-11)
 
 ### Features
