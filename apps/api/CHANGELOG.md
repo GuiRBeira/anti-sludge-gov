@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/v1.3.0...v1.4.0) (2026-04-11)
+
+### Features
+
+* implement conditional deployment triggers for web and API services and add project status badges to README ([3156f89](https://github.com/GuiRBeira/anti-sludge-gov/commit/3156f89c9db9f443b0b95397d486f1ba17da28d3))
+
 ## [1.3.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/v1.2.0...v1.3.0) (2026-04-10)
 
 ### Features
