@@ -1,0 +1,87 @@
+version: 2
+updates:
+  # Backend Python (FastAPI)
+  - package-ecosystem: "pip"
+    directory: "/apps/api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    versioning-strategy: "lockfile-only"
+    groups:
+      python-dev-tools:
+        patterns:
+          - "ruff"
+          - "pytest"
+          - "faker"
+          - "httpx"
+          - "anyio"
+
+  # Frontend Next.js (pnpm)
+  - package-ecosystem: "npm"
+    directory: "/apps/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    versioning-strategy: "increase"
+    groups:
+      web-core:
+        patterns:
+          - "next"
+          - "react*"
+      lint-tools:
+        patterns:
+          - "eslint*"
+          - "typescript-eslint*"
+
+  # Extensão Plasmo (pnpm)
+  - package-ecosystem: "npm"
+    directory: "/apps/extension"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    versioning-strategy: "increase"
+    groups:
+      extension-core:
+        patterns:
+          - "plasmo"
+          - "react*"
+      lint-tools:
+        patterns:
+          - "eslint*"
+          - "typescript-eslint*"
+
+  # GitHub Actions (opcional, mas recomendado)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "ci"
+      - "dependencies"
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      actions:
+        patterns:
+          - "*"
