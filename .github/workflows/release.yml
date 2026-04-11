@@ -32,7 +32,33 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run releases
+      - name: Run releases (create tags & GitHub releases)
         run: ./scripts/release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # =============================================
+      # DEPLOYS CONDICIONAIS (só se o respectivo app mudou)
+      # =============================================
+
+      - name: Check if Web (Next.js) changed
+        id: web-changed
+        run: |
+          if git diff-tree --no-commit-id --name-only -r HEAD | grep -q '^apps/web/'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy Web to Vercel (if changed)
+        if: steps.web-changed.outputs.changed == 'true'
+        run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+
+      - name: Check if API (FastAPI) changed
+        id: api-changed
+        run: |
+          if git diff-tree --no-commit-id --name-only -r HEAD | grep -q '^apps/api/'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy API to Render (if changed)
+        if: steps.api-changed.outputs.changed == 'true'
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"

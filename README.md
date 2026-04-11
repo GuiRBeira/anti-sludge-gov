@@ -1,5 +1,11 @@
 # anti-sludge-gov
 
+![Release](https://github.com/GuiRBeira/anti-sludge-gov/actions/workflows/release.yml/badge.svg)
+![API Version](https://img.shields.io/github/v/tag/GuiRBeira/anti-sludge-gov?filter=api-*&label=API&color=blue)
+![Web Version](https://img.shields.io/github/v/tag/GuiRBeira/anti-sludge-gov?filter=web-*&label=Web&color=green)
+![Extension Version](https://img.shields.io/github/v/tag/GuiRBeira/anti-sludge-gov?filter=extension-*&label=Extension&color=orange)
+![License](https://img.shields.io/github/license/GuiRBeira/anti-sludge-gov)
+
 Ferramenta digital anti-sludge para identificação e mensuração de barreiras em serviços públicos digitais. Projeto de extensão (UTFPR + CINCO/MGI) e base tecnológica do TCC, envolvendo análise de interface, ciência comportamental, acessibilidade e modelos de IA para auditoria automatizada de fricção digital.
 
 ## 🚀 Visão Geral
