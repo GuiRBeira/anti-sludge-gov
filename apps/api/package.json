@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "private": true,
   "description": "Placeholder for semantic-release tooling",
   "devDependencies": {}
