@@ -14,6 +14,9 @@ updates:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
     versioning-strategy: "lockfile-only"
+    ignore:
+      - dependency-name: "*"
+        versions: ["*-alpha*", "*-beta*", "*-rc*", "*-next*"]
     groups:
       python-dev-tools:
         patterns:
@@ -37,6 +40,9 @@ updates:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
     versioning-strategy: "increase"
+    ignore:
+      - dependency-name: "*"
+        versions: ["*-alpha*", "*-beta*", "*-rc*", "*-next*"]
     groups:
       web-core:
         patterns:
@@ -61,6 +67,9 @@ updates:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
     versioning-strategy: "increase"
+    ignore:
+      - dependency-name: "*"
+        versions: ["*-alpha*", "*-beta*", "*-rc*", "*-next*"]
     groups:
       extension-core:
         patterns:

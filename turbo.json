@@ -6,7 +6,8 @@
       "outputs": [".next/**", "dist/**", ".plasmo/**", "out/**"]
     },
     "lint": {
-      "cache": true
+      "cache": true,
+      "dependsOn": ["^lint"]
     },
     "test": {
       "cache": true
