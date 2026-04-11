@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.4.0...extension-1.4.1) (2026-04-11)
+
+### Bug Fixes
+
+* upgrade next to 16.2.3 and restore stable typescript 6 to resolve vercel security block ([c9ab69e](https://github.com/GuiRBeira/anti-sludge-gov/commit/c9ab69e5b727f8bf24ec15f06db60e26bc3c8566))
+
 ## [1.4.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.3.1...extension-1.4.0) (2026-04-11)
 
 ### Features
