@@ -1,0 +1,86 @@
+name: 🧪 PR Quality Check
+
+on:
+  pull_request:
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  quality-backend:
+    name: 🐍 Backend Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          cache-dependency-path: apps/api/requirements-dev.txt
+
+      - name: 🧱 Install Python Dependencies
+        run: |
+          cd apps/api
+          pip install -r requirements-dev.txt
+
+      - name: 🔍 Lint & Test Backend
+        run: |
+          cd apps/api
+          python -m ruff check .
+          python -m pytest
+        env:
+          PYTHONPATH: .
+
+  quality-frontend:
+    name: 🌐 Web Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: 🛠️ Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🌐 Lint, Test & Build Web
+        run: |
+          pnpm turbo lint --filter web
+          pnpm turbo test --filter web -- --passWithNoTests
+          pnpm turbo build --filter web
+
+  quality-extension:
+    name: 🧩 Extension Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: 🛠️ Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧩 Lint, Test & Build Extension
+        run: |
+          pnpm turbo lint --filter extension
+          pnpm turbo test --filter extension -- --passWithNoTests
+          pnpm turbo build --filter extension

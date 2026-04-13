@@ -6,7 +6,7 @@ import { GovIcon } from "@/components/gov";
 
 interface StatItem {
   label: string;
-  value: number;
+  value: string | number;
   icon: string;
   color: string;
 }

@@ -4,6 +4,7 @@
 import dynamic from "next/dynamic";
 import React from "react";
 import clsx from "clsx";
+import { GovIcon } from "./GovIcon";
 
 /**
  * Interface para as ações do menu do Card.
@@ -28,13 +29,15 @@ export interface GovCardProps {
   menuActions?: GovCardMenuAction[];
   /** Propriedades de imagem ou avatar podem ser adicionadas conforme necessário */
   avatar?: unknown; 
+  /** Ícone a ser exibido ao lado do título */
+  icon?: string;
 }
 
 /**
  * Skeleton para o BrCard renderizado no Servidor.
  * Mantém a estrutura visual básica para evitar CLS.
  */
-function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, className, children }: GovCardProps) {
+function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, className, children, icon }: GovCardProps) {
   return (
     <div className={clsx(
       "br-card",
@@ -44,7 +47,14 @@ function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, classNam
     )}>
       {(title || subtitle) && (
         <div className="card-header">
-          {title && <div className="br-item header-title">{title}</div>}
+          {title && (
+            <div className="br-item header-title">
+              <div className="flex items-center gap-2">
+                {icon && <GovIcon icon={icon} size={20} className="text-gov-blue" />}
+                <span>{title}</span>
+              </div>
+            </div>
+          )}
           {subtitle && <div className="br-item header-subtitle">{subtitle}</div>}
         </div>
       )}

@@ -60,10 +60,11 @@ jobs:
       - name: 🛠️ Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🌐 Lint & Test Web
+      - name: 🌐 Lint, Test & Build Web
         run: |
           pnpm turbo lint --filter web
           pnpm turbo test --filter web -- --passWithNoTests
+          pnpm turbo build --filter web
 
   # ---------------------------------------------------------
   # JOB: Quality Check - Extension
@@ -87,10 +88,11 @@ jobs:
       - name: 🛠️ Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🧩 Lint & Test Extension
+      - name: 🧩 Lint, Test & Build Extension
         run: |
           pnpm turbo lint --filter extension
           pnpm turbo test --filter extension -- --passWithNoTests
+          pnpm turbo build --filter extension
 
   # ---------------------------------------------------------
   # JOB: Release & Deploy

@@ -69,7 +69,7 @@ export default function Home() {
   // Dados fake para o gráfico baseados nos processos (mock inicial)
   const chartData = processos.slice(0, 6).map(p => ({
     name: p.nome.split(" ").slice(0, 2).join(" "),
-    score: (Math.random() * 20).toFixed(1) // Em prod viria do sumário/analise
+    score: parseFloat((Math.random() * 20).toFixed(1)) // Em prod viria do sumário/analise
   }));
 
   return (
@@ -120,7 +120,7 @@ export default function Home() {
         <div className="lg:col-span-1 space-y-8">
           <GovCard title="Atividade Recente" icon="mdi:history">
             <div className="p-4 space-y-4">
-              {summary?.recent_activity.length > 0 ? summary.recent_activity.map((act) => (
+              {summary?.recent_activity && summary.recent_activity.length > 0 ? summary.recent_activity.map((act) => (
                 <div key={act.id} className="flex items-start gap-3 pb-4 border-b border-slate-50 last:border-0 last:pb-0">
                   <div className="mt-1 p-2 bg-blue-50 text-blue-600 rounded-lg">
                     <History size={16} />

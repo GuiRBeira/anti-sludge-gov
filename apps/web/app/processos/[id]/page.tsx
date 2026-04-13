@@ -48,9 +48,11 @@ export default function ProcessDetail() {
         <div className="space-y-2">
           <div className="flex items-center gap-3">
              <h2 className="text-4xl font-black text-slate-900 tracking-tight">{data.nome}</h2>
-             <GovTag type={data.status === "Crítico" ? "danger" : data.status === "Em Andamento" ? "warning" : "success"}>
-               {data.status}
-             </GovTag>
+             <GovTag 
+               type="status" 
+               color={data.status === "Crítico" ? "danger" : data.status === "Em Andamento" ? "warning" : "success"}
+               value={data.status}
+             />
           </div>
           <p className="text-slate-500 text-lg max-w-3xl">{data.descricao || "Sem descrição disponível."}</p>
         </div>
@@ -102,9 +104,12 @@ export default function ProcessDetail() {
                   <div className="flex-1 bg-slate-50/50 p-6 rounded-2xl border border-slate-100 hover:border-blue-200 transition-colors">
                     <div className="flex items-start justify-between mb-2">
                        <h4 className="text-lg font-black text-slate-900">{etapa.comportamento}</h4>
-                       <GovTag type={etapa.e_obrigatorio ? "warning" : "default"} size="small">
-                         {etapa.e_obrigatorio ? "Obrigatório" : "Opcional"}
-                       </GovTag>
+                       <GovTag 
+                        type="text" 
+                        color={etapa.e_obrigatorio ? "warning" : "neutral"} 
+                        size="small"
+                        value={etapa.e_obrigatorio ? "Obrigatório" : "Opcional"}
+                      />
                     </div>
                     
                     <div className="flex flex-wrap gap-4 text-xs text-slate-500 font-medium">
