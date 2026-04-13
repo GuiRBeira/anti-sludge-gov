@@ -16,8 +16,8 @@
     "@govbr-ds/core": "^3.7.0",
     "@govbr-ds/react-components": "^2.15.1",
     "plasmo": "0.90.5",
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react": "19.2.5",
+    "react-dom": "19.2.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",
