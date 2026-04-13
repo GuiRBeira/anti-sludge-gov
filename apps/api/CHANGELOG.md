@@ -1,3 +1,5 @@
+## [1.7.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.7.0...api-1.7.1) (2026-04-13)
+
 ## [1.7.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.6.0...api-1.7.0) (2026-04-13)
 
 ### Features
