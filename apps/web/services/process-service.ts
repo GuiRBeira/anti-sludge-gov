@@ -59,6 +59,16 @@ export interface CreateProcessoDTO {
   status?: string;
 }
 
+export interface DashboardSummary {
+  total_processos: number;
+  total_jornadas: number;
+  media_barreiras: number;
+  media_impactos: number;
+  processos_criticos: number;
+  processos_por_status: { status: string; count: number }[];
+  recent_activity: { id: number; protocolo: string; processo: string; data: string }[];
+}
+
 export const processService = {
   async list(): Promise<Processo[]> {
     return apiFetch<Processo[]>("/processos");
@@ -73,5 +83,9 @@ export const processService = {
       method: "POST",
       body: JSON.stringify(data),
     });
+  },
+
+  async getDashboardSummary(): Promise<DashboardSummary> {
+    return apiFetch<DashboardSummary>("/dashboard/summary");
   },
 };

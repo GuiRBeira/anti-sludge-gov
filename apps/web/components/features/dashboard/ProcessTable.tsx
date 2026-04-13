@@ -1,6 +1,8 @@
+// apps/web/components/features/dashboard/ProcessTable.tsx
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { GovButton, GovTag, GovIcon } from "@/components/gov";
 import { Processo } from "@/services/process-service";
@@ -54,7 +56,7 @@ export function ProcessTable({ processos, loading, error }: ProcessTableProps) {
                 <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Processo</th>
                 <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Esfera</th>
                 <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Status</th>
-                <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Ações</th>
+                <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase text-right">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -62,7 +64,9 @@ export function ProcessTable({ processos, loading, error }: ProcessTableProps) {
                 <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
                   <td className="px-4 py-4 text-xs font-bold text-slate-400">#{p.id}</td>
                   <td className="px-4 py-4">
-                    <div className="text-sm font-black text-slate-800">{p.nome}</div>
+                    <Link href={`/processos/${p.id}`} className="text-sm font-black text-slate-800 hover:text-blue-600 transition-colors cursor-pointer">
+                      {p.nome}
+                    </Link>
                     <div className="text-[10px] font-medium text-slate-400 truncate max-w-xs">{p.descricao || "Sem descrição"}</div>
                   </td>
                   <td className="px-4 py-4">
@@ -76,8 +80,10 @@ export function ProcessTable({ processos, loading, error }: ProcessTableProps) {
                       className="text-[9px] font-bold" 
                     />
                   </td>
-                  <td className="px-4 py-4">
-                    <GovButton type="secondary" size="small" circle icon="fas fa-arrow-right" />
+                  <td className="px-4 py-4 text-right">
+                    <Link href={`/processos/${p.id}`}>
+                      <GovButton type="secondary" size="small" circle icon="fas fa-arrow-right" />
+                    </Link>
                   </td>
                 </tr>
               ))}
