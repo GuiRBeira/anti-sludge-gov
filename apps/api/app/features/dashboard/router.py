@@ -25,7 +25,7 @@ async def get_dashboard_summary(db: AsyncSession = Depends(get_db)):
 			func.avg(ResultadoAnalise.media_barreiras).label("avg_b"),
 			func.avg(ResultadoAnalise.media_impactos).label("avg_i"),
 			func.count(ResultadoAnalise.id)
-			.filter(ResultadoAnalise.e_sludge == True)
+			.filter(ResultadoAnalise.e_sludge)
 			.label("criticos"),
 		)
 	)
