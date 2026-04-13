@@ -22,8 +22,8 @@
   },
   "lint-staged": {
     "apps/api/**/*.py": [
-      "ruff check --fix --exit-zero",
-      "ruff format"
+      "apps/api/.venv/bin/ruff check --fix --exit-zero",
+      "apps/api/.venv/bin/ruff format"
     ],
     "apps/**/*.{js,jsx,ts,tsx}": [
       "eslint --fix"
