@@ -10,6 +10,13 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
   ]),
   {
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+  {
     rules: {
       "eslint-comments/no-unused-disable": "off"
     },

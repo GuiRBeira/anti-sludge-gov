@@ -8,6 +8,13 @@ export default tseslint.config(
 	{
 		ignores: ["node_modules/", ".plasmo/", "build/", "dist/"]
 	},
+	{
+		languageOptions: {
+			parserOptions: {
+				tsconfigRootDir: import.meta.dirname,
+			},
+		},
+	},
 	js.configs.recommended,
 	...tseslint.configs.recommended,
 	{
@@ -22,6 +29,7 @@ export default tseslint.config(
 				chrome: "readonly",
 			},
 			parserOptions: {
+				tsconfigRootDir: import.meta.dirname,
 				ecmaFeatures: {
 					jsx: true,
 				},
