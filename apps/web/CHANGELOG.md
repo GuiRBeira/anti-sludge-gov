@@ -1,3 +1,10 @@
+## [1.9.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.8.0...web-1.9.0) (2026-04-13)
+
+### Features
+
+* redesign header with sticky positioning, version badge, and improved layout structure ([645858f](https://github.com/GuiRBeira/anti-sludge-gov/commit/645858ff7124dd3b016ed53415dc3b3c8922dad7))
+* **web:** redesign header with sticky positioning, version badge, and improved layout structure ([1e0645c](https://github.com/GuiRBeira/anti-sludge-gov/commit/1e0645c5ff8d0096bf6f84c1baeca35b544327d1))
+
 ## [1.8.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.7.1...web-1.8.0) (2026-04-13)
 
 ### Features
