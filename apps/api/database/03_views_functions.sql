@@ -105,4 +105,6 @@ BEGIN
     JOIN avaliacao_impacto ai ON ci.id = ai.criterio_impacto_id
     WHERE ci.etapa_id = p_etapa_id;
     
-    RETURN ROUND((v_media_barreiras * v_media_impact
+    RETURN ROUND((v_media_barreiras * v_media_impactos)::NUMERIC, 2);
+END;
+$$ LANGUAGE plpgsql;
