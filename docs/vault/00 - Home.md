@@ -7,13 +7,14 @@ Bem-vindo ao vault de documentação do projeto. Este espaço serve como reposit
 - [[01 - Visão Geral do Projeto]]
 - [[Decisões de Arquitetura (ADRs)]]
 - [[Mapa de Requisitos]]
-- [[Diário de Bordo]]
 
 ## 🛠️ Stack Técnica
 - **Backend**: FastAPI (Python)
 - **Frontend**: Next.js (React)
 - **Banco**: PostgreSQL
 - **Design**: Gov.br DS
+- **Ajustes Finos de Design**: Tailwind CSS
+- **Documentação**: Obsidian
 
 ---
 *Nota: Esta estrutura foi gerada para ser utilizada no Obsidian.*
