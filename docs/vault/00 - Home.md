@@ -7,6 +7,7 @@ Bem-vindo ao vault de documentação do projeto. Este espaço serve como reposit
 - [[01 - Visão Geral do Projeto]]
 - [[Decisões de Arquitetura (ADRs)]]
 - [[Mapa de Requisitos]]
+- [[Guia de Manutenção do Banco (Alembic)]]
 
 ## 🛠️ Stack Técnica
 - **Backend**: FastAPI (Python)
