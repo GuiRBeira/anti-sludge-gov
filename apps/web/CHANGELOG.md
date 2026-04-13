@@ -1,3 +1,9 @@
+## [1.9.2](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.9.1...web-1.9.2) (2026-04-13)
+
+### Bug Fixes
+
+* **web:** testing semantic release ([72a7116](https://github.com/GuiRBeira/anti-sludge-gov/commit/72a711681ab7e957ef32c83ba49f29fb24193d03))
+
 ## [1.9.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.9.0...web-1.9.1) (2026-04-13)
 
 ## [1.9.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.8.0...web-1.9.0) (2026-04-13)
