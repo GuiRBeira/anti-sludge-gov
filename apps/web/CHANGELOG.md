@@ -1,3 +1,9 @@
+## [1.10.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.9.2...web-1.10.0) (2026-04-13)
+
+### Features
+
+* **web:** ignore commits with scopes belonging to other monorepo applications in release configuration ([e0f7428](https://github.com/GuiRBeira/anti-sludge-gov/commit/e0f742864c22adced34acdc4f7b4cf13868b1611))
+
 ## [1.9.2](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.9.1...web-1.9.2) (2026-04-13)
 
 ### Bug Fixes

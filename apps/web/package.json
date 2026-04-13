@@ -33,5 +33,5 @@
     "tailwindcss": "^4.0.0",
     "typescript": "^6.0.2"
   },
-  "version": "1.9.2"
+  "version": "1.10.0"
 }
