@@ -1,3 +1,9 @@
+## [1.7.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.6.1...extension-1.7.0) (2026-04-13)
+
+### Features
+
+* **api:** initialize Alembic for database migrations ([7319cef](https://github.com/GuiRBeira/anti-sludge-gov/commit/7319cefe6913a05bff03d9d59813ae603a485530))
+
 ## [1.6.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.6.0...extension-1.6.1) (2026-04-13)
 
 ## [1.6.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.5.0...extension-1.6.0) (2026-04-13)
