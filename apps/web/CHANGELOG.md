@@ -1,3 +1,15 @@
+## [1.7.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.6.0...web-1.7.0) (2026-04-13)
+
+### Features
+
+* **api:** add dashboard summary endpoint ([55115f7](https://github.com/GuiRBeira/anti-sludge-gov/commit/55115f71b7430e61a6578059e1c4847830133b51))
+* **web:** add sidebar navigation and recharts ([e26eacb](https://github.com/GuiRBeira/anti-sludge-gov/commit/e26eacb6a37cb0bf2ebb956cbe56c62188065af3))
+* **web:** implement dashboard charts and process details ([8cc922b](https://github.com/GuiRBeira/anti-sludge-gov/commit/8cc922b9517978eb437950c7330566afaa882b89))
+
+### Bug Fixes
+
+* simplify sludge filter condition in dashboard router query ([ed92f26](https://github.com/GuiRBeira/anti-sludge-gov/commit/ed92f26f9c3f891e56e7cf1a8f1d973d1be341d4))
+
 ## [1.6.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.5.1...web-1.6.0) (2026-04-13)
 
 ### Features
