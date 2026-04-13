@@ -1,3 +1,5 @@
+## [1.9.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.9.0...web-1.9.1) (2026-04-13)
+
 ## [1.9.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.8.0...web-1.9.0) (2026-04-13)
 
 ### Features
