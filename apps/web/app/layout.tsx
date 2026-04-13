@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "Análise e redução de carga administrativa",
 };
 
+import { Shell } from "@/components/common/Shell";
+
 export default function RootLayout({
   children,
 }: {
@@ -28,13 +30,8 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
-        {/* Usaremos uma estrutura simplifyed de DSGOV para o Layout Principal */}
-        <div className="flex flex-col min-h-screen">
-          <main className="flex-1">
-            {children}
-          </main>
-        </div>
+      <body className="min-h-full bg-slate-50 text-slate-900">
+        <Shell>{children}</Shell>
       </body>
     </html>
   );
