@@ -1,3 +1,9 @@
+## [1.6.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.5.1...api-1.6.0) (2026-04-13)
+
+### Features
+
+* update database configuration, add sync session support, fix enum mapping, and enhance seeding and deployment settings ([0d05c5f](https://github.com/GuiRBeira/anti-sludge-gov/commit/0d05c5f2143e05c2f4887dbf288ace3385ce7be2))
+
 ## [1.5.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.5.0...api-1.5.1) (2026-04-11)
 
 ### Bug Fixes
