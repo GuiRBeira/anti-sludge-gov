@@ -1,0 +1,19 @@
+# 🏛️ Anti-Sludge Gov - Central de Documentação
+
+Bem-vindo ao vault de documentação do projeto. Este espaço serve como repositório de conhecimento para o **TCC** e o **Projeto de Extensão**.
+
+## 🎯 Seções Principais
+
+- [[01 - Visão Geral do Projeto]]
+- [[Decisões de Arquitetura (ADRs)]]
+- [[Mapa de Requisitos]]
+- [[Diário de Bordo]]
+
+## 🛠️ Stack Técnica
+- **Backend**: FastAPI (Python)
+- **Frontend**: Next.js (React)
+- **Banco**: PostgreSQL
+- **Design**: Gov.br DS
+
+---
+*Nota: Esta estrutura foi gerada para ser utilizada no Obsidian.*
