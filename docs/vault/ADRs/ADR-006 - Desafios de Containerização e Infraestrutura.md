@@ -33,6 +33,11 @@ O projeto foi migrado de um ambiente de desenvolvimento local (node/python diret
 - **Problema**: Os scripts de `seed` automáticos do Postgres criavam as tabelas antes do Alembic rodar, gerando erro de `DuplicateTable` ao tentar aplicar a migração de `baseline`.
 - **Solução**: Sincronização manual via `alembic stamp head` para alinhar o estado do banco com o histórico de migrações.
 
+### 6. Desafio do SSL em Redes Residenciais (DNS-01 Challenge)
+- **Problema**: A porta 80 e 443 são bloqueadas por padrão em conexões domésticas, impedindo a validação `HTTP-01` do Let's Encrypt.
+- **Solução**: Implementação do **DNS-01 Challenge** via API do DuckDNS. O Certbot interage direto com o DNS para provar a posse do domínio sem precisar de portas abertas para validação.
+- **Infra**: Adição do container `infinityofspace/certbot_dns_duckdns` com renovação automatizada.
+
 ## Nota sobre o Tempo de Build
 O primeiro build de produção do container Web levou aproximadamente **3 a 4 minutos**. Isso é esperado em monorepos devido a:
 1. **Instalação Clean**: O pnpm precisa baixar e resolver centenas de dependências (800+ pacotes).
@@ -43,5 +48,6 @@ O primeiro build de produção do container Web levou aproximadamente **3 a 4 mi
 
 ## Consequências
 - A aplicação agora é portável e simulando fielmente o ambiente de produção.
+- O site está acessível via domínio público com **HTTPS (SSL)** configurado.
 - O desenvolvedor ganhou ferramentas de limpeza e diagnóstico de infraestrutura.
-- A documentação de ADR agora reflete as lições aprendidas para futuros colaboradores.
+- A documentação de ADR agora reflete as lições aprendidas sobre rede e certificação.
