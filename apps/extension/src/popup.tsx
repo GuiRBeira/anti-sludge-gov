@@ -82,11 +82,10 @@ export default function IndexPopup() {
   // Seleção de processo
   const [processos, setProcessos] = useState<ProcessoOption[]>([])
   const [selectedProcessoId, setSelectedProcessoId] = useState<number | null>(null)
-  const [loadingProcessos, setLoadingProcessos] = useState(false)
+  const [loadingProcessos, setLoadingProcessos] = useState(true)
 
   // Busca lista de processos ao abrir o popup
   useEffect(() => {
-    setLoadingProcessos(true)
     chrome.runtime.sendMessage({ action: "GET_PROCESSOS" }, (response) => {
       if (response?.processos) setProcessos(response.processos)
       setLoadingProcessos(false)
