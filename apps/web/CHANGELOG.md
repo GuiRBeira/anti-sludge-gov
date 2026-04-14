@@ -1,3 +1,13 @@
+## [1.11.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.10.0...web-1.11.0) (2026-04-14)
+
+### Features
+
+* **api,extension:** captura de mouse e integração de sessões da extensão ([2131474](https://github.com/GuiRBeira/anti-sludge-gov/commit/2131474c70f6049fa1cfe4ee99809b601a10adff))
+
+### Bug Fixes
+
+* set initial loading state to true in popup to prevent flickering during process fetch ([b946faa](https://github.com/GuiRBeira/anti-sludge-gov/commit/b946faafa20706c9a17a35e3fd4286924e14f9f0))
+
 ## [1.10.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.9.2...web-1.10.0) (2026-04-13)
 
 ### Features
