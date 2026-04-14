@@ -1,160 +1,225 @@
 // ============================================================
-// AntiSludge — Background Service Worker (Reconstructed)
+// AntiSludge — Background Service Worker
 // Single Source of Truth: chrome.storage.local
 // ============================================================
 
 export {}
 
-// export {} -- Removed unused Icon import
+const API_BASE_URL = process.env.PLASMO_PUBLIC_API_URL ?? "http://localhost:8000/api/v1"
 
 // --- Types ---
-interface PageInfo {
-  url: string;
-  title: string;
-  startTime: number; // Seconds
-  endTime?: number;  // Seconds
-  clicks: number;
-  scrolled: boolean;
+export interface InteractionData {
+  tipo: "click"
+  posX: number
+  posY: number
+  posXRelativa: number
+  posYRelativa: number
+  elementoTag: string
+  elementoId: string
+  elementoClasse: string
+  elementoTexto: string
+  timestampEvento: number // unix ms
 }
 
-interface Session {
-  id: string;
-  startTime: number; // Seconds
-  pages: PageInfo[];
+export interface PageInfo {
+  url: string
+  title: string
+  startTime: number  // Unix seconds
+  endTime?: number   // Unix seconds
+  clicks: number
+  scrolled: boolean
+  interactions: InteractionData[]
+}
+
+export interface Session {
+  id: string
+  startTime: number  // Unix seconds
+  processoId?: number
+  processoNome?: string
+  pages: PageInfo[]
 }
 
 interface AppState {
-  isActive: boolean;
-  currentSession: Session | null;
+  isActive: boolean
+  currentSession: Session | null
+}
+
+export interface ProcessoOption {
+  id: number
+  nome: string
 }
 
 // --- Utils ---
-const nowSeconds = () => Math.floor(Date.now() / 1000);
+const nowSeconds = () => Math.floor(Date.now() / 1000)
 
-const generateId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const generateId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 
 // Get current state from storage
 async function getAppState(): Promise<AppState> {
-  const data = await chrome.storage.local.get(["isActive", "currentSession"]);
+  const data = await chrome.storage.local.get(["isActive", "currentSession"])
   return {
     isActive: data.isActive || false,
     currentSession: data.currentSession || null
-  };
+  }
 }
 
 // Save state to storage
 async function saveAppState(state: AppState) {
-  await chrome.storage.local.set(state);
-  
-  // Update badge and icon
+  await chrome.storage.local.set(state)
   if (state.isActive) {
-    chrome.action.setBadgeText({ text: "ON" });
-    chrome.action.setBadgeBackgroundColor({ color: "#00AA66" });
+    chrome.action.setBadgeText({ text: "ON" })
+    chrome.action.setBadgeBackgroundColor({ color: "#00AA66" })
   } else {
-    chrome.action.setBadgeText({ text: "" });
+    chrome.action.setBadgeText({ text: "" })
   }
 }
 
-// Helper to transform session for export
-function transformSession(sessionData: Session) {
-  const endTime = nowSeconds();
-  const totalTime = endTime - sessionData.startTime;
+// --- API Integration ---
 
-  return {
+async function fetchProcessos(): Promise<ProcessoOption[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/processos?limit=100`)
+    if (!response.ok) return []
+    const data: ProcessoOption[] = await response.json()
+    return data.map((p) => ({ id: p.id, nome: p.nome }))
+  } catch {
+    return []
+  }
+}
+
+async function sendToApi(sessionData: Session): Promise<boolean> {
+  const endTime = nowSeconds()
+  const totalTime = endTime - sessionData.startTime
+
+  const payload = {
+    session_id_extensao: sessionData.id,
+    processo_id: sessionData.processoId ?? null,
+    data_inicio: new Date(sessionData.startTime * 1000).toISOString(),
+    data_fim: new Date(endTime * 1000).toISOString(),
+    total_tempo_segundos: totalTime,
+    total_paginas: sessionData.pages.length,
+    total_cliques: sessionData.pages.reduce((acc, p) => acc + p.clicks, 0),
+    paginas: sessionData.pages.map((p, index) => ({
+      url: p.url,
+      titulo: p.title,
+      tempo_inicio_unix: p.startTime,
+      tempo_fim_unix: p.endTime ?? endTime,
+      duracao_segundos: (p.endTime ?? endTime) - p.startTime,
+      contagem_cliques: p.clicks,
+      teve_scroll: p.scrolled,
+      ordem: index,
+      interacoes: p.interactions.map((i) => ({
+        tipo: i.tipo,
+        pos_x: i.posX,
+        pos_y: i.posY,
+        pos_x_relativa: i.posXRelativa,
+        pos_y_relativa: i.posYRelativa,
+        elemento_tag: i.elementoTag,
+        elemento_id: i.elementoId,
+        elemento_classe: i.elementoClasse,
+        elemento_texto: i.elementoTexto,
+        timestamp_evento: i.timestampEvento,
+      })),
+    })),
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/sessoes-extensao`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+    return response.ok
+  } catch (err) {
+    console.error("AntiSludge: Falha ao enviar sessão para API", err)
+    return false
+  }
+}
+
+// Download session as JSON (fallback local)
+async function downloadSession(sessionData: Session) {
+  const endTime = nowSeconds()
+  const exportedData = {
     id: sessionData.id,
-    totalTime: totalTime,
-    pages: sessionData.pages.map(p => ({
+    processoId: sessionData.processoId,
+    processoNome: sessionData.processoNome,
+    totalTime: endTime - sessionData.startTime,
+    pages: sessionData.pages.map((p) => ({
       url: p.url,
       title: p.title,
       clicks: p.clicks,
       scrolled: p.scrolled,
-      time: (p.endTime || endTime) - p.startTime
-    }))
-  };
-}
+      time: (p.endTime || endTime) - p.startTime,
+      interactions: p.interactions,
+    })),
+  }
 
-// Placeholder for future API integration
-async function sendToApi(sessionData: Session) {
-  const exportedData = transformSession(sessionData);
-  console.log("AntiSludge: Pre-prepared for API endpoint", exportedData);
-  // Example:
-  // fetch('https://api.colab.utfpr.edu.br/v1/sessions', {
-  //   method: 'POST',
-  //   body: JSON.stringify(exportedData)
-  // });
-}
-
-// Download session as JSON with simplified structure
-async function downloadSession(sessionData: Session) {
-  const exportedData = transformSession(sessionData);
-
-  const json = JSON.stringify(exportedData, null, 2);
-  const blob = new Blob([json], { type: "application/json" });
-  
-  const buffer = await blob.arrayBuffer();
-  const base64 = btoa(new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-  const dataUrl = `data:application/json;base64,${base64}`;
-
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  const filename = `antisludge-sessao-${timestamp}.json`;
+  const json = JSON.stringify(exportedData, null, 2)
+  const blob = new Blob([json], { type: "application/json" })
+  const buffer = await blob.arrayBuffer()
+  const base64 = btoa(new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ""))
+  const dataUrl = `data:application/json;base64,${base64}`
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19)
 
   chrome.downloads.download({
     url: dataUrl,
-    filename: filename,
-    saveAs: false
-  });
+    filename: `antisludge-sessao-${timestamp}.json`,
+    saveAs: false,
+  })
 }
 
 // --- Core Actions ---
 
-async function startSession() {
-  const state = await getAppState();
-  if (state.isActive) return;
+async function startSession(processoId?: number, processoNome?: string) {
+  const state = await getAppState()
+  if (state.isActive) return
 
-  state.isActive = true;
+  state.isActive = true
   state.currentSession = {
     id: generateId(),
     startTime: nowSeconds(),
-    pages: []
-  };
-
-  await saveAppState(state);
-}
-
-async function stopSession() {
-  const state = await getAppState();
-  if (!state.isActive || !state.currentSession) return;
-
-  // Finalize last page
-  if (state.currentSession.pages.length > 0) {
-    const lastPage = state.currentSession.pages[state.currentSession.pages.length - 1];
-    if (!lastPage.endTime) lastPage.endTime = nowSeconds();
+    processoId,
+    processoNome,
+    pages: [],
   }
 
-  // Export
-  await downloadSession(state.currentSession);
-  await sendToApi(state.currentSession);
+  await saveAppState(state)
+}
 
-  // Clear state
-  state.isActive = false;
-  state.currentSession = null;
-  await saveAppState(state);
+async function stopSession(): Promise<boolean> {
+  const state = await getAppState()
+  if (!state.isActive || !state.currentSession) return false
+
+  // Finalizar última página
+  if (state.currentSession.pages.length > 0) {
+    const lastPage = state.currentSession.pages[state.currentSession.pages.length - 1]
+    if (!lastPage.endTime) lastPage.endTime = nowSeconds()
+  }
+
+  const apiSuccess = await sendToApi(state.currentSession)
+
+  // Download local como backup se a API falhar
+  if (!apiSuccess) {
+    await downloadSession(state.currentSession)
+  }
+
+  state.isActive = false
+  state.currentSession = null
+  await saveAppState(state)
+
+  return apiSuccess
 }
 
 async function addPage(url: string, title?: string) {
-  const state = await getAppState();
-  if (!state.isActive || !state.currentSession) return;
+  const state = await getAppState()
+  if (!state.isActive || !state.currentSession) return
 
-  // Filter internal pages
-  if (url.startsWith("chrome://") || url.startsWith("chrome-extension://")) return;
+  if (url.startsWith("chrome://") || url.startsWith("chrome-extension://")) return
 
-  // Avoid duplicates
   if (state.currentSession.pages.length > 0) {
-    const lastPage = state.currentSession.pages[state.currentSession.pages.length - 1];
-    if (lastPage.url === url) return;
-    
-    // Finalize previous page duration
-    if (!lastPage.endTime) lastPage.endTime = nowSeconds();
+    const lastPage = state.currentSession.pages[state.currentSession.pages.length - 1]
+    if (lastPage.url === url) return
+    if (!lastPage.endTime) lastPage.endTime = nowSeconds()
   }
 
   const newPage: PageInfo = {
@@ -162,67 +227,85 @@ async function addPage(url: string, title?: string) {
     title: title || url,
     startTime: nowSeconds(),
     clicks: 0,
-    scrolled: false
-  };
+    scrolled: false,
+    interactions: [],
+  }
 
-  state.currentSession.pages.push(newPage);
-  await saveAppState(state);
+  state.currentSession.pages.push(newPage)
+  await saveAppState(state)
 }
 
 async function updateStats(url: string, clicks: number, scrolled: boolean) {
-  const state = await getAppState();
-  if (!state.isActive || !state.currentSession || state.currentSession.pages.length === 0) return;
+  const state = await getAppState()
+  if (!state.isActive || !state.currentSession || state.currentSession.pages.length === 0) return
 
-  const currentPage = state.currentSession.pages[state.currentSession.pages.length - 1];
+  const currentPage = state.currentSession.pages[state.currentSession.pages.length - 1]
   if (currentPage.url === url) {
-    currentPage.clicks = clicks;
-    currentPage.scrolled = scrolled || currentPage.scrolled;
-    await saveAppState(state);
+    currentPage.clicks = clicks
+    currentPage.scrolled = scrolled || currentPage.scrolled
+    await saveAppState(state)
   }
+}
+
+async function addInteraction(interaction: InteractionData) {
+  const state = await getAppState()
+  if (!state.isActive || !state.currentSession || state.currentSession.pages.length === 0) return
+
+  const currentPage = state.currentSession.pages[state.currentSession.pages.length - 1]
+  currentPage.interactions.push(interaction)
+  currentPage.clicks = currentPage.interactions.filter((i) => i.tipo === "click").length
+  await saveAppState(state)
 }
 
 // --- Listeners ---
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  const action = message.action || message.type;
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  const action = message.action || message.type
 
   if (action === "startSession") {
-    startSession().then(() => sendResponse({ ok: true }));
-    return true;
+    startSession(message.processoId, message.processoNome).then(() => sendResponse({ ok: true }))
+    return true
   }
   if (action === "stopSession") {
-    stopSession().then(() => sendResponse({ ok: true }));
-    return true;
+    stopSession().then((apiSuccess) => sendResponse({ ok: true, apiSuccess }))
+    return true
   }
   if (action === "PAGE_STATS") {
-    updateStats(message.url, message.clicks, message.scrolled).then(() => sendResponse({ ok: true }));
-    return true;
+    updateStats(message.url, message.clicks, message.scrolled).then(() => sendResponse({ ok: true }))
+    return true
+  }
+  if (action === "CLICK_INTERACTION") {
+    addInteraction(message.interaction as InteractionData).then(() => sendResponse({ ok: true }))
+    return true
   }
   if (action === "GET_STATE") {
-    getAppState().then(sendResponse);
-    return true;
+    getAppState().then(sendResponse)
+    return true
   }
-});
+  if (action === "GET_PROCESSOS") {
+    fetchProcessos().then((processos) => sendResponse({ processos }))
+    return true
+  }
+})
 
 chrome.webNavigation.onCompleted.addListener(async (details) => {
-  if (details.frameId !== 0) return;
+  if (details.frameId !== 0) return
   try {
-    const tab = await chrome.tabs.get(details.tabId);
+    const tab = await chrome.tabs.get(details.tabId)
     if (tab && tab.url) {
-      await addPage(tab.url, tab.title);
+      await addPage(tab.url, tab.title)
     }
   } catch {
     // Tab might be gone
   }
-});
+})
 
-// Initialize on install or startup
 chrome.runtime.onInstalled.addListener(async () => {
-  const state = await getAppState();
-  await saveAppState(state); // Sync manifest badges
-});
+  const state = await getAppState()
+  await saveAppState(state)
+})
 
 chrome.runtime.onStartup.addListener(async () => {
-  const state = await getAppState();
-  await saveAppState(state); // Sync manifest badges
-});
+  const state = await getAppState()
+  await saveAppState(state)
+})

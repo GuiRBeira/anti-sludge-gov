@@ -401,6 +401,84 @@ INSERT INTO glossario (termo, grupo, definicao) VALUES
 ('Necessidade', 'Critérios de Impacto', 'A necessidade refere-se ao grau de importância atribuido ao objetivo final do processo, especialmente com relação ao seu impacto no cotidiano da pessoa usuária. Quanto maior a necessidade, maior a expectativa de que ele seja rápido, compreensível e eficiente.');
 
 -- ============================================
+-- TABELAS: SESSÕES DA EXTENSÃO DO NAVEGADOR
+-- ============================================
+
+-- Enum para tipo de interação capturada pela extensão
+CREATE TYPE tipo_interacao_enum AS ENUM ('click', 'scroll');
+
+-- Sessão de gravação da extensão (jornada real capturada pelo navegador)
+CREATE TABLE sessao_extensao (
+    id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT uuid_generate_v4() UNIQUE,
+    session_id_extensao VARCHAR(100) NOT NULL UNIQUE,
+    processo_id INT REFERENCES processo(id) ON DELETE SET NULL,
+    jornada_observada_id INT REFERENCES jornada_observada(id) ON DELETE SET NULL,
+    data_inicio TIMESTAMP NOT NULL,
+    data_fim TIMESTAMP,
+    total_tempo_segundos INT,
+    total_paginas INT DEFAULT 0,
+    total_cliques INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE sessao_extensao IS 'Sessões de gravação capturadas pela extensão do navegador AntiSludge';
+COMMENT ON COLUMN sessao_extensao.session_id_extensao IS 'ID único gerado pela extensão no momento da gravação';
+COMMENT ON COLUMN sessao_extensao.jornada_observada_id IS 'Vínculo opcional com uma jornada observada formal (pode ser associado depois)';
+
+CREATE INDEX idx_sessao_extensao_processo ON sessao_extensao(processo_id);
+CREATE INDEX idx_sessao_extensao_jornada ON sessao_extensao(jornada_observada_id);
+
+-- Páginas visitadas durante uma sessão da extensão
+CREATE TABLE pagina_extensao (
+    id SERIAL PRIMARY KEY,
+    sessao_extensao_id INT NOT NULL REFERENCES sessao_extensao(id) ON DELETE CASCADE,
+    url TEXT NOT NULL,
+    titulo VARCHAR(500),
+    tempo_inicio_unix BIGINT NOT NULL,
+    tempo_fim_unix BIGINT,
+    duracao_segundos INT,
+    contagem_cliques INT DEFAULT 0,
+    teve_scroll BOOLEAN DEFAULT FALSE,
+    ordem INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE pagina_extensao IS 'Páginas visitadas pelo usuário durante uma sessão de gravação da extensão';
+COMMENT ON COLUMN pagina_extensao.tempo_inicio_unix IS 'Timestamp Unix (segundos) do início da visita à página';
+COMMENT ON COLUMN pagina_extensao.tempo_fim_unix IS 'Timestamp Unix (segundos) do fim da visita à página';
+
+CREATE INDEX idx_pagina_extensao_sessao ON pagina_extensao(sessao_extensao_id);
+
+-- Interações individuais capturadas (cliques com posição do mouse e info do elemento)
+CREATE TABLE interacao_extensao (
+    id SERIAL PRIMARY KEY,
+    pagina_extensao_id INT NOT NULL REFERENCES pagina_extensao(id) ON DELETE CASCADE,
+    tipo tipo_interacao_enum NOT NULL DEFAULT 'click',
+    pos_x INT,
+    pos_y INT,
+    pos_x_relativa NUMERIC(5,2),
+    pos_y_relativa NUMERIC(5,2),
+    elemento_tag VARCHAR(50),
+    elemento_id VARCHAR(200),
+    elemento_classe VARCHAR(500),
+    elemento_texto VARCHAR(200),
+    timestamp_evento BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE interacao_extensao IS 'Interações individuais (cliques) capturadas pela extensão com posição do mouse e metadados do elemento';
+COMMENT ON COLUMN interacao_extensao.pos_x IS 'Posição X em pixels na viewport no momento do clique';
+COMMENT ON COLUMN interacao_extensao.pos_y IS 'Posição Y em pixels na viewport no momento do clique';
+COMMENT ON COLUMN interacao_extensao.pos_x_relativa IS 'Posição X como porcentagem da largura da viewport (0-100)';
+COMMENT ON COLUMN interacao_extensao.pos_y_relativa IS 'Posição Y como porcentagem da altura da viewport (0-100)';
+COMMENT ON COLUMN interacao_extensao.elemento_tag IS 'Tag HTML do elemento clicado (ex: button, a, input)';
+COMMENT ON COLUMN interacao_extensao.elemento_texto IS 'Texto visível do elemento clicado, truncado em 200 caracteres';
+COMMENT ON COLUMN interacao_extensao.timestamp_evento IS 'Timestamp Unix em milissegundos do evento';
+
+CREATE INDEX idx_interacao_pagina ON interacao_extensao(pagina_extensao_id);
+
+-- ============================================
 -- VIEWS ÚTEIS PARA RELATÓRIOS
 -- ============================================
 

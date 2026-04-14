@@ -16,6 +16,11 @@ from app.models.catalog_model import (
 	TipoComportamento,
 	TipoCriterio,
 )
+from app.models.extension_model import (
+	InteracaoExtensao,
+	PaginaExtensao,
+	SessaoExtensao,
+)
 from app.models.observation_model import JornadaObservada, Observador, TempoEtapa
 from app.models.process_model import Etapa, Processo
 
@@ -38,4 +43,7 @@ __all__ = [
 	"TempoEtapa",
 	"Etapa",
 	"Processo",
+	"InteracaoExtensao",
+	"PaginaExtensao",
+	"SessaoExtensao",
 ]
