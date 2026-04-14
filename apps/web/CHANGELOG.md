@@ -1,3 +1,9 @@
+## [1.13.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.13.0...web-1.13.1) (2026-04-14)
+
+### Bug Fixes
+
+* **extension:** request of user's journey adapted for espected response to api ([8ca6a27](https://github.com/GuiRBeira/anti-sludge-gov/commit/8ca6a273323aa7e70cd8854a943e6bd2c8403637))
+
 ## [1.13.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.12.0...web-1.13.0) (2026-04-14)
 
 ### Features
