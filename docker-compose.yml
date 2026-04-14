@@ -16,6 +16,65 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - anti-sludge-net
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    image: anti-sludge-api:latest
+    restart: unless-stopped
+    environment:
+      - DB_USER=admin
+      - DB_PASS=secret
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=antisludge
+      - DB_SSLMODE=disable
+      - DEBUG=True
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - anti-sludge-net
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=/api/v1
+    image: anti-sludge-web:latest
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - anti-sludge-net
+
+  nginx:
+    build:
+      context: ./infra/nginx
+      dockerfile: Dockerfile
+    image: anti-sludge-nginx:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - web
+      - api
+    networks:
+      - anti-sludge-net
+
+networks:
+  anti-sludge-net:
+    driver: bridge
 
 volumes:
   postgres_data:

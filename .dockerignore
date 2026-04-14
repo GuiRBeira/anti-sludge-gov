@@ -1,0 +1,26 @@
+node_modules
+.next
+out
+build
+dist
+.turbo
+.git
+.github
+.vscode
+.husky
+.ruff_cache
+apps/api/.venv
+apps/api/__pycache__
+apps/extension
+docs
+README.md
+CHANGELOG.md
+# Keep the essentials for pnpm monorepo build
+!apps/web
+apps/web/.next
+apps/web/node_modules
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!turbo.json
+!scripts

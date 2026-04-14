@@ -1,0 +1,15 @@
+.venv
+__pycache__
+.pytest_cache
+.ruff_cache
+.vscode
+.env
+.env.local
+*.pyc
+*.pyo
+*.pyd
+.git
+.gitignore
+# alembic.ini is needed for migrations
+# alembic.ini
+tests
