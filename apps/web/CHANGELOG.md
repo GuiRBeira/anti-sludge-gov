@@ -1,3 +1,9 @@
+## [1.13.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.12.0...web-1.13.0) (2026-04-14)
+
+### Features
+
+* implement SSL/TLS support with Certbot and Nginx HTTPS redirection ([38494a5](https://github.com/GuiRBeira/anti-sludge-gov/commit/38494a5666ab7242276cefa3e34ffa57baaf4bbc))
+
 ## [1.12.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.11.0...web-1.12.0) (2026-04-14)
 
 ### Features
