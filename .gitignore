@@ -54,3 +54,6 @@ share/
 pywrapcl/
 .gemini/
 .turbo/
+
+# Infrastructure and SSL
+infra/certbot/

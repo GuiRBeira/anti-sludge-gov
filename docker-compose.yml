@@ -66,9 +66,24 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./infra/certbot/conf:/etc/letsencrypt:ro
+      - ./infra/certbot/www:/var/www/certbot:ro
     depends_on:
       - web
       - api
+    networks:
+      - anti-sludge-net
+
+  certbot:
+    image: infinityofspace/certbot_dns_duckdns:latest
+    volumes:
+      - ./infra/certbot/conf:/etc/letsencrypt
+    environment:
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
+    # O comando abaixo será usado para renovação automática após a primeira emissão
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --dns-duckdns --dns-duckdns-token ${DUCKDNS_TOKEN}; sleep 12h & wait $${!}; done;'"
     networks:
       - anti-sludge-net
 
