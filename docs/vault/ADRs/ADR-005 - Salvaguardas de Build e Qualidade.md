@@ -1,7 +1,8 @@
 # ADR-005: Salvaguardas de Build e Qualidade
 
-## Status
-Aceito
+**Status**: 🔵 Aceito
+**Data**: 2026-04-13
+**Decisores**: @GuiRBeira, Antigravity
 
 ## Contexto
 Durante o desenvolvimento das funcionalidades do Dashboard no pacote `web`, ocorreram múltiplos erros de build (tipagem TypeScript e inconsistências de propriedades de componentes) que só foram detectados durante a tentativa de gerar o pacote de produção (`pnpm build`). 
