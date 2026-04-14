@@ -1,3 +1,7 @@
+# Node (gerado por hooks, não pertence à API Python)
+package-lock.json
+node_modules/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
