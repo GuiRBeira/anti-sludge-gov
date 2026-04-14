@@ -1,7 +1,7 @@
 {
   "name": "extension",
   "displayName": "AntiSludge",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "Rastreador de jornada em serviços digitais do governo",
   "author": "GuiRBeira",
   "scripts": {
