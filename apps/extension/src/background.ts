@@ -129,9 +129,22 @@ async function sendToApi(sessionData: Session): Promise<boolean> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     })
-    return response.ok
+
+    if (!response.ok) {
+      const rawText = await response.text().catch(() => "(sem corpo)")
+      let errorBody: unknown = rawText
+      try { errorBody = JSON.parse(rawText) } catch { /* não é JSON */ }
+      console.error("AntiSludge: Erro na API", {
+        status: response.status,
+        details: errorBody,
+        raw: rawText,
+      })
+      return false
+    }
+
+    return true
   } catch (err) {
-    console.error("AntiSludge: Falha ao enviar sessão para API", err)
+    console.error("AntiSludge: Falha de conexão com a API", err)
     return false
   }
 }

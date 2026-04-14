@@ -129,8 +129,17 @@ export default function IndexPopup() {
     return () => clearInterval(interval)
   }, [isActive, session])
 
-  const handleToggle = (nextState?: boolean) => {
-    const targetState = typeof nextState === "boolean" ? nextState : !isActive
+  const handleToggle = (event?: any) => {
+    // Suporte para booleano direto ou evento do componente GovBR
+    let targetState: boolean
+    if (typeof event === "boolean") {
+      targetState = event
+    } else if (event?.target && typeof event.target.checked === "boolean") {
+      targetState = event.target.checked
+    } else {
+      targetState = !isActive
+    }
+
     if (targetState === isActive) return
 
     setIsActive(targetState)
@@ -139,8 +148,8 @@ export default function IndexPopup() {
       const processo = processos.find((p) => p.id === selectedProcessoId)
       chrome.runtime.sendMessage({
         action: "startSession",
-        processoId: processo?.id,
-        processoNome: processo?.nome,
+        processoId: processo?.id || null,
+        processoNome: processo?.nome || "Sessão Avulsa",
       })
       setShowFinishedBanner(false)
       setApiSuccess(null)
@@ -177,7 +186,6 @@ export default function IndexPopup() {
               onChange={handleToggle}
               checked={isActive}
               label={isActive ? "Parar" : "Iniciar"}
-              disabled={!isActive && !canStart}
               className="tw:mb-0"
             />
           </header>
@@ -199,7 +207,11 @@ export default function IndexPopup() {
                   placeholder="Selecione um processo..."
                   options={processoOptions}
                   value={selectedProcessoId !== null ? String(selectedProcessoId) : null}
-                  onChange={(val) => setSelectedProcessoId(val ? Number(val) : null)}
+                  onChange={(val: any) => {
+                    // Trata se o valor vem direto ou dentro de um evento/objeto
+                    const actualValue = val?.target ? val.target.value : val
+                    setSelectedProcessoId(actualValue ? Number(actualValue) : null)
+                  }}
                 />
               )}
               {!canStart && processos.length > 0 && (
