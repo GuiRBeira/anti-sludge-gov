@@ -1,3 +1,9 @@
+## [1.11.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.10.0...api-1.11.0) (2026-04-14)
+
+### Features
+
+* implement containerization with Docker, Nginx reverse proxy, and multi-stage builds for API and web services ([18bb1ac](https://github.com/GuiRBeira/anti-sludge-gov/commit/18bb1ac956e2003cb0455211932da853c048a8b4))
+
 ## [1.10.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.9.2...api-1.10.0) (2026-04-14)
 
 ### Features
