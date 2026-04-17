@@ -5,12 +5,12 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { 
-  LayoutDashboard, 
-  FileText, 
-  BarChart2, 
-  History, 
-  Settings, 
+import {
+  LayoutDashboard,
+  FileText,
+  BarChart2,
+  History,
+  Settings,
   HelpCircle,
   ShieldAlert
 } from "lucide-react";
@@ -49,18 +49,18 @@ export function Sidebar() {
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <Link 
-              key={item.href} 
+            <Link
+              key={item.href}
               href={item.href}
               className={clsx(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors group relative",
-                isActive 
-                  ? "bg-blue-50 text-blue-700" 
+                isActive
+                  ? "bg-blue-50 text-blue-700"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
               {isActive && (
-                <motion.div 
+                <motion.div
                   layoutId="active-nav"
                   className="absolute left-0 w-1 h-6 bg-blue-600 rounded-r-full"
                 />
@@ -77,8 +77,8 @@ export function Sidebar() {
 
       <div className="p-4 border-t border-slate-100 space-y-1">
         {secondaryItems.map((item) => (
-          <Link 
-            key={item.href} 
+          <Link
+            key={item.href}
             href={item.href}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors"
           >
@@ -86,10 +86,10 @@ export function Sidebar() {
             {item.label}
           </Link>
         ))}
-        
+
         <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
           <p className="text-xs font-bold text-slate-900">Versao do Protótipo</p>
-          <p className="text-[10px] text-slate-500 mt-1">v1.5.1 - 2026-04-13</p>
+          <p className="text-[10px] text-slate-500 mt-1">v{process.env.APP_VERSION}</p>
         </div>
       </div>
     </aside>

@@ -43,7 +43,7 @@ export function Header() {
           <div className="flex items-center gap-3">
             {/* Badge de Versão - Toque Profissional de TCC */}
             <div className="hidden sm:flex items-center px-3 py-1 bg-slate-100 rounded-full border border-slate-200 text-slate-500 text-[10px] font-bold tracking-widest uppercase mr-2">
-              v1.5.1
+              {process.env.APP_VERSION}
             </div>
 
             <div className="flex gap-2">
