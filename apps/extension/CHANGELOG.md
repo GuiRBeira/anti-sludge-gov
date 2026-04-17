@@ -1,3 +1,9 @@
+## [1.13.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.12.0...extension-1.13.0) (2026-04-17)
+
+### Features
+
+* inject dynamic app version from package.json into UI components via environment variables ([416fd5e](https://github.com/GuiRBeira/anti-sludge-gov/commit/416fd5e544c926d9c1a50cc133dd213036dfa927))
+
 ## [1.12.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.11.1...extension-1.12.0) (2026-04-17)
 
 ### Features
