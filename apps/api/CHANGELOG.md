@@ -1,3 +1,9 @@
+## [1.16.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.15.0...api-1.16.0) (2026-04-17)
+
+### Features
+
+* implement domain validation for behavior-criteria compatibility and add associated repository methods and endpoints ([aecf8bd](https://github.com/GuiRBeira/anti-sludge-gov/commit/aecf8bd7a7eec87a0f5a4d256bd779f2d09ed845))
+
 ## [1.15.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.14.0...api-1.15.0) (2026-04-17)
 
 ### Features
