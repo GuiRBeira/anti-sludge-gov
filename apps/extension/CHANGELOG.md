@@ -1,3 +1,9 @@
+## [1.12.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.11.1...extension-1.12.0) (2026-04-17)
+
+### Features
+
+* add CI workflow for building extension ZIP and OCI images, and update docker-compose and nginx configurations ([62ded1b](https://github.com/GuiRBeira/anti-sludge-gov/commit/62ded1b21e18b45922305d9013489caa31b79f8e))
+
 ## [1.11.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.11.0...extension-1.11.1) (2026-04-14)
 
 ### Bug Fixes
