@@ -1,9 +1,9 @@
 # app/features/dashboard/router.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc
 from app.core.database import get_db
-from app.models.process_model import Processo
+from app.models.process_model import Processo, Etapa
 from app.models.observation_model import JornadaObservada
 from app.models.analysis_model import ResultadoAnalise
 from app.features.dashboard import schemas
@@ -64,4 +64,46 @@ async def get_dashboard_summary(db: AsyncSession = Depends(get_db)):
 		processos_criticos=stats.criticos or 0,
 		processos_por_status=status_counts,
 		recent_activity=recent_activity,
+	)
+
+
+@router.get("/process/{processo_id}", response_model=schemas.ProcessChart)
+async def get_process_chart(processo_id: int, db: AsyncSession = Depends(get_db)):
+	"""
+	Retorna a série temporal (por etapa) do índice de Sludge para um processo.
+	Ideal para alimentar gráficos de linha/barra.
+	"""
+	# Verificar se processo existe
+	processo = await db.get(Processo, processo_id)
+	if not processo:
+		raise HTTPException(status_code=404, detail="Processo não encontrado")
+
+	# Buscar etapas e seus respectivos resultados calculados
+	# Usamos outer join pois uma etapa pode ainda não ter sido calculada
+	query = (
+		select(Etapa, ResultadoAnalise)
+		.outerjoin(ResultadoAnalise, ResultadoAnalise.etapa_id == Etapa.id)
+		.where(Etapa.processo_id == processo_id)
+		.order_by(Etapa.ordem)
+	)
+
+	result = await db.execute(query)
+	rows = result.all()
+
+	steps = []
+	for et, res in rows:
+		steps.append(
+			schemas.StepScore(
+				etapa_id=et.id,
+				nome=et.nome,
+				ordem=et.ordem,
+				indice_sludge=float(res.indice_sludge)
+				if res and res.indice_sludge
+				else None,
+				prioridade=res.prioridade if res else None,
+			)
+		)
+
+	return schemas.ProcessChart(
+		processo_id=processo.id, nome_processo=processo.nome, steps=steps
 	)

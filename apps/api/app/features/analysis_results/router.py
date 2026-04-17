@@ -3,15 +3,18 @@
 from app.core.crud import CRUDBase
 from app.core.database import get_db
 from app.features.analysis_results import schemas
+from app.features.catalog import schemas as catalog_schemas
 from app.models.analysis_model import (
 	CriterioBarreira,
 	CriterioImpacto,
 	ResultadoAnalise,
 )
 from app.repositories.analysis_repository import AnalysisRepository
+from app.repositories.catalog_repository import CatalogRepository
 from app.repositories.process_repository import ProcessRepository
 from app.use_cases.analysis_use_cases import CalculateProcessSludgeUseCase
-from fastapi import APIRouter, Depends
+from app.use_cases.catalog_use_cases import CatalogUseCases
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
@@ -29,6 +32,28 @@ crud_resultado = CRUDBase(ResultadoAnalise)
 async def create_criterio_barreira(
 	obj_in: schemas.CriterioBarreiraCreate, db: AsyncSession = Depends(get_db)
 ):
+	"""
+	Cria um critério de barreira para uma etapa, validando se o critério é compatível
+	com o tipo de comportamento da etapa segundo a Metodologia F5.
+	"""
+	if obj_in.criterio_template_id:
+		process_repo = ProcessRepository(db)
+		catalog_repo = CatalogRepository(db)
+
+		etapa = await process_repo.get_by_id(obj_in.etapa_id)
+		if not etapa:
+			raise HTTPException(status_code=404, detail="Etapa não encontrada")
+
+		if etapa.tipo_comportamento_id:
+			is_compatible = await catalog_repo.validate_compatibility(
+				etapa.tipo_comportamento_id, obj_in.criterio_template_id
+			)
+			if not is_compatible:
+				raise HTTPException(
+					status_code=400,
+					detail="Este critério não é aplicável para o tipo de comportamento desta etapa.",
+				)
+
 	return await crud_barreira.create(db, obj_in=obj_in.model_dump())
 
 
@@ -37,6 +62,21 @@ async def list_criterios_barreira(
 	skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
 ):
 	return await crud_barreira.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get(
+	"/allowed-criteria/{etapa_id}",
+	response_model=list[catalog_schemas.CriterioTemplateOut],
+)
+async def get_allowed_criteria(etapa_id: int, db: AsyncSession = Depends(get_db)):
+	"""
+	Sugere quais critérios de barreira podem ser aplicados a uma etapa específica.
+	"""
+	catalog_repo = CatalogRepository(db)
+	process_repo = ProcessRepository(db)
+	use_case = CatalogUseCases(catalog_repo, process_repo)
+
+	return await use_case.get_allowed_criteria_for_step(etapa_id)
 
 
 # =========================

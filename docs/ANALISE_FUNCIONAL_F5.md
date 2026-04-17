@@ -48,29 +48,33 @@ graph TB
 
 ## 🔍 Lacunas Identificadas (Gaps)
 
-Após análise do Excel de referência, as seguintes funcionalidades críticas precisam ser implementadas no backend:
+Após análise do Excel de referência, as seguintes funcionalidades críticas foram mapeadas e estão em desenvolvimento:
 
-### 1. O Motor de Cálculo (The Sludge Engine)
-Atualmente, as tabelas de banco de dados existem (`avaliacao_barreira`, `avaliacao_impacto`), mas o backend não "sabe" como processar esses dados segundo a Metodologia F5.
-- **Necessário:** Implementar `use_cases` que realizem as agregações e cálculos de média ponderada/simples para gerar o Índice de Sludge final por etapa e por processo.
+### 1. ✅ O Motor de Cálculo (The Sludge Engine) - CONCLUÍDO
+Implementado em `app/domain/sludge_logic.py` e `app/use_cases/analysis_use_cases.py`.
+- **Status:** Disponível via endpoint `POST /analysis_results/calculate/{processo_id}`.
 
-### 2. Regras de Negócio de Domínio (Business Rules)
-O Excel vincula tipos específicos de comportamento (ex: "Preencher formulário") a critérios específicos (ex: "Carga Cognitiva").
-- **Necessário:** Validar na API se a avaliação que está sendo submetida faz sentido para o tipo de comportamento daquela etapa, evitando dados inconsistentes (Aba `#CritériosPorTipo`).
+### 2. ✅ Visualização de Sludge por Etapa - CONCLUÍDO
+Dados estruturados para gráficos de linha/barra (coordenadas Etapa x Índice).
+- **Status:** Disponível via endpoint `GET /dashboard/process/{processo_id}`.
 
-### 3. Diferencial Planejado vs. Real
-A metodologia foca em identificar onde o usuário "se perde" ou faz caminhos extras.
-- **Necessário:** Lógica para comparar a `jornada_planejada` com a `jornada_observada`, gerando métricas de eficiência (cliques extras, tempo excedente).
+### 3. ✅ Regras de Negócio de Domínio (Business Rules) - CONCLUÍDO
+O Excel vincula tipos específicos de comportamento a critérios específicos.
+- **Status:** Backend agora valida a compatibilidade comportamento x critério no endpoint de criação e oferece sugestões filtradas via `GET /analysis_results/allowed-criteria/{etapa_id}`.
 
-### 4. Inteligência de Dados da Extensão
-O backend já recebe logs da extensão Chrome, mas eles precisam de contexto.
-- **Necessário:** Ferramenta para associar "Chunks" (pedaços) de uma sessão da extensão a uma "Etapa" do backend, permitindo que o sistema calcule o tempo real de cada etapa automaticamente.
+### 4. Diferencial Planejado vs. Real
+Identificar onde o usuário "se perde" ou faz caminhos extras.
+- **Pendente:** Lógica para comparar a `jornada_planejada` com a `jornada_observada`.
+
+### 5. Inteligência de Dados da Extensão
+Vincular logs da extensão Chrome a etapas do backend.
+- **Pendente:** Ferramenta para associar "Chunks" de sessões a etapas do processo.
 
 ## 🚀 Próximos Passos (Workflow de Implementação)
 
-1.  **Criação do `SludgeCalculatorService`**: Implementar a lógica de cálculo puro em `app/domain` e orquestrá-la em `app/use_cases`.
-2.  **Dashboard Endpoints**: Refatorar `app/features/dashboard` para consumir o `SludgeCalculatorService` e retornar as matrizes de priorização prontas para o frontend.
-3.  **Mapeamento de Critérios**: Criar a lógica de validação que associa Tipos de Comportamento aos seus Critérios e Escalas correspondentes.
+1.  **Integração Frontend**: Consumir o endpoint `/dashboard/process/{id}` para renderizar o gráfico de coordenadas.
+2.  **Mapeamento de Critérios**: Desenvolver a validação de tipos de comportamento vs critérios permitidos.
+3.  **Comparativo de Eficiência**: Implementar cálculo de métricas entre jornada real e planejada.
 
 ---
 *Documento gerado automaticamente pela análise do mapeamento metodológico F5.*
