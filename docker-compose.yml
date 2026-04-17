@@ -33,8 +33,10 @@ services:
       - DB_NAME=antisludge
       - DB_SSLMODE=disable
       - DEBUG=True
-    ports:
-      - "8000:8000"
+    # Em produção: remova a exposição direta de porta da API.
+    # Acesso externo deve passar exclusivamente pelo nginx.
+    # ports:
+    #   - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -51,8 +53,10 @@ services:
     restart: unless-stopped
     environment:
       - NEXT_PUBLIC_API_URL=/api/v1
-    ports:
-      - "3000:3000"
+    # Em produção: remova a exposição direta de porta do Web.
+    # Acesso externo deve passar exclusivamente pelo nginx.
+    # ports:
+    #   - "3000:3000"
     depends_on:
       - api
     networks:
@@ -65,8 +69,8 @@ services:
     image: anti-sludge-nginx:latest
     restart: unless-stopped
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "8080:80"   # HTTP local (use sysctl para 80:80 em produção com portas livres)
+      - "8443:443"  # HTTPS local
     volumes:
       - ./infra/certbot/conf:/etc/letsencrypt:ro
       - ./infra/certbot/www:/var/www/certbot:ro
@@ -82,10 +86,23 @@ services:
       - ./infra/certbot/conf:/etc/letsencrypt
     environment:
       - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
-    # O comando abaixo será usado para renovação automática após a primeira emissão
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --dns-duckdns --dns-duckdns-token ${DUCKDNS_TOKEN}; sleep 12h & wait $${!}; done;'"
     networks:
       - anti-sludge-net
+
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - nginx
+    networks:
+      - anti-sludge-net
+    profiles:
+      - tunnel  # Não sobe por padrão — use: podman compose --profile tunnel up -d
 
 networks:
   anti-sludge-net:
