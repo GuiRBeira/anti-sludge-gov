@@ -105,3 +105,10 @@ class SessaoExtensaoOut(BaseModel):
 class SessaoExtensaoDetailOut(SessaoExtensaoOut):
 	paginas: list[PaginaExtensaoSummaryOut] = []
 	model_config = ConfigDict(from_attributes=True)
+
+
+class VinculoEtapaExtensao(BaseModel):
+	jornada_id: int
+	etapa_id: int
+	start_ts: int
+	end_ts: int

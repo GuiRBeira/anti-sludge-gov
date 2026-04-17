@@ -125,3 +125,32 @@ async def vincular_sessao_jornada(
 	await db.commit()
 	await db.refresh(sessao)
 	return sessao
+
+
+@router.post("/vincular-etapa")
+async def link_interactions_to_step(
+	obj_in: schemas.VinculoEtapaExtensao, db: AsyncSession = Depends(get_db)
+):
+	"""
+	Associa um intervalo de tempo da extensão a uma etapa específica da jornada.
+	Calcula automaticamente a duração real e os cliques.
+	"""
+	from app.repositories.extension_repository import ExtensionRepository
+	from app.repositories.observation_repository import ObservationRepository
+	from app.use_cases.extension_use_cases import LinkExtensionToStepUseCase
+
+	ext_repo = ExtensionRepository(db)
+	obs_repo = ObservationRepository(db)
+	use_case = LinkExtensionToStepUseCase(ext_repo, obs_repo)
+
+	result = await use_case.execute(
+		jornada_id=obj_in.jornada_id,
+		etapa_id=obj_in.etapa_id,
+		start_ts=obj_in.start_ts,
+		end_ts=obj_in.end_ts,
+	)
+
+	if "error" in result:
+		raise HTTPException(status_code=400, detail=result["error"])
+
+	return result
