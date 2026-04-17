@@ -1,3 +1,9 @@
+## [1.14.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.13.0...extension-1.14.0) (2026-04-17)
+
+### Features
+
+* implement Sludge calculation engine and add endpoint to process analysis metrics ([b43ebc3](https://github.com/GuiRBeira/anti-sludge-gov/commit/b43ebc3dee39274c55a3d8b82622802737bcb3b5))
+
 ## [1.13.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.12.0...extension-1.13.0) (2026-04-17)
 
 ### Features
