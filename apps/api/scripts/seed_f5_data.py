@@ -12,18 +12,22 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.models.process_model import Processo, Etapa, CriterioBarreira, CriterioImpacto
-from app.models.observation_model import (
-	JornadaObservada,
+from app.models.process_model import Processo, Etapa
+from app.models.analysis_model import (
+	CriterioBarreira,
+	CriterioImpacto,
 	AvaliacaoBarreira,
 	AvaliacaoImpacto,
+)
+from app.models.observation_model import (
+	JornadaObservada,
 	TempoEtapa,
 )
 from app.models.extension_model import SessaoExtensao, PaginaExtensao, InteracaoExtensao
 from app.models.catalog_model import Categoria, TipoComportamento, CriterioTemplate
 
 # Configurações do Banco (Local)
-DB_URL = "postgresql+asyncpg://admin:secret@localhost:5432/antisludge"
+DB_URL = "postgresql+psycopg://admin:secret@localhost:5432/antisludge"
 
 
 async def reset_data(session: AsyncSession):
