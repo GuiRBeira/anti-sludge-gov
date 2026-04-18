@@ -1,3 +1,10 @@
+## [1.16.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.16.0...extension-1.16.1) (2026-04-18)
+
+### Bug Fixes
+
+* remove fallback URL for PLASMO_PUBLIC_API_URL in production build workflow ([4d98ae4](https://github.com/GuiRBeira/anti-sludge-gov/commit/4d98ae4652ad18ad801d901fb7651bab220f6c06))
+* update PLASMO_PUBLIC_API_URL to use environment variable with fallback default ([e0217cc](https://github.com/GuiRBeira/anti-sludge-gov/commit/e0217cc602f03c798fe1813dea03069498ee8409))
+
 ## [1.16.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.15.0...extension-1.16.0) (2026-04-18)
 
 ### Features
