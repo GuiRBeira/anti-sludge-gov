@@ -1,3 +1,10 @@
+## [1.17.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.16.0...api-1.17.0) (2026-04-18)
+
+### Features
+
+* implement extension-to-step linking, differential analysis engine, and sludge visualization component ([0e5d383](https://github.com/GuiRBeira/anti-sludge-gov/commit/0e5d383f9b91af27387e2257ef60d6cd3dc52636))
+* implement journey differential analysis modal and observation service infrastructure ([bf44bee](https://github.com/GuiRBeira/anti-sludge-gov/commit/bf44beeb0dc852cacb04c71d683bd663642d20ae))
+
 ## [1.16.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.15.0...api-1.16.0) (2026-04-17)
 
 ### Features
