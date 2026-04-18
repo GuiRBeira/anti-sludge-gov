@@ -1,0 +1,25 @@
+# docker-compose.db.yml
+services:
+  db:
+    image: postgres:16
+    container_name: anti-sludge-db-dev
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: antisludge
+    ports:
+      - "5432:5432"
+    volumes:
+      - anti_sludge_postgres_dev:/var/lib/postgresql/data
+      # Carrega os scripts de seed iniciais se existirem
+      - ./apps/api/database:/docker-entrypoint-initdb.d:ro
+    networks:
+      - dev-net
+
+networks:
+  dev-net:
+    driver: bridge
+
+volumes:
+  anti_sludge_postgres_dev:
