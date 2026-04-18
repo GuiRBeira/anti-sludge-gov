@@ -11,7 +11,8 @@ import { observationService, JornadaObservada } from "@/services/observation-ser
 import { SludgeChart } from "@/components/analysis/SludgeChart";
 import { AddCriterionModal } from "@/components/analysis/AddCriterionModal";
 import { JourneyDifferentialModal } from "@/components/analysis/JourneyDifferentialModal";
-import { ArrowLeft, Clock, Layers, Users, Building, Globe, Calculator, TrendingUp, History, PlayCircle } from "lucide-react";
+import { ExtensionLinkerModal } from "@/components/analysis/ExtensionLinkerModal";
+import { ArrowLeft, Clock, Layers, Users, Building, Globe, Calculator, TrendingUp, History, PlayCircle, Link2 } from "lucide-react";
 
 export default function ProcessDetail() {
   const { id } = useParams();
@@ -29,6 +30,8 @@ export default function ProcessDetail() {
 
   const [diffModalOpen, setDiffModalOpen] = useState(false);
   const [selectedJornada, setSelectedJornada] = useState<JornadaObservada | null>(null);
+
+  const [linkerOpen, setLinkerOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -73,6 +76,17 @@ export default function ProcessDetail() {
   const openDifferential = (jornada: JornadaObservada) => {
     setSelectedJornada(jornada);
     setDiffModalOpen(true);
+  };
+
+  const openLinker = (etapa: {id: number, comportamento: string}) => {
+    if (journeys.length === 0) {
+      alert("É necessário carregar ao menos uma jornada real para vincular logs.");
+      return;
+    }
+    // Para simplificar, vinculamos à jornada mais recente se não houver uma selecionada
+    setSelectedJornada(journeys[0]);
+    setSelectedEtapa({ id: etapa.id, nome: etapa.comportamento });
+    setLinkerOpen(true);
   };
 
   if (loading) return <div className="flex items-center justify-center h-64"><p className="text-slate-500 animate-pulse">Carregando jornada...</p></div>;
@@ -178,6 +192,12 @@ export default function ProcessDetail() {
                            {score?.indice_sludge !== null && (
                              <span className="text-[10px] font-black text-slate-400">INDEX: {score?.indice_sludge}</span>
                            )}
+                           <button
+                             onClick={() => openLinker(etapa)}
+                             className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:underline flex items-center gap-1"
+                           >
+                             <Link2 size={10} /> Vincular Extensão
+                           </button>
                          </div>
                       </div>
                     </div>
@@ -238,6 +258,18 @@ export default function ProcessDetail() {
           onClose={() => setDiffModalOpen(false)}
           jornadaId={selectedJornada.id}
           jornadaProtocolo={selectedJornada.protocolo}
+        />
+      )}
+
+      {selectedEtapa && selectedJornada && (
+        <ExtensionLinkerModal
+          isOpen={linkerOpen}
+          onClose={() => setLinkerOpen(false)}
+          jornadaId={selectedJornada.id}
+          etapaId={selectedEtapa.id}
+          etapaNome={selectedEtapa.nome}
+          processoId={Number(id)}
+          onSuccess={loadData}
         />
       )}
     </div>
