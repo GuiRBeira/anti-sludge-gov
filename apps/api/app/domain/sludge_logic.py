@@ -47,3 +47,21 @@ class SludgeCalculator:
 	def is_sludge(sludge_index: float) -> bool:
 		"""Identifica se o índice é classificado tecnicamente como Sludge (> 9)"""
 		return sludge_index > 9.0
+
+	@staticmethod
+	def calculate_efficiency_index(
+		planned_seconds: float, realized_seconds: float
+	) -> float:
+		"""
+		Calcula o Índice de Eficiência de Sludge.
+		Fórmula: Tempo Realizado / Tempo Planejado.
+		Valores > 1 indicam atraso (fricção).
+		"""
+		if not planned_seconds or planned_seconds == 0:
+			return 1.0
+		return round(realized_seconds / planned_seconds, 2)
+
+	@staticmethod
+	def get_time_deviation(planned_seconds: float, realized_seconds: float) -> float:
+		"""Calcula o desvio absoluto em segundos."""
+		return realized_seconds - (planned_seconds or 0)

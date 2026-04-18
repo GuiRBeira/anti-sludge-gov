@@ -62,9 +62,9 @@ Dados estruturados para gráficos de linha/barra (coordenadas Etapa x Índice).
 O Excel vincula tipos específicos de comportamento a critérios específicos.
 - **Status:** Backend agora valida a compatibilidade comportamento x critério no endpoint de criação e oferece sugestões filtradas via `GET /analysis_results/allowed-criteria/{etapa_id}`.
 
-### 4. Diferencial Planejado vs. Real
-Identificar onde o usuário "se perde" ou faz caminhos extras.
-- **Pendente:** Lógica para comparar a `jornada_planejada` com a `jornada_observada`.
+### 4. ✅ Diferencial Planejado vs. Real - CONCLUÍDO
+Identificar onde o usuário "se perde" ou faz caminhos extras comparando com o ideal planejado.
+- **Status:** Implementado via endpoint `GET /observations/jornadas/{id}/differential`. O motor calcula desvios de tempo por etapa, identifica etapas omitidas e gera um Índice de Eficiência Global da jornada.
 
 ### 5. Inteligência de Dados da Extensão
 Vincular logs da extensão Chrome a etapas do backend.
