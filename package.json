@@ -67,5 +67,8 @@
       "@types/react": "^19",
       "@types/react-dom": "^19"
     }
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0"
   }
 }
