@@ -11,7 +11,8 @@ import { observationService, JornadaObservada } from "@/services/observation-ser
 import { SludgeChart } from "@/components/analysis/SludgeChart";
 import { AddCriterionModal } from "@/components/analysis/AddCriterionModal";
 import { JourneyDifferentialModal } from "@/components/analysis/JourneyDifferentialModal";
-import { ArrowLeft, Clock, Layers, Users, Building, Globe, Calculator, TrendingUp, History, PlayCircle } from "lucide-react";
+import { ExtensionLinkerModal } from "@/components/analysis/ExtensionLinkerModal";
+import { ArrowLeft, Clock, Layers, Users, Building, Globe, Calculator, TrendingUp, History, PlayCircle, Link2 } from "lucide-react";
 
 export default function ProcessDetail() {
   const { id } = useParams();
@@ -29,6 +30,8 @@ export default function ProcessDetail() {
 
   const [diffModalOpen, setDiffModalOpen] = useState(false);
   const [selectedJornada, setSelectedJornada] = useState<JornadaObservada | null>(null);
+
+  const [linkerOpen, setLinkerOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -75,6 +78,17 @@ export default function ProcessDetail() {
     setDiffModalOpen(true);
   };
 
+  const openLinker = (etapa: {id: number, comportamento: string}) => {
+    if (journeys.length === 0) {
+      alert("É necessário carregar ao menos uma jornada real para vincular logs.");
+      return;
+    }
+    // Para simplificar, vinculamos à jornada mais recente se não houver uma selecionada
+    setSelectedJornada(journeys[0]);
+    setSelectedEtapa({ id: etapa.id, nome: etapa.comportamento });
+    setLinkerOpen(true);
+  };
+
   if (loading) return <div className="flex items-center justify-center h-64"><p className="text-slate-500 animate-pulse">Carregando jornada...</p></div>;
   if (error || !data) return <div className="bg-red-50 p-6 rounded-xl text-red-600 font-bold">{error || "Processo não encontrado."}</div>;
 
@@ -88,36 +102,39 @@ export default function ProcessDetail() {
         Voltar para listagem
       </button>
 
-      <section className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+      <section className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
         <div className="space-y-2">
-          <div className="flex items-center gap-3">
-             <h2 className="text-4xl font-black text-slate-900 tracking-tight">{data.nome}</h2>
-             <GovTag
-               type="status"
-               color={data.status === "Crítico" ? "danger" : data.status === "Em Andamento" ? "warning" : "success"}
-               value={data.status}
-             />
+          <div className="flex flex-col md:flex-row md:items-center gap-3">
+             <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">{data.nome}</h2>
+             <div className="w-fit">
+               <GovTag
+                 type="status"
+                 color={data.status === "Crítico" ? "danger" : data.status === "Em Andamento" ? "warning" : "success"}
+                 value={data.status}
+               />
+             </div>
           </div>
-          <p className="text-slate-500 text-lg max-w-3xl">{data.descricao || "Sem descrição disponível."}</p>
+          <p className="text-slate-500 text-base md:text-lg max-w-3xl leading-relaxed">{data.descricao || "Sem descrição disponível."}</p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
            <GovButton
              type="secondary"
              onClick={handleCalculate}
              disabled={calculating}
+             className="flex-1 md:flex-none"
            >
-             <div className="flex items-center gap-2">
+             <div className="flex items-center justify-center gap-2">
                <Calculator size={16} className={calculating ? "animate-spin" : ""} />
                {calculating ? "Calculando..." : "Recalcular Sludge"}
              </div>
            </GovButton>
-           <GovButton type="primary">Nova Jornada</GovButton>
+           <GovButton type="primary" className="flex-1 md:flex-none">Nova Jornada</GovButton>
         </div>
       </section>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           { label: "Esfera", value: data.esfera_governo, icon: Building },
           { label: "Abrangência", value: data.abrangencia, icon: Globe },
@@ -125,10 +142,10 @@ export default function ProcessDetail() {
           { label: "Jornadas", value: journeys.length.toString(), icon: History },
         ].map((item, i) => (
           <div key={i} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-            <item.icon size={20} className="text-slate-400" />
-            <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.label}</p>
-              <p className="text-sm font-black text-slate-900">{item.value || "N/A"}</p>
+            <item.icon size={20} className="text-slate-400 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">{item.label}</p>
+              <p className="text-xs md:text-sm font-black text-slate-900 truncate">{item.value || "N/A"}</p>
             </div>
           </div>
         ))}
@@ -138,9 +155,13 @@ export default function ProcessDetail() {
         <div className="lg:col-span-2 space-y-8">
           {/* Seção de Análise e Gráfico */}
           <GovCard title="Análise Metodológica F5" icon="mdi:chart-timeline-variant">
-            <div className="p-8 space-y-8">
+            <div className="p-4 md:p-8 space-y-8 overflow-hidden">
               {chartData.some(s => s.indice_sludge !== null) ? (
-                <SludgeChart data={chartData} />
+                <div className="w-full overflow-x-auto">
+                  <div className="min-w-[500px] md:min-w-full">
+                    <SludgeChart data={chartData} />
+                  </div>
+                </div>
               ) : (
                 <div className="h-[200px] flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/30 gap-4">
                     <TrendingUp size={40} className="text-slate-200" />
@@ -178,6 +199,12 @@ export default function ProcessDetail() {
                            {score?.indice_sludge !== null && (
                              <span className="text-[10px] font-black text-slate-400">INDEX: {score?.indice_sludge}</span>
                            )}
+                           <button
+                             onClick={() => openLinker(etapa)}
+                             className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:underline flex items-center gap-1"
+                           >
+                             <Link2 size={10} /> Vincular Extensão
+                           </button>
                          </div>
                       </div>
                     </div>
@@ -238,6 +265,18 @@ export default function ProcessDetail() {
           onClose={() => setDiffModalOpen(false)}
           jornadaId={selectedJornada.id}
           jornadaProtocolo={selectedJornada.protocolo}
+        />
+      )}
+
+      {selectedEtapa && selectedJornada && (
+        <ExtensionLinkerModal
+          isOpen={linkerOpen}
+          onClose={() => setLinkerOpen(false)}
+          jornadaId={selectedJornada.id}
+          etapaId={selectedEtapa.id}
+          etapaNome={selectedEtapa.nome}
+          processoId={Number(id)}
+          onSuccess={loadData}
         />
       )}
     </div>

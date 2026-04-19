@@ -1,18 +1,27 @@
-"use client";
+import { Menu } from "lucide-react";
+import NextImage from "next/image";
+import { GovButton } from "@/components/gov/GovButton";
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
 
-import React from "react";
-import Image from "next/image";
-import { GovButton } from "@/components/gov";
-
-const NextImage = Image as unknown as React.ElementType;
-
-export function Header() {
+export function Header({ onMenuClick }: HeaderProps) {
   return (
     <header className="br-header mb-0 border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm py-1 transition-all duration-300">
-      <div className="container-lg flex flex-col pl-6 pr-8 py-4">
+      <div className="container-lg flex flex-col pl-4 md:pl-6 pr-4 md:pr-8 py-4">
         {/* Linha 1: Branding e Ações */}
         <div className="w-full flex items-center justify-between">
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3 md:gap-5">
+            {/* Burger Menu Button (Mobile) */}
+            {onMenuClick && (
+              <button
+                onClick={onMenuClick}
+                className="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+                aria-label="Menu"
+              >
+                <Menu size={20} />
+              </button>
+            )}
             {/* Logo Oficial gov.br */}
             <a
               href="https://www.gov.br"
@@ -32,7 +41,7 @@ export function Header() {
             <div className="h-8 w-px bg-slate-200" />
 
             {/* Nome do Sistema (h1 para SEO/Acessibilidade) */}
-            <h1 className="text-2xl font-black text-gov-blue-light tracking-tight m-0 p-0 group cursor-default">
+            <h1 className="text-lg md:text-2xl font-black text-gov-blue-light tracking-tight m-0 p-0 group cursor-default">
               Anti-Sludge{" "}
               <span className="text-blue-600 transition-colors duration-300 group-hover:text-blue-500">
                 Gov
@@ -66,9 +75,9 @@ export function Header() {
         </div>
 
         {/* Linha 2: Subtítulo/Status de Auditoria */}
-        <div className="flex items-center gap-3 mt-4 pb-1">
-          <div className="flex items-center justify-center w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <div className="text-sm font-bold text-slate-500 tracking-[0.2em] uppercase leading-none">
+        <div className="flex items-center gap-2 md:gap-3 mt-4 pb-1 overflow-x-hidden">
+          <div className="shrink-0 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="text-[10px] md:text-sm font-bold text-slate-500 tracking-widest md:tracking-[0.2em] uppercase leading-none truncate">
             Auditoria de Carga Administrativa
           </div>
         </div>

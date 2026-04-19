@@ -85,7 +85,7 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
     <GovModal isOpen={isOpen} onClose={onClose} title={`Critério Metodológico: ${etapaNome}`}>
       <div className="space-y-6">
         <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 flex gap-3">
-          <Info className="text-blue-500 flex-shrink-0" size={20} />
+          <Info className="text-blue-500 shrink-0" size={20} />
           <p className="text-xs text-blue-700 font-medium leading-relaxed">
             Selecione um dos critérios abaixo. A lista foi filtrada automaticamente
             baseada no <b>tipo de comportamento</b> desta etapa (Metodologia F5).
