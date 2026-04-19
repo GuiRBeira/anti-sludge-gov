@@ -6,7 +6,8 @@ from app.models.extension_model import (
 	PaginaExtensao,
 	SessaoExtensao,
 )
-from fastapi import APIRouter, Depends, HTTPException, Query
+from app.core.auth import get_current_user, check_extension_key
+from fastapi import APIRouter, Depends, HTTPException, Query, Header
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -25,8 +26,10 @@ router = APIRouter()
 async def create_sessao_extensao(
 	obj_in: schemas.SessaoExtensaoCreate,
 	db: AsyncSession = Depends(get_db),
+	x_api_key: str = Header(...),
 ):
 	"""Recebe e persiste uma sessão completa da extensão, incluindo páginas e interações."""
+	check_extension_key(x_api_key)
 	sessao = SessaoExtensao(
 		session_id_extensao=obj_in.session_id_extensao,
 		processo_id=obj_in.processo_id,
@@ -81,6 +84,7 @@ async def list_sessoes_extensao(
 	limit: int = 100,
 	processo_id: int | None = Query(None, description="Filtrar por processo"),
 	db: AsyncSession = Depends(get_db),
+	current_user: dict = Depends(get_current_user),
 ):
 	"""Lista sessões da extensão, com filtro opcional por processo."""
 	stmt = select(SessaoExtensao).offset(skip).limit(limit)
