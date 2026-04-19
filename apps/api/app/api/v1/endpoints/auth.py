@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from app.core.auth import verify_google_token, create_access_token
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -31,6 +32,16 @@ async def google_auth(payload: TokenRequest):
 		data={"sub": user_info["email"], "name": user_info.get("name")}
 	)
 
+	# Determinar Role (Lógica repetida do get_current_user por simplicidade)
+	admins = [e.strip() for e in settings.ADMIN_EMAILS.split(",") if e.strip()]
+	analysts = [e.strip() for e in settings.ANALYST_EMAILS.split(",") if e.strip()]
+
+	role = "visitor"
+	if user_info["email"] in admins:
+		role = "admin"
+	elif user_info["email"] in analysts:
+		role = "analyst"
+
 	return {
 		"access_token": access_token,
 		"token_type": "bearer",
@@ -38,5 +49,6 @@ async def google_auth(payload: TokenRequest):
 			"email": user_info["email"],
 			"name": user_info.get("name"),
 			"picture": user_info.get("picture"),
+			"role": role,
 		},
 	}

@@ -40,7 +40,10 @@ class Settings(BaseSettings):
 
 	# Extension Auth
 	EXTENSION_API_KEY: str = "dev-api-key"
-	ALLOWED_EMAILS: str = ""  # Comma separated
+
+	# RBAC - Role Based Access Control
+	ADMIN_EMAILS: str = ""  # Comma separated
+	ANALYST_EMAILS: str = ""  # Comma separated
 
 	@property
 	def VERSION(self) -> str:

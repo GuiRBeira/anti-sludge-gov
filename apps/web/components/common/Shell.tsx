@@ -24,6 +24,11 @@ export function Shell({ children }: ShellProps) {
     if (!isLoading && !user && pathname !== "/login") {
       router.push("/login");
     }
+
+    if (user?.role === "visitor") {
+      // Redireciona para o GitHub se for visitante (não autorizado)
+      window.location.href = "https://github.com/GuiRBeira/anti-sludge-gov";
+    }
   }, [user, isLoading, pathname, router]);
 
   // Se estiver carregando ou sem usuário (e não estiver na login), não mostra o Shell completo

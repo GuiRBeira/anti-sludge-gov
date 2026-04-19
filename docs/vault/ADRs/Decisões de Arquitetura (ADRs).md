@@ -12,6 +12,7 @@ Este diretório contém o histórico de todas as decisões significativas tomada
 - [[ADR-006 - Arquitetura Monorepo com Turborepo]]
 - [[ADR-007 - Autenticação Stateless via Google ID Token e JWT Próprio]]
 - [[ADR-008 - Identificação de Coleta por Device ID na Extensão]]
+- [[ADR-009 - Controle de Acesso Baseado em Papéis Simplificado]]
 
 ---
 > [!TIP]

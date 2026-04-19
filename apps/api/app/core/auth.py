@@ -65,15 +65,17 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 		if email is None:
 			raise credentials_exception
 
-		# Validação de lista de emails permitidos
-		allowed = settings.ALLOWED_EMAILS.split(",")
-		if email not in allowed:
-			raise HTTPException(
-				status_code=status.HTTP_403_FORBIDDEN,
-				detail="Usuário não autorizado neste sistema",
-			)
+		# Validação de lista de emails e atribuição de ROLES
+		admins = [e.strip() for e in settings.ADMIN_EMAILS.split(",") if e.strip()]
+		analysts = [e.strip() for e in settings.ANALYST_EMAILS.split(",") if e.strip()]
 
-		return {"email": email}
+		role = "visitor"
+		if email in admins:
+			role = "admin"
+		elif email in analysts:
+			role = "analyst"
+
+		return {"email": email, "role": role}
 	except JWTError:
 		raise credentials_exception
 
