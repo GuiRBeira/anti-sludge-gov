@@ -107,7 +107,7 @@ async def seed():
 					tipo_comportamento_id=tipo.id,
 					comportamento=nome,
 					ordem=ordem,
-					e_obrigatorio=True if i < 4 else False,
+					e_obrigatorio=i < 4,
 					tempo_planejado=timedelta(minutes=random.randint(2, 10)),
 				)
 				session.add(etapa)
