@@ -1,3 +1,9 @@
+## [1.17.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.17.0...extension-1.17.1) (2026-04-19)
+
+### Bug Fixes
+
+* allow extension version tags to trigger artifact release attachment ([33c3eab](https://github.com/GuiRBeira/anti-sludge-gov/commit/33c3eabde5df2cc6d1bc7a487710ac620c57cc93))
+
 ## [1.17.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.16.1...extension-1.17.0) (2026-04-19)
 
 ### Features
