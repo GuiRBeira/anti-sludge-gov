@@ -1,11 +1,15 @@
 import { Menu } from "lucide-react";
 import NextImage from "next/image";
 import { GovButton } from "@/components/gov/GovButton";
+import { useAuth } from "@/context/AuthContext";
+import { LogOut, User } from "lucide-react";
 interface HeaderProps {
   onMenuClick?: () => void;
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
+  const { user, logout } = useAuth();
+
   return (
     <header className="br-header mb-0 border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm py-1 transition-all duration-300">
       <div className="container-lg flex flex-col pl-4 md:pl-6 pr-4 md:pr-8 py-4">
@@ -55,21 +59,39 @@ export function Header({ onMenuClick }: HeaderProps) {
               {process.env.APP_VERSION}
             </div>
 
-            <div className="flex gap-2">
-              <GovButton
-                type="primary"
-                size="small"
-                circle
-                icon="fas fa-search"
-                className="hover:scale-110 transition-transform"
-              />
-              <GovButton
-                type="primary"
-                size="small"
-                circle
-                icon="fas fa-user"
-                className="hover:scale-110 transition-transform"
-              />
+            <div className="flex items-center gap-4">
+              {user && (
+                <div className="hidden md:flex flex-col items-end mr-2">
+                  <span className="text-xs font-bold text-slate-700">{user.name}</span>
+                  <span className="text-[10px] text-slate-500 truncate max-w-[150px]">{user.email}</span>
+                </div>
+              )}
+              
+              <div className="flex gap-2">
+                <div className="relative group">
+                  {user?.picture ? (
+                    <NextImage 
+                      src={user.picture} 
+                      alt={user.name || "User"} 
+                      width={32} 
+                      height={32} 
+                      className="rounded-full border-2 border-blue-100 group-hover:border-blue-400 transition-colors"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                      <User size={16} />
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={logout}
+                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  title="Sair do sistema"
+                >
+                  <LogOut size={20} />
+                </button>
+              </div>
             </div>
           </div>
         </div>

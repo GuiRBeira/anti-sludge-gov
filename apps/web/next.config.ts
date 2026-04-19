@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
         hostname: 'www.gov.br',
         pathname: '/++theme++padrao_govbr/img/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
     ],
   },
 };
