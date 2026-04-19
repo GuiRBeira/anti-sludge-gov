@@ -1,3 +1,14 @@
+## [1.18.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.17.1...api-1.18.0) (2026-04-19)
+
+### Features
+
+* add date-fns dependency to project ([2a958d9](https://github.com/GuiRBeira/anti-sludge-gov/commit/2a958d98d414d805e634c24efc1c6457720f981e))
+* implement extension session linking service and UI modal to associate user logs with process steps ([f6175d1](https://github.com/GuiRBeira/anti-sludge-gov/commit/f6175d1dbfac3c40ca9d99e53e58bd2df1ee2fcc))
+
+### Bug Fixes
+
+* stage govmodal on commit ([188d8f1](https://github.com/GuiRBeira/anti-sludge-gov/commit/188d8f1c84b7c777b73cef12275968fb56d9cb8d))
+
 ## [1.17.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/api-1.17.0...api-1.17.1) (2026-04-18)
 
 ### Bug Fixes
