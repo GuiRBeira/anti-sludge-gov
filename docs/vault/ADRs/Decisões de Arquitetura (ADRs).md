@@ -7,6 +7,11 @@ Este diretório contém o histórico de todas as decisões significativas tomada
 - [[ADR-001 - Uso de Podman e Podman Compose]]
 - [[ADR-002 - Escolha do Next.js 16 App Router]]
 - [[ADR-003 - Estratégia de Seeding Automatizado]]
+- [[ADR-004 - Validação Externa de Processos Governamentais]]
+- [[ADR-005 - Identidade Criptográfica por Chaves Públicas]]
+- [[ADR-006 - Arquitetura Monorepo com Turborepo]]
+- [[ADR-007 - Autenticação Stateless via Google ID Token e JWT Próprio]]
+- [[ADR-008 - Identificação de Coleta por Device ID na Extensão]]
 
 ---
 > [!TIP]
