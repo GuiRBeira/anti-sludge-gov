@@ -2,6 +2,8 @@
 
 Este diretório contém o histórico de todas as decisões significativas tomadas durante o desenvolvimento deste TCC.
 
+>OBS: Eu não registrei na mesma ordem que foram tomadas, mas todas estão aqui.
+
 ## Log de Decisões
 
 - [[ADR-001 - Uso de Podman e Podman Compose]]
@@ -13,6 +15,7 @@ Este diretório contém o histórico de todas as decisões significativas tomada
 - [[ADR-007 - Autenticação Stateless via Google ID Token e JWT Próprio]]
 - [[ADR-008 - Identificação de Coleta por Device ID na Extensão]]
 - [[ADR-009 - Controle de Acesso Baseado em Papéis Simplificado]]
+- [[ADR-010 - Abstração de Componentes GovBR com Dynamic Imports]]
 
 ---
 > [!TIP]
