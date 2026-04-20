@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Icon } from "@iconify/react";
+import { GovIcon } from "@/components/gov/GovIcon";
 
 export default function LoginPage() {
   const { user, login, isLoading } = useAuth();
@@ -42,9 +42,9 @@ export default function LoginPage() {
       if (window.google) {
         window.google.accounts.id.renderButton(
           document.getElementById("google-button"),
-          { 
-            theme: "outline", 
-            size: "large", 
+          {
+            theme: "outline",
+            size: "large",
             width: 320,
             text: "signin_with",
             shape: "rectangular"
@@ -67,7 +67,7 @@ export default function LoginPage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-white p-1 rounded">
-                <Icon icon="bi:shield-check" className="text-[#004b82] text-2xl" />
+                <GovIcon icon="bi:shield-check" className="text-[#004b82] text-2xl" />
             </div>
             <span className="font-bold text-xl tracking-tight">anti-sludge.gov</span>
           </div>
@@ -82,12 +82,12 @@ export default function LoginPage() {
         <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden flex flex-col">
           {/* Top Bar do Card */}
           <div className="h-1 bg-[#004b82]"></div>
-          
+
           <div className="p-8">
             <div className="flex justify-center mb-6 text-[#004b82]">
-                <Icon icon="ri:government-line" className="text-6xl" />
+                <GovIcon icon="ri:government-line" className="text-6xl" />
             </div>
-            
+
             <h1 className="text-2xl font-bold text-center text-slate-800 mb-2">
               Identifique-se no anti-sludge.gov
             </h1>
@@ -110,11 +110,11 @@ export default function LoginPage() {
 
               <div className="w-full grid grid-cols-2 gap-4">
                  <button disabled className="flex items-center justify-center gap-2 p-3 border border-slate-200 rounded text-slate-400 cursor-not-allowed text-xs transition-colors">
-                    <Icon icon="simple-icons:icloud" />
+                    <GovIcon icon="simple-icons:icloud" />
                     gov.br
                  </button>
                  <button disabled className="flex items-center justify-center gap-2 p-3 border border-slate-200 rounded text-slate-400 cursor-not-allowed text-xs transition-colors">
-                    <Icon icon="simple-icons:microsoft" />
+                    <GovIcon icon="simple-icons:microsoft" />
                     Outlook
                  </button>
               </div>
@@ -123,9 +123,9 @@ export default function LoginPage() {
 
           <div className="bg-slate-50 p-6 border-t border-slate-100">
              <div className="flex items-start gap-3 text-xs text-slate-500 leading-relaxed">
-                <Icon icon="bi:info-circle" className="text-blue-500 mt-0.5 flex-shrink-0" size={16} />
+                <GovIcon icon="bi:info-circle" className="text-blue-500 mt-0.5 shrink-0" size={16} />
                 <p>
-                  Esta é uma ferramenta de pesquisa acadêmica para redução de burocracia. 
+                  Esta é uma ferramenta de pesquisa acadêmica para redução de burocracia.
                   Ao entrar, você concorda com a coleta de métricas de uso anônimas para o TCC.
                 </p>
              </div>
