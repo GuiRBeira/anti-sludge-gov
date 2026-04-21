@@ -1,3 +1,14 @@
+## [1.18.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.17.1...extension-1.18.0) (2026-04-21)
+
+### Features
+
+* add system architecture documentation and update Obsidian workspace configuration ([c638e7e](https://github.com/GuiRBeira/anti-sludge-gov/commit/c638e7e9bf76823f63e8e2c7c2b1e47d41f41d62))
+* **api:** implement google auth and protected routes ([4d69dd6](https://github.com/GuiRBeira/anti-sludge-gov/commit/4d69dd62ea667efed8604c003f5c3c877008a2da))
+* **extension:** add api key and device identification headers ([a19cc29](https://github.com/GuiRBeira/anti-sludge-gov/commit/a19cc2914119f6fe4253b54c16003efac9639b10))
+* implement google authentication flow and login page with protected routes ([a170d41](https://github.com/GuiRBeira/anti-sludge-gov/commit/a170d41ad8dd85824ead0d140d4f44798e272713))
+* implement role-based access control with admin, analyst, and visitor roles across frontend and backend services ([53b477a](https://github.com/GuiRBeira/anti-sludge-gov/commit/53b477a1c9af909fcbfcf93e990863e8b37d2639))
+* **web:** add AuthProvider and context for session management ([31d92cb](https://github.com/GuiRBeira/anti-sludge-gov/commit/31d92cbfb277ef9125a721cc55337afbaa008652))
+
 ## [1.17.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.17.0...extension-1.17.1) (2026-04-19)
 
 ### Bug Fixes
