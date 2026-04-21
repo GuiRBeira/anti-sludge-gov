@@ -10,8 +10,10 @@ import { CreateProcessModal } from "@/components/features/dashboard/CreateProces
 import { SludgeChart } from "@/components/features/dashboard/SludgeChart";
 import { processService, Processo, DashboardSummary } from "@/services/process-service";
 import { AlertCircle, History, TrendingUp } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
+  const { token } = useAuth();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [processos, setProcessos] = useState<Processo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,8 +38,10 @@ export default function Home() {
   }
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (token) {
+      loadData();
+    }
+  }, [token]);
 
   const stats = [
     { 

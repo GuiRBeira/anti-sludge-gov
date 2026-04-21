@@ -6,6 +6,7 @@
 export {}
 
 const API_BASE_URL = process.env.PLASMO_PUBLIC_API_URL ?? "http://localhost:8000/api/v1"
+const EXTENSION_API_KEY = process.env.PLASMO_PUBLIC_EXTENSION_API_KEY ?? "dev-api-key"
 
 // --- Types ---
 export interface InteractionData {
@@ -78,7 +79,9 @@ async function saveAppState(state: AppState) {
 
 async function fetchProcessos(): Promise<ProcessoOption[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/processos?limit=100`)
+    const response = await fetch(`${API_BASE_URL}/processos?limit=100`, {
+      headers: { "X-API-KEY": EXTENSION_API_KEY }
+    })
     if (!response.ok) return []
     const data: ProcessoOption[] = await response.json()
     return data.map((p) => ({ id: p.id, nome: p.nome }))
@@ -126,7 +129,10 @@ async function sendToApi(sessionData: Session): Promise<boolean> {
   try {
     const response = await fetch(`${API_BASE_URL}/sessoes-extensao`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "X-API-KEY": EXTENSION_API_KEY
+      },
       body: JSON.stringify(payload),
     })
 

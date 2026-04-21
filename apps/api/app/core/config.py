@@ -31,6 +31,20 @@ class Settings(BaseSettings):
 
 	DEBUG: bool = False
 
+	# Auth Settings
+	GOOGLE_CLIENT_ID: str = ""
+	GOOGLE_CLIENT_SECRET: str = ""
+	SECRET_KEY: str = "super-secret-key-change-it-in-prod"
+	ALGORITHM: str = "HS256"
+	ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 day
+
+	# Extension Auth
+	EXTENSION_API_KEY: str = "dev-api-key"
+
+	# RBAC - Role Based Access Control
+	ADMIN_EMAILS: str = ""  # Comma separated
+	ANALYST_EMAILS: str = ""  # Comma separated
+
 	@property
 	def VERSION(self) -> str:
 		"""Lê a versão do package.json na raiz do projeto."""
