@@ -48,7 +48,7 @@ def verify_google_token(token: str) -> dict:
 		raise HTTPException(
 			status_code=status.HTTP_401_UNAUTHORIZED,
 			detail=f"Token do Google inválido: {str(e)}",
-		)
+		) from e
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -77,7 +77,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 		return {"email": email, "role": role}
 	except JWTError:
-		raise credentials_exception
+		raise credentials_exception from None
 
 
 def check_extension_key(api_key: str):
