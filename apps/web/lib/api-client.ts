@@ -8,20 +8,17 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
   
-  // Tenta obter o token do localStorage (padrão definido no AuthContext)
-  const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
-
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),
   };
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
   try {
-    const response = await fetch(url, { ...options, headers });
+    const response = await fetch(url, { 
+      ...options, 
+      headers,
+      credentials: "include" // Permite o envio automático do cookie HttpOnly
+    });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

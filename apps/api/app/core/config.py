@@ -45,6 +45,12 @@ class Settings(BaseSettings):
 	ADMIN_EMAILS: str = ""  # Comma separated
 	ANALYST_EMAILS: str = ""  # Comma separated
 
+	# Security Settings
+	ALLOWED_ORIGINS: str = "http://localhost:3000"
+	RATE_LIMIT_DEFAULT: str = "60/minute"
+	AUTH_COOKIE_SECURE: bool = False  # True em prod
+	AUTH_COOKIE_SAMESITE: str = "lax"
+
 	@property
 	def VERSION(self) -> str:
 		"""Lê a versão do package.json na raiz do projeto."""

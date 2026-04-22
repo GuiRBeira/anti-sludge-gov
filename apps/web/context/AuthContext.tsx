@@ -25,14 +25,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Restaurar sessão do localStorage
-    const savedToken = localStorage.getItem("auth_token");
-    const savedUser = localStorage.getItem("auth_user");
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-    }
-    setIsLoading(false);
+    // Restaurar sessão verificando o cookie via /me
+    const checkAuth = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+          credentials: "include",
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          // Se falhar, limpa o estado (o cookie pode ter expirado)
+          setUser(null);
+          localStorage.removeItem("auth_user");
+        }
+      } catch (error) {
+        console.error("Erro ao verificar autenticação:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const login = async (googleToken: string) => {
@@ -41,15 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: googleToken }),
+        credentials: "include", // Importante para receber o cookie
       });
 
       if (!response.ok) throw new Error("Falha na autenticação");
 
       const data = await response.json();
-      setToken(data.access_token);
+      // O token agora está no cookie HttpOnly, não salvamos no localStorage
       setUser(data.user);
-      
-      localStorage.setItem("auth_token", data.access_token);
       localStorage.setItem("auth_user", JSON.stringify(data.user));
     } catch (error) {
       console.error("Erro no login:", error);
@@ -57,11 +70,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_user");
+  const logout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Erro no logout:", error);
+    } finally {
+      setToken(null);
+      setUser(null);
+      localStorage.removeItem("auth_user");
+    }
   };
 
   return (
