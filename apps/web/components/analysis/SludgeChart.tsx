@@ -55,27 +55,27 @@ export function SludgeChart({ data }: SludgeChartProps) {
           margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-          <XAxis 
-            dataKey="ordem" 
-            axisLine={false} 
-            tickLine={false} 
+          <XAxis
+            dataKey="ordem"
+            axisLine={false}
+            tickLine={false}
             tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 700 }}
             dy={10}
             label={{ value: 'Etapas do Processo', position: 'insideBottom', offset: -10, fill: '#94a3b8', fontSize: 10, fontWeight: 800 }}
           />
-          <YAxis 
-            axisLine={false} 
-            tickLine={false} 
+          <YAxis
+            axisLine={false}
+            tickLine={false}
             tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 700 }}
             dx={-10}
             domain={[0, 25]} // Escala F5 é Barreira(5) x Impacto(5) = 25 max
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
           <ReferenceLine y={9} stroke="#cbd5e1" strokeDasharray="5 5" label={{ value: 'Limiar Sludge', position: 'right', fill: '#94a3b8', fontSize: 10 }} />
-          
-          <Bar 
-            dataKey="indice_sludge" 
-            radius={[6, 6, 0, 0]} 
+
+          <Bar
+            dataKey="indice_sludge"
+            radius={[6, 6, 0, 0]}
             barSize={40}
           >
             {data.map((entry, index) => (

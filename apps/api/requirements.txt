@@ -31,3 +31,4 @@ passlib[bcrypt]==1.7.4
 # TOOLS / LIBS
 # =========================
 requests==2.33.1
+slowapi==0.1.9

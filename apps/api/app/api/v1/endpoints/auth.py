@@ -1,9 +1,10 @@
 # app/api/v1/endpoints/auth.py
-from fastapi import APIRouter
+from fastapi import APIRouter, Response, Request, Depends
 from pydantic import BaseModel
 
-from app.core.auth import verify_google_token, create_access_token
+from app.core.auth import verify_google_token, create_access_token, get_current_user
 from app.core.config import settings
+from app.core.limiter import limiter
 
 router = APIRouter()
 
@@ -19,9 +20,10 @@ class TokenResponse(BaseModel):
 
 
 @router.post("/google", response_model=TokenResponse)
-async def google_auth(payload: TokenRequest):
+@limiter.limit("5/minute")
+async def google_auth(request: Request, payload: TokenRequest, response: Response):
 	"""
-	Recebe o ID Token do Google, valida e emite um JWT próprio.
+	Recebe o ID Token do Google, valida e emite um JWT próprio via Cookie e Body.
 	"""
 	user_info = verify_google_token(payload.token)
 
@@ -42,6 +44,17 @@ async def google_auth(payload: TokenRequest):
 	elif user_info["email"] in analysts:
 		role = "analyst"
 
+	# Configurar Cookie HttpOnly
+	response.set_cookie(
+		key="access_token",
+		value=access_token,
+		httponly=True,
+		max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+		expires=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+		samesite=settings.AUTH_COOKIE_SAMESITE,
+		secure=settings.AUTH_COOKIE_SECURE,
+	)
+
 	return {
 		"access_token": access_token,
 		"token_type": "bearer",
@@ -52,3 +65,20 @@ async def google_auth(payload: TokenRequest):
 			"role": role,
 		},
 	}
+
+
+@router.post("/logout")
+async def logout(response: Response):
+	"""
+	Remove o cookie de autenticação.
+	"""
+	response.delete_cookie(key="access_token")
+	return {"message": "Logout realizado com sucesso"}
+
+
+@router.get("/me")
+async def get_me(current_user: dict = Depends(get_current_user)):
+	"""
+	Retorna as informações do usuário logado.
+	"""
+	return current_user
