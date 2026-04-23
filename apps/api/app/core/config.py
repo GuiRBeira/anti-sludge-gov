@@ -52,6 +52,7 @@ class Settings(BaseSettings):
 	RATE_LIMIT_DEFAULT: str = "60/minute"
 	AUTH_COOKIE_SECURE: bool = False  # True em prod
 	AUTH_COOKIE_SAMESITE: str = "lax"
+	DISCORD_WEBHOOK_URL: str | None = None
 
 	@property
 	def VERSION(self) -> str:

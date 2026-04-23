@@ -1,7 +1,6 @@
 // apps/web/components/features/dashboard/ProcessTable.tsx
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { GovButton, GovTag, GovIcon } from "@/components/gov";
@@ -15,8 +14,12 @@ interface ProcessTableProps {
 }
 
 export function ProcessTable({ processos, loading, error }: ProcessTableProps) {
+  function onEdit(p: Processo): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.4 }}
@@ -74,19 +77,19 @@ export function ProcessTable({ processos, loading, error }: ProcessTableProps) {
                     <GovTag type="icon" icon="fas fa-landmark" value={p.esfera_governo || "N/A"} size="small" className="text-[9px] font-black" />
                   </td>
                   <td className="px-4 py-4">
-                    <GovTag 
-                      type="text" 
-                      color={p.status === "Concluído" ? "success" : "warning"} 
-                      value={p.status.toUpperCase()} 
-                      className="text-[9px] font-bold" 
+                    <GovTag
+                      type="text"
+                      color={p.status === "Concluído" ? "success" : "warning"}
+                      value={p.status.toUpperCase()}
+                      className="text-[9px] font-bold"
                     />
                   </td>
                   <td className="px-4 py-4 text-right flex justify-end gap-2">
-                    <GovButton 
-                      type="secondary" 
-                      size="small" 
-                      circle 
-                      icon="mdi:pencil" 
+                    <GovButton
+                      type="secondary"
+                      size="small"
+                      circle
+                      icon="mdi:pencil"
                       onClick={() => onEdit(p)}
                       className="text-blue-500 border-blue-100 hover:bg-blue-50"
                     />
