@@ -1,3 +1,9 @@
+## [1.19.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.18.0...extension-1.19.0) (2026-04-23)
+
+### Features
+
+* implement secure HttpOnly cookie-based authentication with rate limiting ([6d98dcf](https://github.com/GuiRBeira/anti-sludge-gov/commit/6d98dcf488909d1ca7bcb119d1e36b04642920a5))
+
 ## [1.18.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.17.1...extension-1.18.0) (2026-04-21)
 
 ### Features
