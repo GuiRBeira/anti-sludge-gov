@@ -8,15 +8,20 @@ import { ArrowLeft, Edit, Trash2, Layout, Info } from "lucide-react";
 import { SludgeChart } from "@/features/analysis/components/SludgeChart";
 import { ProcessModal } from "@/features/processes/components/ProcessModal";
 import { useProcessDetail, useDeleteProcessMutation } from "@/features/processes/api/useProcessQueries";
+import { useProcessAnalysis } from "@/features/analysis/api/useAnalysisQueries";
 
 export default function ProcessoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const processId = parseInt(id);
 
-  const { data: processo, isLoading: loading, error } = useProcessDetail(processId);
+  const { data: processo, isLoading: loadingProcesso, error: errorProcesso } = useProcessDetail(processId);
+  const { data: analysis, isLoading: loadingAnalysis } = useProcessAnalysis(processId);
   const deleteMutation = useDeleteProcessMutation();
   const [showModal, setShowModal] = useState(false);
+
+  const loading = loadingProcesso || loadingAnalysis;
+  const error = errorProcesso;
 
   if (loading) {
     return (
@@ -37,13 +42,8 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
     );
   }
 
-  // Mock de dados para o gráfico de sludge por etapa
-  const chartData = processo.etapas.length > 0 
-    ? processo.etapas.map(e => ({
-        name: e.comportamento.length > 15 ? e.comportamento.substring(0, 15) + "..." : e.comportamento,
-        score: parseFloat((Math.random() * 15 + 5).toFixed(1))
-      }))
-    : [{ name: "Sem Etapas", score: 0 }];
+  // Dados reais vindo da análise calculada no backend
+  const chartData = analysis?.steps || [];
 
   const handleDelete = async () => {
     if (confirm("Tem certeza que deseja excluir este processo? Esta ação não pode ser desfeita.")) {
@@ -61,7 +61,7 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
       {/* Header com Ações */}
       <section className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={() => router.push("/")}
             className="p-2 bg-white rounded-full shadow-sm border border-slate-200 text-slate-400 hover:text-blue-600 transition-colors"
           >
@@ -79,16 +79,16 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
         </div>
 
         <div className="flex items-center gap-3">
-           <GovButton 
-             type="secondary" 
-             size="small" 
+           <GovButton
+             type="secondary"
+             size="small"
              className="border-slate-200"
              onClick={() => setShowModal(true)}
            >
               <Edit size={16} className="mr-2" />
               Editar Processo
            </GovButton>
-           <button 
+           <button
              onClick={handleDelete}
              disabled={deleteMutation.isPending}
              className="p-2 text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
@@ -114,11 +114,11 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
                  <div className="grid grid-cols-2 gap-4">
                     <div>
                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Esfera</label>
-                       <GovTag type="text" color="blue" value={processo.esfera_governo || "N/A"} className="font-bold" />
+                       <GovTag type="text" color="info" value={processo.esfera_governo || "N/A"} className="font-bold" />
                     </div>
                     <div>
                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Abrangência</label>
-                       <GovTag type="text" color="purple" value={processo.abrangencia || "N/A"} className="font-bold" />
+                       <GovTag type="text" color="info" value={processo.abrangencia || "N/A"} className="font-bold" />
                     </div>
                  </div>
 
@@ -195,8 +195,8 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
       </div>
 
       {showModal && (
-        <ProcessModal 
-          onClose={() => setShowModal(false)} 
+        <ProcessModal
+          onClose={() => setShowModal(false)}
           initialData={processo}
         />
       )}

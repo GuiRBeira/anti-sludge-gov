@@ -95,7 +95,7 @@ async def get_process_chart(processo_id: int, db: AsyncSession = Depends(get_db)
 		steps.append(
 			schemas.StepScore(
 				etapa_id=et.id,
-				nome=et.nome,
+				nome=et.comportamento,
 				ordem=et.ordem,
 				indice_sludge=float(res.indice_sludge)
 				if res and res.indice_sludge
