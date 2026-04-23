@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { GovButton, GovIcon, GovCard } from "@/components/gov";
 import { StatsGrid } from "@/components/features/dashboard/StatsGrid";
 import { ProcessTable } from "@/components/features/dashboard/ProcessTable";
-import { CreateProcessModal } from "@/components/features/dashboard/CreateProcessModal";
+import { ProcessModal } from "@/components/features/dashboard/ProcessModal";
 import { SludgeChart } from "@/components/features/dashboard/SludgeChart";
 import { processService, Processo, DashboardSummary } from "@/services/process-service";
 import { AlertCircle, History, TrendingUp } from "lucide-react";
@@ -19,6 +19,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [editingProcess, setEditingProcess] = useState<Processo | null>(null);
 
   async function loadData() {
     setLoading(true);
@@ -29,6 +30,7 @@ export default function Home() {
       ]);
       setSummary(sumData);
       setProcessos(procData);
+      setEditingProcess(null);
     } catch (err) {
       console.error(err);
       setError("Erro ao carregar dados. Verifique se a API está rodando.");
@@ -36,6 +38,16 @@ export default function Home() {
       setLoading(false);
     }
   }
+
+  const handleEdit = (processo: Processo) => {
+    setEditingProcess(processo);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setEditingProcess(null);
+  };
 
   useEffect(() => {
     if (user) {
@@ -164,13 +176,15 @@ export default function Home() {
           processos={processos} 
           loading={loading} 
           error={error} 
+          onEdit={handleEdit}
         />
       </GovCard>
 
       {showModal && (
-        <CreateProcessModal 
-          onClose={() => setShowModal(false)} 
+        <ProcessModal 
+          onClose={handleCloseModal} 
           onSuccess={loadData} 
+          initialData={editingProcess || undefined}
         />
       )}
     </div>

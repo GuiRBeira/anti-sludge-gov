@@ -22,7 +22,9 @@ crud_etapa = CRUDBase(Etapa)
 # =========================
 @router.post("/processos", response_model=schemas.ProcessoOut)
 async def create_processo(
-	obj_in: schemas.ProcessoCreate, db: AsyncSession = Depends(get_db)
+	obj_in: schemas.ProcessoCreate,
+	db: AsyncSession = Depends(get_db),
+	current_user: dict = Depends(get_current_user),
 ):
 	return await crud_processo.create(db, obj_in=obj_in.model_dump())
 
@@ -41,7 +43,11 @@ async def list_processos(
 
 
 @router.get("/processos/{id}", response_model=schemas.ProcessoDetailOut)
-async def get_processo(id: int, db: AsyncSession = Depends(get_db)):
+async def get_processo(
+	id: int,
+	db: AsyncSession = Depends(get_db),
+	current_user: dict = Depends(get_current_user),
+):
 	# Buscamos o processo com as etapas carregadas (Eager Loading)
 	stmt = (
 		select(Processo).where(Processo.id == id).options(selectinload(Processo.etapas))
@@ -52,6 +58,31 @@ async def get_processo(id: int, db: AsyncSession = Depends(get_db)):
 	if not db_obj:
 		raise HTTPException(status_code=404, detail="Processo não encontrado")
 	return db_obj
+
+
+@router.put("/processos/{id}", response_model=schemas.ProcessoOut)
+async def update_processo(
+	id: int,
+	obj_in: schemas.ProcessoUpdate,
+	db: AsyncSession = Depends(get_db),
+	current_user: dict = Depends(get_current_user),
+):
+	db_obj = await crud_processo.get(db, id=id)
+	if not db_obj:
+		raise HTTPException(status_code=404, detail="Processo não encontrado")
+	return await crud_processo.update(db, db_obj=db_obj, obj_in=obj_in)
+
+
+@router.delete("/processos/{id}", response_model=schemas.ProcessoOut)
+async def delete_processo(
+	id: int,
+	db: AsyncSession = Depends(get_db),
+	current_user: dict = Depends(get_current_user),
+):
+	db_obj = await crud_processo.get(db, id=id)
+	if not db_obj:
+		raise HTTPException(status_code=404, detail="Processo não encontrado")
+	return await crud_processo.remove(db, id=id)
 
 
 # =========================

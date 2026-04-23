@@ -11,6 +11,7 @@ interface ProcessTableProps {
   processos: Processo[];
   loading: boolean;
   error: string | null;
+  onEdit: (processo: Processo) => void;
 }
 
 export function ProcessTable({ processos, loading, error }: ProcessTableProps) {
@@ -80,7 +81,15 @@ export function ProcessTable({ processos, loading, error }: ProcessTableProps) {
                       className="text-[9px] font-bold" 
                     />
                   </td>
-                  <td className="px-4 py-4 text-right">
+                  <td className="px-4 py-4 text-right flex justify-end gap-2">
+                    <GovButton 
+                      type="secondary" 
+                      size="small" 
+                      circle 
+                      icon="mdi:pencil" 
+                      onClick={() => onEdit(p)}
+                      className="text-blue-500 border-blue-100 hover:bg-blue-50"
+                    />
                     <Link href={`/processos/${p.id}`}>
                       <GovButton type="secondary" size="small" circle icon="fas fa-arrow-right" />
                     </Link>

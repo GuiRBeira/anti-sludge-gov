@@ -88,4 +88,17 @@ export const processService = {
   async getDashboardSummary(): Promise<DashboardSummary> {
     return apiFetch<DashboardSummary>("/dashboard/summary");
   },
+
+  async update(id: number, data: Partial<CreateProcessoDTO>): Promise<Processo> {
+    return apiFetch<Processo>(`/processos/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async delete(id: number): Promise<void> {
+    return apiFetch<void>(`/processos/${id}`, {
+      method: "DELETE",
+    });
+  },
 };
