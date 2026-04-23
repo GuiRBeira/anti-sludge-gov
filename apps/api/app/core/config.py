@@ -9,7 +9,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 class Settings(BaseSettings):
 	model_config = SettingsConfigDict(
-		env_file=(".env", ".env.local"), env_file_encoding="utf-8", extra="ignore"
+		env_file=(".env.local",), env_file_encoding="utf-8", extra="ignore"
 	)
 
 	# Supabase / Postgres Credentials
@@ -46,7 +46,9 @@ class Settings(BaseSettings):
 	ANALYST_EMAILS: str = ""  # Comma separated
 
 	# Security Settings
-	ALLOWED_ORIGINS: str = "http://localhost:3000"
+	ALLOWED_ORIGINS: str = (
+		"http://localhost:3000,http://127.0.0.1:3000,http://0.0.0.0:3000"
+	)
 	RATE_LIMIT_DEFAULT: str = "60/minute"
 	AUTH_COOKIE_SECURE: bool = False  # True em prod
 	AUTH_COOKIE_SAMESITE: str = "lax"
