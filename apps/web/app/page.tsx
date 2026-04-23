@@ -4,56 +4,32 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { GovButton, GovIcon, GovCard } from "@/components/gov";
-import { StatsGrid } from "@/components/features/dashboard/StatsGrid";
-import { ProcessTable } from "@/components/features/dashboard/ProcessTable";
-import { ProcessModal } from "@/components/features/dashboard/ProcessModal";
-import { SludgeChart } from "@/components/features/dashboard/SludgeChart";
-import { processService, Processo, DashboardSummary } from "@/services/process-service";
+import { StatsGrid } from "@/features/processes/components/StatsGrid";
+import { ProcessTable } from "@/features/processes/components/ProcessTable";
+import { ProcessModal } from "@/features/processes/components/ProcessModal";
+import { SludgeChart } from "@/features/processes/components/DashboardSludgeChart";
+import { Processo } from "@/features/processes/api/processService";
 import { AlertCircle, History, TrendingUp } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import { useProcesses, useProcessSummary } from "@/features/processes/api/useProcessQueries";
 
 export default function Home() {
   const { user } = useAuth();
-  const [summary, setSummary] = useState<DashboardSummary | null>(null);
-  const [processos, setProcessos] = useState<Processo[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: processos = [], isLoading: loading, error } = useProcesses();
+  const { data: summary } = useProcessSummary();
   const [showModal, setShowModal] = useState(false);
   const [editingProcess, setEditingProcess] = useState<Processo | null>(null);
-
-  async function loadData() {
-    setLoading(true);
-    try {
-      const [sumData, procData] = await Promise.all([
-        processService.getDashboardSummary(),
-        processService.list()
-      ]);
-      setSummary(sumData);
-      setProcessos(procData);
-      setEditingProcess(null);
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao carregar dados. Verifique se a API está rodando.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   const handleEdit = (processo: Processo) => {
     setEditingProcess(processo);
     setShowModal(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditingProcess(null);
-  };
-
   useEffect(() => {
-    if (user) {
-      loadData();
+    if (!showModal) {
+      setEditingProcess(null);
     }
-  }, [user]);
+  }, [showModal]);
 
   const stats = [
     { 
@@ -182,8 +158,7 @@ export default function Home() {
 
       {showModal && (
         <ProcessModal 
-          onClose={handleCloseModal} 
-          onSuccess={loadData} 
+          onClose={() => setShowModal(false)} 
           initialData={editingProcess || undefined}
         />
       )}

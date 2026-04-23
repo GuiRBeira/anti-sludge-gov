@@ -13,7 +13,7 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts";
-import { StepScore } from "@/services/analysis-service";
+import { StepScore } from "@/features/analysis/api/analysisService";
 
 interface SludgeChartProps {
   data: StepScore[];

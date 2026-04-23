@@ -3,45 +3,30 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, X, Send, Bug, Lightbulb, MessageCircle } from "lucide-react";
-import { toast } from "sonner";
+import { useFeedbackMutation } from "../api/useFeedbackMutation";
 
 export const FeedbackButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState<"feedback" | "bug" | "suggestion">("feedback");
   const [message, setMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
+  const { mutateAsync: sendFeedback, isPending: isSending } = useFeedbackMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
 
-    setIsSending(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/feedback/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_name: "Tester Anon", // TODO: Pegar do AuthContext se disponível
-          user_email: null,
-          page_url: window.location.href,
-          message: message,
-          type: type,
-        }),
+      await sendFeedback({
+        user_name: "Tester Anon", // TODO: Pegar do AuthContext se disponível
+        user_email: null,
+        page_url: window.location.href,
+        message: message,
+        type: type,
       });
-
-      if (response.ok) {
-        toast.success("Feedback enviado com sucesso! Obrigado pelo apoio.");
-        setMessage("");
-        setIsOpen(false);
-      } else {
-        throw new Error("Falha ao enviar");
-      }
-    } catch (error) {
-      toast.error("Erro ao enviar feedback. Tente novamente mais tarde.");
-    } finally {
-      setIsSending(false);
+      setMessage("");
+      setIsOpen(false);
+    } catch (err) {
+      // Erro já tratado no onError do hook
     }
   };
 

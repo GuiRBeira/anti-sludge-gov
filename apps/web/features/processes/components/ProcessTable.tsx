@@ -1,23 +1,19 @@
-// apps/web/components/features/dashboard/ProcessTable.tsx
+// apps/web/features/processes/components/ProcessTable.tsx
 "use client";
 
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { GovButton, GovTag, GovIcon } from "@/components/gov";
-import { Processo } from "@/services/process-service";
+import { Processo } from "../api/processService";
 
 interface ProcessTableProps {
   processos: Processo[];
   loading: boolean;
-  error: string | null;
+  error: any;
   onEdit: (processo: Processo) => void;
 }
 
-export function ProcessTable({ processos, loading, error }: ProcessTableProps) {
-  function onEdit(p: Processo): void {
-    throw new Error("Function not implemented.");
-  }
-
+export function ProcessTable({ processos, loading, error, onEdit }: ProcessTableProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -44,7 +40,7 @@ export function ProcessTable({ processos, loading, error }: ProcessTableProps) {
           </div>
         ) : error ? (
           <div className="py-20 text-center">
-            <p className="text-red-500 font-bold">{error}</p>
+            <p className="text-red-500 font-bold">Erro ao carregar processos.</p>
           </div>
         ) : processos.length === 0 ? (
            <div className="py-20 text-center text-slate-400">

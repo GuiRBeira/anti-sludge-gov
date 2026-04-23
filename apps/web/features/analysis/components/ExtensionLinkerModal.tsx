@@ -3,8 +3,8 @@
 
 import React, { useEffect, useState } from "react";
 import { GovModal, GovButton, GovTag } from "@/components/gov";
-import { extensionService, SessaoExtensao, SessaoExtensaoDetail, InteracaoSummary } from "@/services/extension-service";
-import { analysisService } from "@/services/analysis-service";
+import { extensionService, SessaoExtensao, SessaoExtensaoDetail, InteracaoSummary } from "@/features/analysis/api/extensionService";
+import { analysisService } from "@/features/analysis/api/analysisService";
 import { MousePointer2, Clock, Globe, ChevronRight, Activity, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";

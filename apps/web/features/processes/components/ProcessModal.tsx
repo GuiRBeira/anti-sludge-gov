@@ -9,21 +9,24 @@ import {
   GovIcon 
 } from "@/components/gov";
 import { 
-  processService, 
   EsferaGoverno, 
   Abrangencia,
   Processo
-} from "@/services/process-service";
+} from "../api/processService";
+import { useCreateProcessMutation, useUpdateProcessMutation } from "../api/useProcessQueries";
 
 interface ProcessModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess?: () => void;
   initialData?: Processo;
 }
 
 export function ProcessModal({ onClose, onSuccess, initialData }: ProcessModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const isEdit = !!initialData;
+  const createMutation = useCreateProcessMutation();
+  const updateMutation = useUpdateProcessMutation();
+  
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   const [formData, setFormData] = useState({
     nome: "",
@@ -51,20 +54,16 @@ export function ProcessModal({ onClose, onSuccess, initialData }: ProcessModalPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     try {
       if (isEdit && initialData) {
-        await processService.update(initialData.id, formData);
+        await updateMutation.mutateAsync({ id: initialData.id, data: formData });
       } else {
-        await processService.create(formData);
+        await createMutation.mutateAsync(formData);
       }
-      onSuccess();
+      onSuccess?.();
       onClose();
     } catch (err) {
-      alert(`Erro ao ${isEdit ? 'atualizar' : 'criar'} processo.`);
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
+      // Erro tratado no mutation
     }
   };
 

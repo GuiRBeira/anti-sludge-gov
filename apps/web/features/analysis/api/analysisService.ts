@@ -1,4 +1,4 @@
-// apps/web/services/analysis-service.ts
+// apps/web/services/analysisService.ts
 import { apiFetch } from "@/lib/api-client";
 
 export interface ResultadoAnalise {

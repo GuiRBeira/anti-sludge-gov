@@ -1,37 +1,22 @@
 "use client";
 
-import React, { useEffect, useState, use } from "react";
+import React, { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { GovButton, GovIcon, GovCard, GovTag } from "@/components/gov";
-import { processService, ProcessoDetail } from "@/services/process-service";
-import { ArrowLeft, Edit, Trash2, Layout, Layers, Info } from "lucide-react";
-import { SludgeChart } from "@/components/features/dashboard/SludgeChart";
-import { ProcessModal } from "@/components/features/dashboard/ProcessModal";
+import { ArrowLeft, Edit, Trash2, Layout, Info } from "lucide-react";
+import { SludgeChart } from "@/features/analysis/components/SludgeChart";
+import { ProcessModal } from "@/features/processes/components/ProcessModal";
+import { useProcessDetail, useDeleteProcessMutation } from "@/features/processes/api/useProcessQueries";
 
 export default function ProcessoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const [processo, setProcesso] = useState<ProcessoDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const processId = parseInt(id);
+
+  const { data: processo, isLoading: loading, error } = useProcessDetail(processId);
+  const deleteMutation = useDeleteProcessMutation();
   const [showModal, setShowModal] = useState(false);
-
-  async function loadProcesso() {
-    try {
-      const data = await processService.getById(parseInt(id));
-      setProcesso(data);
-    } catch (err) {
-      console.error(err);
-      setError("Não foi possível carregar os detalhes do processo.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadProcesso();
-  }, [id]);
 
   if (loading) {
     return (
@@ -44,7 +29,7 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
   if (error || !processo) {
     return (
       <div className="p-8 text-center">
-        <p className="text-red-500 font-bold mb-4">{error || "Processo não encontrado"}</p>
+        <p className="text-red-500 font-bold mb-4">{(error as any)?.message || "Processo não encontrado"}</p>
         <GovButton type="secondary" onClick={() => router.push("/")}>
           Voltar ao Dashboard
         </GovButton>
@@ -63,11 +48,10 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
   const handleDelete = async () => {
     if (confirm("Tem certeza que deseja excluir este processo? Esta ação não pode ser desfeita.")) {
       try {
-        await processService.delete(processo.id);
+        await deleteMutation.mutateAsync(processo.id);
         router.push("/");
       } catch (err) {
-        alert("Erro ao excluir processo.");
-        console.error(err);
+        // Erro já tratado no hook
       }
     }
   };
@@ -85,7 +69,7 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
           </button>
           <div>
             <div className="flex items-center gap-2 text-gov-blue-light font-bold text-xs uppercase tracking-widest mb-1">
-              <Layout size={14} />
+              <Info size={14} />
               Detalhes do Processo #{processo.id}
             </div>
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">
@@ -106,7 +90,8 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
            </GovButton>
            <button 
              onClick={handleDelete}
-             className="p-2 text-red-400 hover:text-red-600 transition-colors"
+             disabled={deleteMutation.isPending}
+             className="p-2 text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
            >
               <Trash2 size={20} />
            </button>
@@ -212,7 +197,6 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
       {showModal && (
         <ProcessModal 
           onClose={() => setShowModal(false)} 
-          onSuccess={loadProcesso} 
           initialData={processo}
         />
       )}

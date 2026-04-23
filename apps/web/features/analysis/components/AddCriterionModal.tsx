@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { GovModal, GovButton, GovSelect, GovInput } from "@/components/gov";
-import { analysisService, CriterioTemplate } from "@/services/analysis-service";
+import { analysisService, CriterioTemplate } from "@/features/analysis/api/analysisService";
 import { Info, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -53,21 +53,15 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
       // Chama a API do backend para criar o critério na etapa
       // Nota: No nosso backend atual, a criação de CriterioBarreira pede nome, pergunta e notas.
       // Aqui estamos simplificando usando os dados do template.
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/analysis_results/criterios-barreira`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          etapa_id: etapaId,
-          criterio_template_id: template.id,
-          nome: template.nome,
-          pergunta: `Avalie o nível de ${template.nome} nesta etapa.`,
-          texto_nota_1: "Péssimo",
-          texto_nota_5: "Excelente",
-          ordem: 1
-        })
+      await analysisService.createCriterion({
+        etapa_id: etapaId,
+        criterio_template_id: template.id,
+        nome: template.nome,
+        pergunta: `Avalie o nível de ${template.nome} nesta etapa.`,
+        texto_nota_1: "Péssimo",
+        texto_nota_5: "Excelente",
+        ordem: 1,
       });
-
-      if (!response.ok) throw new Error("Falha ao salvar");
 
       onSuccess();
       onClose();
