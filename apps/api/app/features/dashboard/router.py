@@ -7,6 +7,10 @@ from app.models.process_model import Processo, Etapa
 from app.models.observation_model import JornadaObservada
 from app.models.analysis_model import ResultadoAnalise
 from app.features.dashboard import schemas
+from app.repositories.analysis_repository import AnalysisRepository
+from app.repositories.process_repository import ProcessRepository
+from app.use_cases.analysis_use_cases import CalculateProcessSludgeUseCase
+
 
 router = APIRouter()
 
@@ -79,11 +83,6 @@ async def get_dashboard_summary(db: AsyncSession = Depends(get_db)):
 		recent_activity=recent_activity,
 		processos_ranking=ranking,
 	)
-
-
-from app.repositories.analysis_repository import AnalysisRepository
-from app.repositories.process_repository import ProcessRepository
-from app.use_cases.analysis_use_cases import CalculateProcessSludgeUseCase
 
 
 @router.get("/process/{processo_id}", response_model=schemas.ProcessChart)
