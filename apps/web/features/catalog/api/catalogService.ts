@@ -16,9 +16,9 @@ export interface TipoComportamento {
 
 export const catalogService = {
   async getCategorias(): Promise<Categoria[]> {
-    return apiFetch<Categoria[]>("/catalog/categorias");
+    return apiFetch<Categoria[]>("/categorias");
   },
   async getTiposComportamento(): Promise<TipoComportamento[]> {
-    return apiFetch<TipoComportamento[]>("/catalog/tipos-comportamento");
+    return apiFetch<TipoComportamento[]>("/tipos-comportamento");
   },
 };

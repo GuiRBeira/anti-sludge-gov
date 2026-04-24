@@ -19,7 +19,7 @@ export function EtapaModal({ processoId, initialData, onClose }: EtapaModalProps
   const isEditing = !!initialData;
   const createMutation = useCreateEtapaMutation();
   const updateMutation = useUpdateEtapaMutation();
-  
+
   const { data: categorias = [] } = useCategorias();
   const { data: tiposComportamento = [] } = useTiposComportamento();
 
@@ -62,7 +62,7 @@ export function EtapaModal({ processoId, initialData, onClose }: EtapaModalProps
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -83,7 +83,7 @@ export function EtapaModal({ processoId, initialData, onClose }: EtapaModalProps
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 transition-colors">
+          <button type="button" onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 transition-colors">
             <X size={24} />
           </button>
         </div>
@@ -172,8 +172,9 @@ export function EtapaModal({ processoId, initialData, onClose }: EtapaModalProps
           </div>
 
           <div className="pt-4 flex gap-4">
-            <GovButton 
-              type="primary" 
+            <GovButton
+              type="primary"
+              submit={true}
               className="flex-1 py-4 shadow-xl shadow-blue-500/20"
               disabled={createMutation.isPending || updateMutation.isPending}
             >

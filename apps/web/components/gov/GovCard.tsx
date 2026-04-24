@@ -35,30 +35,43 @@ export interface GovCardProps {
   headerAction?: React.ReactNode;
 }
 
-/**
- * Skeleton para o BrCard renderizado no Servidor.
- * Mantém a estrutura visual básica para evitar CLS.
- */
-function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, className, children, icon, headerAction }: GovCardProps) {
+export function GovCard({ 
+  children, 
+  title, 
+  subtitle, 
+  footer, 
+  hover, 
+  className, 
+  icon, 
+  headerAction 
+}: GovCardProps) {
   return (
     <div className={clsx(
-      "br-card",
-      hover && "hover",
-      fixedHeight && "fixed-height",
+      "bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden flex flex-col h-full transition-all duration-300",
+      hover && "hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1",
       className
     )}>
+      {/* Header */}
       {(title || subtitle || headerAction) && (
-        <div className="card-header flex items-center justify-between pr-4">
-          <div>
-            {title && (
-              <div className="br-item header-title">
-                <div className="flex items-center gap-2">
-                  {icon && <GovIcon icon={icon} size={20} className="text-gov-blue" />}
-                  <span>{title}</span>
-                </div>
+        <div className="px-8 pt-8 pb-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {icon && (
+              <div className="p-3 bg-slate-50 text-slate-600 rounded-2xl border border-slate-100">
+                <GovIcon icon={icon} size={20} />
               </div>
             )}
-            {subtitle && <div className="br-item header-subtitle">{subtitle}</div>}
+            <div>
+              {title && (
+                <h3 className="text-lg font-black text-slate-900 tracking-tight leading-none">
+                  {title}
+                </h3>
+              )}
+              {subtitle && (
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mt-1.5">
+                  {subtitle}
+                </p>
+              )}
+            </div>
           </div>
           {headerAction && (
             <div className="shrink-0">
@@ -67,37 +80,18 @@ function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, classNam
           )}
         </div>
       )}
-      <div className="card-content">
+
+      {/* Content */}
+      <div className="flex-1 px-8 pb-8">
         {children}
       </div>
+
+      {/* Footer */}
       {footer && (
-        <div className="card-footer">
+        <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-50 mt-auto">
           {footer}
         </div>
       )}
     </div>
   );
-}
-
-// Import dinâmico com Isolamento de tipos para React 19
-const BrCard = dynamic(() => import("@govbr-ds/react-components").then(m => m.BrCard as any), {
-  ssr: false
-}) as React.ElementType;
-
-/**
- * Abstração Isomórfica do BrCard com Hydration Guard.
- * Permite usar Cards do Governo com performance de SSR e segurança de tipos.
- */
-export function GovCard(props: GovCardProps) {
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <GovCardSkeleton {...props} />;
-  }
-
-  return <BrCard {...props}>{props.children}</BrCard>;
 }

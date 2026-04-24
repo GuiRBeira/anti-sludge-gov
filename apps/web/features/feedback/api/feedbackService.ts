@@ -17,7 +17,7 @@ export interface FeedbackResponse {
 
 export const feedbackService = {
   sendFeedback: async (data: FeedbackCreate): Promise<FeedbackResponse> => {
-    return apiFetch<FeedbackResponse>("/api/v1/feedback/", {
+    return apiFetch<FeedbackResponse>("/feedback/", {
       method: "POST",
       body: JSON.stringify(data),
     });

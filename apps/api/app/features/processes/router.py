@@ -70,7 +70,9 @@ async def update_processo(
 	db_obj = await crud_processo.get(db, id=id)
 	if not db_obj:
 		raise HTTPException(status_code=404, detail="Processo não encontrado")
-	return await crud_processo.update(db, db_obj=db_obj, obj_in=obj_in)
+	return await crud_processo.update(
+		db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True)
+	)
 
 
 @router.delete("/processos/{id}", response_model=schemas.ProcessoOut)
@@ -98,3 +100,23 @@ async def list_etapas(
 	skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
 ):
 	return await crud_etapa.get_multi(db, skip=skip, limit=limit)
+
+
+@router.put("/etapas/{id}", response_model=schemas.EtapaOut)
+async def update_etapa(
+	id: int, obj_in: schemas.EtapaUpdate, db: AsyncSession = Depends(get_db)
+):
+	db_obj = await crud_etapa.get(db, id=id)
+	if not db_obj:
+		raise HTTPException(status_code=404, detail="Etapa não encontrada")
+	return await crud_etapa.update(
+		db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True)
+	)
+
+
+@router.delete("/etapas/{id}", response_model=schemas.EtapaOut)
+async def delete_etapa(id: int, db: AsyncSession = Depends(get_db)):
+	db_obj = await crud_etapa.get(db, id=id)
+	if not db_obj:
+		raise HTTPException(status_code=404, detail="Etapa não encontrada")
+	return await crud_etapa.remove(db, id=id)

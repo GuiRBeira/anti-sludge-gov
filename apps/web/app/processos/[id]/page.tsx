@@ -3,6 +3,7 @@
 import React, { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
 import { GovButton, GovIcon, GovCard, GovTag } from "@/components/gov";
 import { ArrowLeft, Edit, Trash2, Layout, Info } from "lucide-react";
 import { SludgeChart } from "@/features/analysis/components/SludgeChart";
@@ -21,7 +22,7 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
   const { data: analysis, isLoading: loadingAnalysis } = useProcessAnalysis(processId);
   const deleteMutation = useDeleteProcessMutation();
   const deleteEtapaMutation = useDeleteEtapaMutation(processId);
-  
+
   const [showModal, setShowModal] = useState(false);
   const [showEtapaModal, setShowEtapaModal] = useState(false);
   const [editingEtapa, setEditingEtapa] = useState<Etapa | null>(null);
@@ -174,34 +175,33 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
               </div>
            </GovCard>
 
-           <GovCard 
-             title="Lista de Etapas" 
+           <GovCard
+             title="Lista de Etapas"
              icon="mdi:layers-outline"
              headerAction={
-               <GovButton 
-                 type="secondary" 
-                 size="small" 
-                 className="h-8 text-[10px]"
+               <GovButton
+                 type="secondary"
                  onClick={() => {
                    setEditingEtapa(null);
                    setShowEtapaModal(true);
                  }}
                >
-                 + Add Etapa
+                 <Plus size={14} className="mr-1" />
+                 Adicionar Etapa
                </GovButton>
              }
            >
               <div className="p-2 overflow-x-auto">
                  <table className="w-full text-left border-collapse">
                     <thead>
-                       <tr className="border-b border-slate-50 italic">
-                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Ordem</th>
-                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Comportamento</th>
-                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Planejado</th>
-                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Real (Médio)</th>
-                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Obrig.</th>
-                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase text-right">Ações</th>
-                       </tr>
+                        <tr className="border-b border-slate-50 italic">
+                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-20">Ordem</th>
+                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Comportamento</th>
+                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-28">Planejado</th>
+                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-32">Real (Médio)</th>
+                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-20 text-center">Obrig.</th>
+                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-24 text-right">Ações</th>
+                        </tr>
                     </thead>
                     <tbody>
                        {processo.etapas.length > 0 ? processo.etapas.map((e) => (
@@ -214,30 +214,50 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
                              <td className="px-4 py-4 text-xs font-bold text-blue-600">
                                 {e.duracao_media_observada ? `${e.duracao_media_observada.split(':')[1]}m` : "Sob análise"}
                              </td>
-                             <td className="px-4 py-4">
-                                <div className={`h-2 w-2 rounded-full ${e.e_obrigatorio ? 'bg-orange-400 shadow-lg shadow-orange-200' : 'bg-slate-200'}`} />
-                             </td>
-                             <td className="px-4 py-4 text-right flex justify-end gap-2">
-                                <button 
-                                  onClick={() => handleEditEtapa(e)}
-                                  className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
-                                >
-                                  <Edit size={14} />
-                                </button>
-                                <button 
-                                  onClick={() => handleDeleteEtapa(e.id)}
-                                  className="p-1.5 text-slate-400 hover:text-red-600 transition-colors"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                             </td>
+                              <td className="px-4 py-4 w-20 text-center">
+                                 <div className={`h-3 w-3 rounded-full mx-auto ${e.e_obrigatorio ? 'bg-orange-400 shadow-lg shadow-orange-200' : 'bg-slate-200'}`} />
+                              </td>
+                              <td className="px-4 py-4 text-right w-24">
+                                 <div className="flex justify-end gap-2">
+                                    <button
+                                      onClick={() => handleEditEtapa(e)}
+                                      className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
+                                    >
+                                      <Edit size={18} />
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteEtapa(e.id)}
+                                      className="p-1.5 text-slate-400 hover:text-red-600 transition-colors"
+                                    >
+                                      <Trash2 size={18} />
+                                    </button>
+                                 </div>
+                              </td>
                           </tr>
                        )) : (
-                          <tr>
-                             <td colSpan={6} className="py-10 text-center text-slate-400 text-sm italic font-medium">
-                                Nenhuma etapa cadastrada para este processo.
-                             </td>
-                          </tr>
+                           <tr>
+                              <td colSpan={6} className="py-20 text-center">
+                                 <div className="flex flex-col items-center justify-center space-y-4">
+                                    <div className="p-4 bg-slate-50 rounded-full text-slate-300">
+                                       <Layers size={48} />
+                                    </div>
+                                    <div>
+                                       <p className="text-slate-500 font-bold">Nenhuma etapa mapeada</p>
+                                       <p className="text-slate-400 text-xs mt-1">Comece adicionando a primeira etapa deste serviço público.</p>
+                                    </div>
+                                    <GovButton
+                                       type="primary"
+                                       className="mt-4"
+                                       onClick={() => {
+                                          setEditingEtapa(null);
+                                          setShowEtapaModal(true);
+                                       }}
+                                    >
+                                       + Adicionar Primeira Etapa
+                                    </GovButton>
+                                 </div>
+                              </td>
+                           </tr>
                        )}
                     </tbody>
                  </table>
@@ -254,7 +274,7 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
       )}
 
       {showEtapaModal && (
-        <EtapaModal 
+        <EtapaModal
           processoId={processId}
           initialData={editingEtapa || undefined}
           onClose={() => {
