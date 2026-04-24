@@ -56,6 +56,19 @@ async def get_dashboard_summary(db: AsyncSession = Depends(get_db)):
 		for row in res_recent.all()
 	]
 
+	# 6. Process Ranking (Média de Sludge por Processo)
+	res_ranking = await db.execute(
+		select(Processo.nome, func.avg(ResultadoAnalise.indice_sludge))
+		.join(ResultadoAnalise, ResultadoAnalise.processo_id == Processo.id)
+		.group_by(Processo.id, Processo.nome)
+		.order_by(desc(func.avg(ResultadoAnalise.indice_sludge)))
+		.limit(10)
+	)
+	ranking = [
+		{"nome": row[0], "score": round(float(row[1] or 0), 2)}
+		for row in res_ranking.all()
+	]
+
 	return schemas.DashboardSummary(
 		total_processos=total_processos or 0,
 		total_jornadas=total_jornadas or 0,
@@ -64,7 +77,13 @@ async def get_dashboard_summary(db: AsyncSession = Depends(get_db)):
 		processos_criticos=stats.criticos or 0,
 		processos_por_status=status_counts,
 		recent_activity=recent_activity,
+		processos_ranking=ranking,
 	)
+
+
+from app.repositories.analysis_repository import AnalysisRepository
+from app.repositories.process_repository import ProcessRepository
+from app.use_cases.analysis_use_cases import CalculateProcessSludgeUseCase
 
 
 @router.get("/process/{processo_id}", response_model=schemas.ProcessChart)
@@ -72,14 +91,20 @@ async def get_process_chart(processo_id: int, db: AsyncSession = Depends(get_db)
 	"""
 	Retorna a série temporal (por etapa) do índice de Sludge para um processo.
 	Ideal para alimentar gráficos de linha/barra.
+	Trigger automático de cálculo para garantir dados reais no demo.
 	"""
 	# Verificar se processo existe
 	processo = await db.get(Processo, processo_id)
 	if not processo:
 		raise HTTPException(status_code=404, detail="Processo não encontrado")
 
+	# TRIGGER DE CÁLCULO (Heurística + Notas)
+	analysis_repo = AnalysisRepository(db)
+	process_repo = ProcessRepository(db)
+	use_case = CalculateProcessSludgeUseCase(analysis_repo, process_repo)
+	await use_case.execute(processo_id)
+
 	# Buscar etapas e seus respectivos resultados calculados
-	# Usamos outer join pois uma etapa pode ainda não ter sido calculada
 	query = (
 		select(Etapa, ResultadoAnalise)
 		.outerjoin(ResultadoAnalise, ResultadoAnalise.etapa_id == Etapa.id)
@@ -101,6 +126,7 @@ async def get_process_chart(processo_id: int, db: AsyncSession = Depends(get_db)
 				if res and res.indice_sludge
 				else None,
 				prioridade=res.prioridade if res else None,
+				recomendacao=res.recomendacoes if res else None,
 			)
 		)
 

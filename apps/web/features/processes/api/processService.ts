@@ -67,6 +67,7 @@ export interface DashboardSummary {
   processos_criticos: number;
   processos_por_status: { status: string; count: number }[];
   recent_activity: { id: number; protocolo: string; processo: string; data: string }[];
+  processos_ranking: { nome: string; score: number }[];
 }
 
 export const processService = {

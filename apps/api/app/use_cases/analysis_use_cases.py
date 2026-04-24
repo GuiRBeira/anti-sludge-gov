@@ -1,4 +1,5 @@
-# app/use_cases/analysis_use_cases.py
+from sqlalchemy import select
+from app.models.process_model import Processo
 from app.domain.sludge_logic import SludgeCalculator
 from app.repositories.analysis_repository import AnalysisRepository
 from app.repositories.process_repository import ProcessRepository
@@ -15,31 +16,72 @@ class CalculateProcessSludgeUseCase:
 	async def execute(self, processo_id: int):
 		"""
 		Calcula e persiste o Índice de Sludge para todas as etapas de um processo.
+		Usa heurísticas se não houver avaliações manuais.
 		"""
+		# Carregar processo com etapas e tipos de comportamento
+		query = select(Processo).where(Processo.id == processo_id)
+		res = await self.process_repo.session.execute(query)
+		processo = res.scalar_one_or_none()
+
+		if not processo:
+			return []
+
 		etapas = await self.process_repo.get_etapas(processo_id)
 		resultados = []
 
 		for etapa in etapas:
-			# 1. Coletar notas
+			# 1. Tentar coletar notas manuais
 			barrier_scores = await self.analysis_repo.get_barrier_scores_by_step(
 				etapa.id
 			)
 			impact_scores = await self.analysis_repo.get_impact_scores_by_step(etapa.id)
 
-			# 2. Calcular médias
+			# 2. Se não houver notas, aplicar HEURÍSTICA
+			if not barrier_scores:
+				# Heurística de Barreira baseada no nome/tipo (simplificada para o demo)
+				base_barrier = 2.0
+				nome_lower = etapa.comportamento.lower()
+				if "anexar" in nome_lower or "organizar" in nome_lower:
+					base_barrier = 4.5
+				elif "espera" in nome_lower or "aguardar" in nome_lower:
+					base_barrier = 5.0
+				elif "preencher" in nome_lower:
+					base_barrier = 3.5
+				elif "login" in nome_lower:
+					base_barrier = 3.0
+				elif "acessar" in nome_lower:
+					base_barrier = 1.5
+
+				if etapa.e_obrigatorio:
+					base_barrier += 0.5
+				barrier_scores = [min(base_barrier, 5.0)]
+
+			if not impact_scores:
+				# Heurística de Impacto
+				base_impact = 2.5
+				if etapa.e_obrigatorio:
+					base_impact += 1.0
+
+				# Se tivermos tempo planejado (mock de impacto por tempo)
+				if etapa.tempo_planejado:
+					base_impact += 0.5  # Punição padrão por exigir tempo do cidadão
+
+				impact_scores = [min(base_impact, 5.0)]
+
+			# 3. Calcular médias
 			avg_barrier = self.calculator.calculate_average(barrier_scores)
 			avg_impact = self.calculator.calculate_average(impact_scores)
 
-			# 3. Calcular Índice de Sludge
+			# 4. Calcular Índice de Sludge (Barreira x Impacto)
 			sludge_index = self.calculator.calculate_sludge_index(
 				avg_barrier, avg_impact
 			)
 
-			# 4. Determinar metadados
+			# 5. Determinar metadados
 			priority = self.calculator.determine_priority(sludge_index)
 			is_sludge = self.calculator.is_sludge(sludge_index)
 
-			# 5. Persistir
+			# 6. Persistir
 			result_data = {
 				"processo_id": processo_id,
 				"etapa_id": etapa.id,
@@ -48,10 +90,22 @@ class CalculateProcessSludgeUseCase:
 				"indice_sludge": sludge_index,
 				"prioridade": priority,
 				"e_sludge": is_sludge,
+				"recomendacoes": self._generate_recommendation(etapa, sludge_index),
 			}
 
-			res = await self.analysis_repo.upsert_result(result_data)
-			resultados.append(res)
+			res_obj = await self.analysis_repo.upsert_result(result_data)
+			resultados.append(res_obj)
 
 		await self.analysis_repo.session.commit()
 		return resultados
+
+	def _generate_recommendation(self, etapa, index):
+		if index > 18:
+			return (
+				"Redesenho crítico necessário: eliminar etapa ou automatizar via API."
+			)
+		if index > 12:
+			return "Simplificar interface e reduzir número de campos obrigatórios."
+		if index > 6:
+			return "Otimizar tempo de resposta e melhorar orientações ao usuário."
+		return "Etapa saudável, manter monitoramento contínuo."

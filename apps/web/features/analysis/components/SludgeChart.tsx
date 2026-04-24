@@ -23,13 +23,21 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-white p-4 border border-slate-100 shadow-xl rounded-xl">
-        <p className="text-xs font-bold text-slate-400 uppercase mb-1">Etapa {data.ordem}</p>
-        <p className="text-sm font-black text-slate-900 mb-2">{data.nome}</p>
-        <div className="flex items-center gap-2">
+      <div className="bg-white p-4 border border-slate-100 shadow-2xl rounded-2xl max-w-[240px]">
+        <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Etapa {data.ordem}</p>
+        <p className="text-sm font-black text-slate-900 mb-2 leading-tight">{data.nome}</p>
+        <div className="flex items-center gap-2 mb-3">
           <span className="text-2xl font-black text-slate-900">{data.indice_sludge || 0}</span>
-          <span className="text-[10px] text-slate-400">PONTOS</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Pontos F5</span>
         </div>
+        {data.recomendacao && (
+          <div className="pt-3 border-t border-slate-50">
+             <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Recomendação</p>
+             <p className="text-[11px] font-medium text-slate-600 leading-relaxed italic">
+                "{data.recomendacao}"
+             </p>
+          </div>
+        )}
       </div>
     );
   }

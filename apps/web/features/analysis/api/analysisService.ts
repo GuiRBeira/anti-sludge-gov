@@ -20,6 +20,7 @@ export interface StepScore {
   ordem: number;
   indice_sludge: number | null;
   prioridade: number | null;
+  recomendacao?: string;
 }
 
 export interface ProcessChartData {

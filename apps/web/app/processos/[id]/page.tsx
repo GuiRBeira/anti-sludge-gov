@@ -210,39 +210,54 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
                         </tr>
                     </thead>
                     <tbody>
-                       {processo.etapas.length > 0 ? processo.etapas.map((e) => (
-                          <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
-                             <td className="px-4 py-4 text-xs font-black text-slate-300">#0{e.ordem}</td>
-                             <td className="px-4 py-4 text-sm font-bold text-slate-800">{e.comportamento}</td>
-                             <td className="px-4 py-4 text-xs font-medium text-slate-500">
-                                {e.tempo_planejado ? `${e.tempo_planejado.split(':')[1]}m` : "--"}
-                             </td>
-                             <td className="px-4 py-4 text-xs font-bold text-blue-600">
-                                {e.duracao_media_observada ? `${e.duracao_media_observada.split(':')[1]}m` : "Sob análise"}
-                             </td>
-                              <td className="px-4 py-4 w-20 text-center">
-                                 <div className={`h-3 w-3 rounded-full mx-auto ${e.e_obrigatorio ? 'bg-orange-400 shadow-lg shadow-orange-200' : 'bg-slate-200'}`} />
-                              </td>
-                              {canEdit && (
-                                <td className="px-4 py-4 text-right w-24">
-                                   <div className="flex justify-end gap-2">
-                                      <button
-                                        onClick={() => handleEditEtapa(e)}
-                                        className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
-                                      >
-                                        <Edit size={18} />
-                                      </button>
-                                      <button
-                                        onClick={() => handleDeleteEtapa(e.id)}
-                                        className="p-1.5 text-slate-400 hover:text-red-600 transition-colors"
-                                      >
-                                        <Trash2 size={18} />
-                                      </button>
+                        {processo.etapas.length > 0 ? processo.etapas.map((e) => {
+                           const analysisStep = analysis?.steps?.find(s => s.etapa_id === e.id);
+                           const isCritical = analysisStep && (analysisStep.prioridade || 0) >= 3;
+
+                           return (
+                             <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
+                                <td className="px-4 py-4 text-xs font-black text-slate-300">#0{e.ordem}</td>
+                                <td className="px-4 py-4">
+                                   <div className="flex flex-col">
+                                      <span className="text-sm font-bold text-slate-800">{e.comportamento}</span>
+                                      {analysisStep?.recomendacao && isCritical && (
+                                         <span className="text-[10px] text-blue-600 font-bold mt-1 flex items-center gap-1 bg-blue-50 w-fit px-2 py-0.5 rounded-full">
+                                            <Info size={10} />
+                                            {analysisStep.recomendacao}
+                                         </span>
+                                      )}
                                    </div>
                                 </td>
-                              )}
-                          </tr>
-                       )) : (
+                                <td className="px-4 py-4 text-xs font-medium text-slate-500">
+                                   {e.tempo_planejado ? `${e.tempo_planejado.split(':')[1]}m` : "--"}
+                                </td>
+                                <td className="px-4 py-4 text-xs font-bold text-blue-600">
+                                   {e.duracao_media_observada ? `${e.duracao_media_observada.split(':')[1]}m` : "Sob análise"}
+                                </td>
+                                <td className="px-4 py-4 w-20 text-center">
+                                   <div className={`h-3 w-3 rounded-full mx-auto ${e.e_obrigatorio ? 'bg-orange-400 shadow-lg shadow-orange-200' : 'bg-slate-200'}`} />
+                                </td>
+                                {canEdit && (
+                                  <td className="px-4 py-4 text-right w-24">
+                                     <div className="flex justify-end gap-2">
+                                        <button
+                                          onClick={() => handleEditEtapa(e)}
+                                          className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
+                                        >
+                                          <Edit size={18} />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteEtapa(e.id)}
+                                          className="p-1.5 text-slate-400 hover:text-red-600 transition-colors"
+                                        >
+                                          <Trash2 size={18} />
+                                        </button>
+                                     </div>
+                                  </td>
+                                )}
+                             </tr>
+                           );
+                        }) : (
                            <tr>
                               <td colSpan={6} className="py-20 text-center">
                                  <div className="flex flex-col items-center justify-center space-y-4">

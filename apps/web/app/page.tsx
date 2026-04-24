@@ -58,11 +58,11 @@ export default function Home() {
     },
   ];
 
-  // Dados fake para o gráfico baseados nos processos (mock inicial)
-  const chartData = processos.slice(0, 6).map(p => ({
-    name: p.nome.split(" ").slice(0, 2).join(" "),
-    score: parseFloat((Math.random() * 20).toFixed(1))
-  }));
+  // Dados reais para o gráfico vindos do backend (Ranking de Sludge)
+  const chartData = summary?.processos_ranking?.map(r => ({
+    name: r.nome.length > 20 ? r.nome.substring(0, 18) + "..." : r.nome,
+    score: r.score
+  })) || [];
 
   return (
     <div className="space-y-10 pb-10">
