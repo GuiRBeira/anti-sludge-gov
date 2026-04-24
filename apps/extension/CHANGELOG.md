@@ -1,3 +1,17 @@
+## [1.20.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.19.0...extension-1.20.0) (2026-04-24)
+
+### Features
+
+* add headerAction support to GovCardSkeleton and optimize layout styling ([7e8e851](https://github.com/GuiRBeira/anti-sludge-gov/commit/7e8e851b78109adedc025afff13bcc14445125a9))
+* implement analysis queries, add feedback component, and migrate authentication services ([e57ce69](https://github.com/GuiRBeira/anti-sludge-gov/commit/e57ce69f2e9f9f3bdb244b4f7f8e5ae63ed499d8))
+* implement catalog service, etapa management CRUD, and update database seed for analysis results ([322f017](https://github.com/GuiRBeira/anti-sludge-gov/commit/322f017518bcfdf3b29fc438e27718bf96fbd39f))
+* implement createCriterio endpoint and update modal call, plus import missing icon ([5adcf70](https://github.com/GuiRBeira/anti-sludge-gov/commit/5adcf702d39b90e15e58014825ee855906d558cb))
+* implement dynamic process editing and deletion with unified ProcessModal component ([7a27be6](https://github.com/GuiRBeira/anti-sludge-gov/commit/7a27be6941710bd4e1d9b5968b88600d8981a78b))
+* implement heuristic analysis logic for sludge index calculation and add recommendation support to UI ([772643d](https://github.com/GuiRBeira/anti-sludge-gov/commit/772643da2785804a93c685e99561604d9808ec16))
+* implement role-based access control for researchers and supervisors with updated UI authorization logic ([6bfc6d0](https://github.com/GuiRBeira/anti-sludge-gov/commit/6bfc6d054836e9806261472352cd83c53052bd8c))
+* implement user feedback system with Discord integration and floating UI component ([59e8d15](https://github.com/GuiRBeira/anti-sludge-gov/commit/59e8d15293c583ec492f41d75c99629b801bef97))
+* replace GovCard with custom component, add API endpoints for etapas, and enhance UI for process management ([8b7e176](https://github.com/GuiRBeira/anti-sludge-gov/commit/8b7e1769c0dcdc5fe7ba4a2e3802a50df3025213))
+
 ## [1.19.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/extension-1.18.0...extension-1.19.0) (2026-04-23)
 
 ### Features
