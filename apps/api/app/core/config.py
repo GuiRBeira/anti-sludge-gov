@@ -42,8 +42,9 @@ class Settings(BaseSettings):
 	EXTENSION_API_KEY: str = "dev-api-key"
 
 	# RBAC - Role Based Access Control
-	ADMIN_EMAILS: str = ""  # Comma separated
-	ANALYST_EMAILS: str = ""  # Comma separated
+	ADMIN_EMAILS: str = ""  # Comma separated (Owner/Admin)
+	RESEARCHER_EMAILS: str = ""  # Comma separated (Researchers)
+	SUPERVISOR_EMAILS: str = ""  # Comma separated (Supervisors)
 
 	# Security Settings
 	ALLOWED_ORIGINS: str = (

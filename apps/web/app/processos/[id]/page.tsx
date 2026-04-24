@@ -12,12 +12,14 @@ import { EtapaModal } from "@/features/processes/components/EtapaModal";
 import { useProcessDetail, useDeleteProcessMutation, useDeleteEtapaMutation } from "@/features/processes/api/useProcessQueries";
 import { useProcessAnalysis } from "@/features/analysis/api/useAnalysisQueries";
 import { Etapa } from "@/features/processes/api/processService";
+import { useAuth } from "@/features/auth/context/AuthContext";
 
 export default function ProcessoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const processId = parseInt(id);
 
+  const { canEdit } = useAuth();
   const { data: processo, isLoading: loadingProcesso, error: errorProcesso } = useProcessDetail(processId);
   const { data: analysis, isLoading: loadingAnalysis } = useProcessAnalysis(processId);
   const deleteMutation = useDeleteProcessMutation();
@@ -96,24 +98,26 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-           <GovButton
-             type="secondary"
-             size="small"
-             className="border-slate-200"
-             onClick={() => setShowModal(true)}
-           >
-              <Edit size={16} className="mr-2" />
-              Editar Processo
-           </GovButton>
-           <button
-             onClick={handleDelete}
-             disabled={deleteMutation.isPending}
-             className="p-2 text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
-           >
-              <Trash2 size={20} />
-           </button>
-        </div>
+        {canEdit && (
+          <div className="flex items-center gap-3">
+             <GovButton
+               type="secondary"
+               size="small"
+               className="border-slate-200"
+               onClick={() => setShowModal(true)}
+             >
+                <Edit size={16} className="mr-2" />
+                Editar Processo
+             </GovButton>
+             <button
+               onClick={handleDelete}
+               disabled={deleteMutation.isPending}
+               className="p-2 text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
+             >
+                <Trash2 size={20} />
+             </button>
+          </div>
+        )}
       </section>
 
       {/* Grid de Informações */}
@@ -179,16 +183,18 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
              title="Lista de Etapas"
              icon="mdi:layers-outline"
              headerAction={
-               <GovButton
-                 type="secondary"
-                 onClick={() => {
-                   setEditingEtapa(null);
-                   setShowEtapaModal(true);
-                 }}
-               >
-                 <Plus size={14} className="mr-1" />
-                 Adicionar Etapa
-               </GovButton>
+               canEdit ? (
+                 <GovButton
+                   type="secondary"
+                   onClick={() => {
+                     setEditingEtapa(null);
+                     setShowEtapaModal(true);
+                   }}
+                 >
+                   <Plus size={14} className="mr-1" />
+                   Adicionar Etapa
+                 </GovButton>
+               ) : null
              }
            >
               <div className="p-2 overflow-x-auto">
@@ -200,7 +206,7 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
                            <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-28">Planejado</th>
                            <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-32">Real (Médio)</th>
                            <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-20 text-center">Obrig.</th>
-                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-24 text-right">Ações</th>
+                           {canEdit && <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase w-24 text-right">Ações</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -217,22 +223,24 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
                               <td className="px-4 py-4 w-20 text-center">
                                  <div className={`h-3 w-3 rounded-full mx-auto ${e.e_obrigatorio ? 'bg-orange-400 shadow-lg shadow-orange-200' : 'bg-slate-200'}`} />
                               </td>
-                              <td className="px-4 py-4 text-right w-24">
-                                 <div className="flex justify-end gap-2">
-                                    <button
-                                      onClick={() => handleEditEtapa(e)}
-                                      className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
-                                    >
-                                      <Edit size={18} />
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteEtapa(e.id)}
-                                      className="p-1.5 text-slate-400 hover:text-red-600 transition-colors"
-                                    >
-                                      <Trash2 size={18} />
-                                    </button>
-                                 </div>
-                              </td>
+                              {canEdit && (
+                                <td className="px-4 py-4 text-right w-24">
+                                   <div className="flex justify-end gap-2">
+                                      <button
+                                        onClick={() => handleEditEtapa(e)}
+                                        className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
+                                      >
+                                        <Edit size={18} />
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteEtapa(e.id)}
+                                        className="p-1.5 text-slate-400 hover:text-red-600 transition-colors"
+                                      >
+                                        <Trash2 size={18} />
+                                      </button>
+                                   </div>
+                                </td>
+                              )}
                           </tr>
                        )) : (
                            <tr>
@@ -245,16 +253,18 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
                                        <p className="text-slate-500 font-bold">Nenhuma etapa mapeada</p>
                                        <p className="text-slate-400 text-xs mt-1">Comece adicionando a primeira etapa deste serviço público.</p>
                                     </div>
-                                    <GovButton
-                                       type="primary"
-                                       className="mt-4"
-                                       onClick={() => {
-                                          setEditingEtapa(null);
-                                          setShowEtapaModal(true);
-                                       }}
-                                    >
-                                       + Adicionar Primeira Etapa
-                                    </GovButton>
+                                    {canEdit && (
+                                       <GovButton
+                                          type="primary"
+                                          className="mt-4"
+                                          onClick={() => {
+                                             setEditingEtapa(null);
+                                             setShowEtapaModal(true);
+                                          }}
+                                       >
+                                          + Adicionar Primeira Etapa
+                                       </GovButton>
+                                    )}
                                  </div>
                               </td>
                            </tr>

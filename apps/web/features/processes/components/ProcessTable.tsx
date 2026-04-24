@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { GovButton, GovIcon } from "@/components/gov";
 import { Processo } from "../api/processService";
 import { Edit2, ArrowRight, Landmark, Activity } from "lucide-react";
+import { useAuth } from "@/features/auth/context/AuthContext";
 
 interface ProcessTableProps {
   processos: Processo[];
@@ -13,6 +14,8 @@ interface ProcessTableProps {
 }
 
 export function ProcessTable({ processos, loading, error, onEdit }: ProcessTableProps) {
+  const { canEdit } = useAuth();
+  
   return (
     <div className="overflow-x-auto">
       {loading ? (
@@ -86,13 +89,15 @@ export function ProcessTable({ processos, loading, error, onEdit }: ProcessTable
                 </td>
                 <td className="px-6 py-5 text-center">
                   <div className="flex justify-center gap-2 transition-opacity">
-                    <button
-                      onClick={() => onEdit(p)}
-                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
-                      title="Editar Processo"
-                    >
-                      <Edit2 size={20} />
-                    </button>
+                    {canEdit && (
+                      <button
+                        onClick={() => onEdit(p)}
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                        title="Editar Processo"
+                      >
+                        <Edit2 size={20} />
+                      </button>
+                    )}
                     <Link
                       href={`/processos/${p.id}`}
                       className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"

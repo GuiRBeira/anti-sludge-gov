@@ -14,7 +14,7 @@ import { useAuth } from "@/features/auth/context/AuthContext";
 import { useProcesses, useProcessSummary } from "@/features/processes/api/useProcessQueries";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, canEdit } = useAuth();
   const { data: processos = [], isLoading: loading, error } = useProcesses();
   const { data: summary } = useProcessSummary();
   const [showModal, setShowModal] = useState(false);
@@ -87,14 +87,16 @@ export default function Home() {
           </p>
         </motion.div>
 
-        <GovButton
-          type="primary"
-          className="shadow-2xl shadow-blue-500/30 p-4 rounded-full h-auto"
-          onClick={() => setShowModal(true)}
-        >
-          <Plus size={20} className="mr-2" />
-          <span className="font-black uppercase tracking-widest text-xs">Novo Processo</span>
-        </GovButton>
+        {canEdit && (
+          <GovButton 
+            type="primary" 
+            className="shadow-2xl shadow-blue-500/30 p-4 rounded-full h-auto"
+            onClick={() => setShowModal(true)}
+          >
+            <Plus size={20} className="mr-2" />
+            <span className="font-black uppercase tracking-widest text-xs">Novo Processo</span>
+          </GovButton>
+        )}
       </section>
 
       <StatsGrid stats={stats} />

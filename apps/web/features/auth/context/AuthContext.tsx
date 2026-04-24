@@ -10,6 +10,9 @@ interface AuthContextType {
   login: (googleToken: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
+  isAdmin: boolean;
+  canEdit: boolean;
+  isReadOnly: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,12 +31,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("auth_user");
   };
 
+  const isAdmin = user?.role === "admin";
+  const canEdit = user?.role === "admin" || user?.role === "researcher";
+  const isReadOnly = user?.role === "supervisor" || user?.role === "visitor";
+
   return (
     <AuthContext.Provider value={{ 
       user: user ?? null, 
       login, 
       logout, 
-      isLoading 
+      isLoading,
+      isAdmin,
+      canEdit,
+      isReadOnly
     }}>
       {children}
     </AuthContext.Provider>

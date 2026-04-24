@@ -34,15 +34,22 @@ async def google_auth(request: Request, payload: TokenRequest, response: Respons
 		data={"sub": user_info["email"], "name": user_info.get("name")}
 	)
 
-	# Determinar Role (Lógica repetida do get_current_user por simplicidade)
+	# Determinar Role
 	admins = [e.strip() for e in settings.ADMIN_EMAILS.split(",") if e.strip()]
-	analysts = [e.strip() for e in settings.ANALYST_EMAILS.split(",") if e.strip()]
+	researchers = [
+		e.strip() for e in settings.RESEARCHER_EMAILS.split(",") if e.strip()
+	]
+	supervisors = [
+		e.strip() for e in settings.SUPERVISOR_EMAILS.split(",") if e.strip()
+	]
 
 	role = "visitor"
 	if user_info["email"] in admins:
 		role = "admin"
-	elif user_info["email"] in analysts:
-		role = "analyst"
+	elif user_info["email"] in researchers:
+		role = "researcher"
+	elif user_info["email"] in supervisors:
+		role = "supervisor"
 
 	# Configurar Cookie HttpOnly
 	response.set_cookie(

@@ -2,10 +2,10 @@
 import { apiFetch } from "@/lib/api-client";
 
 export interface User {
-  id: number;
   email: string;
-  full_name?: string;
-  role: string;
+  name: string;
+  picture?: string;
+  role: "admin" | "researcher" | "supervisor" | "visitor";
 }
 
 export interface AuthResponse {
