@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { GovModal, GovTag } from "@/components/gov";
-import { analysisService, JourneyDifferential } from "@/services/analysis-service";
+import { analysisService, JourneyDifferential } from "@/features/analysis/api/analysisService";
 import { Clock, AlertTriangle, CheckCircle2, MinusCircle, ArrowRight } from "lucide-react";
 
 interface JourneyDifferentialModalProps {

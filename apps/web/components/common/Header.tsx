@@ -1,7 +1,7 @@
 import { Menu } from "lucide-react";
 import NextImage from "next/image";
 import { GovButton } from "@/components/gov/GovButton";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { LogOut, User } from "lucide-react";
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -66,15 +66,15 @@ export function Header({ onMenuClick }: HeaderProps) {
                   <span className="text-[10px] text-slate-500 truncate max-w-[150px]">{user.email}</span>
                 </div>
               )}
-              
+
               <div className="flex gap-2">
                 <div className="relative group">
                   {user?.picture ? (
-                    <NextImage 
-                      src={user.picture} 
-                      alt={user.name || "User"} 
-                      width={32} 
-                      height={32} 
+                    <NextImage
+                      src={user.picture}
+                      alt={user.name || "User"}
+                      width={32}
+                      height={32}
                       className="rounded-full border-2 border-blue-100 group-hover:border-blue-400 transition-colors"
                     />
                   ) : (

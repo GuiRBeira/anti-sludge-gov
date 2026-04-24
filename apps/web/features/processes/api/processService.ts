@@ -67,6 +67,7 @@ export interface DashboardSummary {
   processos_criticos: number;
   processos_por_status: { status: string; count: number }[];
   recent_activity: { id: number; protocolo: string; processo: string; data: string }[];
+  processos_ranking: { nome: string; score: number }[];
 }
 
 export const processService = {
@@ -87,5 +88,39 @@ export const processService = {
 
   async getDashboardSummary(): Promise<DashboardSummary> {
     return apiFetch<DashboardSummary>("/dashboard/summary");
+  },
+
+  async update(id: number, data: Partial<CreateProcessoDTO>): Promise<Processo> {
+    return apiFetch<Processo>(`/processos/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async delete(id: number): Promise<void> {
+    return apiFetch<void>(`/processos/${id}`, {
+      method: "DELETE",
+    });
+  },
+
+  // Etapas
+  async createEtapa(data: Partial<Etapa>): Promise<Etapa> {
+    return apiFetch<Etapa>("/etapas", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateEtapa(id: number, data: Partial<Etapa>): Promise<Etapa> {
+    return apiFetch<Etapa>(`/etapas/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async deleteEtapa(id: number): Promise<void> {
+    return apiFetch<void>(`/etapas/${id}`, {
+      method: "DELETE",
+    });
   },
 };

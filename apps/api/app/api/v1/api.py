@@ -8,6 +8,7 @@ from app.features.observations.router import router as observations_router
 from app.features.processes.router import router as processes_router
 from app.features.dashboard.router import router as dashboard_router
 from app.features.extension_sessions.router import router as extension_sessions_router
+from app.features.feedback.router import router as feedback_router
 from app.api.v1.endpoints.auth import router as auth_router
 from fastapi import APIRouter
 
@@ -24,3 +25,4 @@ router.include_router(observations_router, tags=["Observations"])
 router.include_router(analysis_results_router, tags=["Analysis Results"])
 router.include_router(dashboard_router, prefix="/dashboard", tags=["Dashboard"])
 router.include_router(extension_sessions_router, tags=["Extension Sessions"])
+router.include_router(feedback_router, prefix="/feedback", tags=["Feedback"])

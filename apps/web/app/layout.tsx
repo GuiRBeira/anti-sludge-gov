@@ -19,7 +19,10 @@ export const metadata: Metadata = {
 };
 
 import { Shell } from "@/components/common/Shell";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/features/auth/context/AuthContext";
+import { FeedbackButton } from "@/features/feedback/components/FeedbackButton";
+import { Toaster } from "sonner";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 export default function RootLayout({
   children,
@@ -32,9 +35,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-slate-50 text-slate-900">
-        <AuthProvider>
-          <Shell>{children}</Shell>
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <Shell>{children}</Shell>
+            <FeedbackButton />
+            <Toaster position="top-right" expand={false} richColors />
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

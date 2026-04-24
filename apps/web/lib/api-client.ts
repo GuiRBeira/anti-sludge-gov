@@ -7,15 +7,15 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
-  
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),
   };
 
   try {
-    const response = await fetch(url, { 
-      ...options, 
+    const response = await fetch(url, {
+      ...options,
       headers,
       credentials: "include" // Permite o envio automático do cookie HttpOnly
     });

@@ -15,6 +15,7 @@ class DashboardSummary(BaseModel):
 	processos_criticos: int
 	processos_por_status: list[StatusCount]
 	recent_activity: list[dict] = []
+	processos_ranking: list[dict] = []
 
 
 class StepScore(BaseModel):
@@ -23,6 +24,7 @@ class StepScore(BaseModel):
 	ordem: int
 	indice_sludge: float | None
 	prioridade: int | None
+	recomendacao: str | None
 
 
 class ProcessChart(BaseModel):

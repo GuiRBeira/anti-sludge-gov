@@ -75,15 +75,22 @@ def get_current_user(request: Request, token: str | None = Depends(oauth2_scheme
 
 		# Validação de lista de emails e atribuição de ROLES
 		admins = [e.strip() for e in settings.ADMIN_EMAILS.split(",") if e.strip()]
-		analysts = [e.strip() for e in settings.ANALYST_EMAILS.split(",") if e.strip()]
+		researchers = [
+			e.strip() for e in settings.RESEARCHER_EMAILS.split(",") if e.strip()
+		]
+		supervisors = [
+			e.strip() for e in settings.SUPERVISOR_EMAILS.split(",") if e.strip()
+		]
 
 		role = "visitor"
 		if email in admins:
 			role = "admin"
-		elif email in analysts:
-			role = "analyst"
+		elif email in researchers:
+			role = "researcher"
+		elif email in supervisors:
+			role = "supervisor"
 
-		return {"email": email, "role": role}
+		return {"email": email, "name": payload.get("name"), "role": role}
 	except JWTError:
 		raise credentials_exception from None
 

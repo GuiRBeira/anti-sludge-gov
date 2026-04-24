@@ -1,4 +1,4 @@
-// apps/web/services/analysis-service.ts
+// apps/web/services/analysisService.ts
 import { apiFetch } from "@/lib/api-client";
 
 export interface ResultadoAnalise {
@@ -20,6 +20,7 @@ export interface StepScore {
   ordem: number;
   indice_sludge: number | null;
   prioridade: number | null;
+  recomendacao?: string;
 }
 
 export interface ProcessChartData {
@@ -95,6 +96,16 @@ export const analysisService = {
     end_ts: number;
   }): Promise<any> {
     return apiFetch("/extension_sessions/vincular-etapa", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Cria um novo critério de barreira para uma etapa.
+   */
+  async createCriterio(data: any): Promise<any> {
+    return apiFetch("/analysis_results/criterios-barreira", {
       method: "POST",
       body: JSON.stringify(data),
     });

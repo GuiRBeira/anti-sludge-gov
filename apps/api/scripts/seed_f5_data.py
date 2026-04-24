@@ -2,7 +2,7 @@
 import asyncio
 import random
 from datetime import datetime, timedelta
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -18,6 +18,7 @@ from app.models.analysis_model import (
 	CriterioImpacto,
 	AvaliacaoBarreira,
 	AvaliacaoImpacto,
+	ResultadoAnalise,
 )
 from app.models.observation_model import (
 	JornadaObservada,
@@ -31,9 +32,13 @@ DB_URL = "postgresql+psycopg://admin:secret@localhost:5432/antisludge"
 
 
 async def reset_data(session: AsyncSession):
-	# Opcional: Limpar dados anteriores para ter um seed limpo
-	# await session.execute("TRUNCATE TABLE interacao_extensao, pagina_extensao, sessao_extensao, avaliacao_barreira, avaliacao_impacto, tempo_etapa, jornada_observada, criterio_barreira, criterio_impacto, etapa, processo RESTART IDENTITY CASCADE")
-	pass
+	print("🧹 Limpando dados antigos do banco...")
+	await session.execute(
+		text(
+			"TRUNCATE TABLE resultado_analise, interacao_extensao, pagina_extensao, sessao_extensao, avaliacao_barreira, avaliacao_impacto, tempo_etapa, jornada_observada, criterio_barreira, criterio_impacto, etapa, processo RESTART IDENTITY CASCADE"
+		)
+	)
+	await session.commit()
 
 
 async def seed():
@@ -41,6 +46,7 @@ async def seed():
 	async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 	async with async_session() as session:
+		await reset_data(session)
 		print("🌱 Iniciando o abastecimento do banco...")
 
 		# 1. Obter dados do catálogo (assumindo que 02_initial_data já rodou no SQL)
@@ -179,6 +185,34 @@ async def seed():
 						jornada_observada_id=jornada.id,
 						etapa_id=etapa.id,
 						tempo_realizado=timedelta(minutes=random.randint(3, 15)),
+					)
+				)
+
+				# 5. GERAR RESULTADO DE ANÁLISE (O que alimenta o gráfico)
+				# Simulando o cálculo F5: Média Barreira * Média Impacto
+				m_barreira = random.uniform(1.5, 4.5)
+				m_impacto = random.uniform(2.0, 5.0)
+				idx_sludge = m_barreira * m_impacto
+
+				# Prioridade baseada no índice
+				priori = 1
+				if idx_sludge > 15:
+					priori = 4
+				elif idx_sludge > 10:
+					priori = 3
+				elif idx_sludge > 5:
+					priori = 2
+
+				session.add(
+					ResultadoAnalise(
+						processo_id=processo.id,
+						etapa_id=etapa.id,
+						media_barreiras=round(m_barreira, 2),
+						media_impactos=round(m_impacto, 2),
+						indice_sludge=round(idx_sludge, 2),
+						prioridade=priori,
+						e_sludge=idx_sludge > 9,
+						recomendacoes="Revisar fluxo de login e simplificar anexos.",
 					)
 				)
 

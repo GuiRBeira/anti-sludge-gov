@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   GovButton, 
@@ -9,40 +9,47 @@ import {
   GovIcon 
 } from "@/components/gov";
 import { 
-  processService, 
   EsferaGoverno, 
-  Abrangencia 
-} from "@/services/process-service";
+  Abrangencia,
+  Processo
+} from "../api/processService";
+import { useCreateProcessMutation, useUpdateProcessMutation } from "../api/useProcessQueries";
 
-interface CreateProcessModalProps {
+interface ProcessModalProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess?: () => void;
+  initialData?: Processo;
 }
 
-export function CreateProcessModal({ onClose, onSuccess }: CreateProcessModalProps) {
-  const [isCreating, setIsCreating] = useState(false);
+export function ProcessModal({ onClose, onSuccess, initialData }: ProcessModalProps) {
+  const isEdit = !!initialData;
+  const createMutation = useCreateProcessMutation();
+  const updateMutation = useUpdateProcessMutation();
+  
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
   const [formData, setFormData] = useState({
-    nome: "",
-    descricao: "",
-    objetivo: "",
-    esfera_governo: EsferaGoverno.FEDERAL,
-    abrangencia: Abrangencia.PUBLICO_GERAL,
-    publico_alvo: "",
-    usuarios_estimados_ano: 0,
+    nome: initialData?.nome || "",
+    descricao: initialData?.descricao || "",
+    objetivo: initialData?.objetivo || "",
+    esfera_governo: initialData?.esfera_governo || EsferaGoverno.FEDERAL,
+    abrangencia: initialData?.abrangencia || Abrangencia.PUBLICO_GERAL,
+    publico_alvo: initialData?.publico_alvo || "",
+    usuarios_estimados_ano: initialData?.usuarios_estimados_ano || 0,
   });
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsCreating(true);
     try {
-      await processService.create(formData);
-      onSuccess();
+      if (isEdit && initialData) {
+        await updateMutation.mutateAsync({ id: initialData.id, data: formData });
+      } else {
+        await createMutation.mutateAsync(formData);
+      }
+      onSuccess?.();
       onClose();
     } catch (err) {
-      alert("Erro ao criar processo.");
-      console.error(err);
-    } finally {
-      setIsCreating(false);
+      // Erro tratado no mutation
     }
   };
 
@@ -54,13 +61,15 @@ export function CreateProcessModal({ onClose, onSuccess }: CreateProcessModalPro
         className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
       >
         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-          <h3 className="text-lg font-black text-gov-blue uppercase italic">Novo Processo</h3>
+          <h3 className="text-lg font-black text-gov-blue uppercase italic">
+            {isEdit ? 'Editar Processo' : 'Novo Processo'}
+          </h3>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
             <GovIcon icon="mdi:close" size={24} />
           </button>
         </div>
 
-        <form onSubmit={handleCreate} className="p-6 space-y-4 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
           <GovInput 
             label="Nome do Processo" 
             placeholder="Ex: Cadastro de Artesão" 
@@ -107,7 +116,9 @@ export function CreateProcessModal({ onClose, onSuccess }: CreateProcessModalPro
 
           <div className="pt-4 flex gap-3">
             <GovButton type="secondary" block onClick={onClose}>Cancelar</GovButton>
-            <GovButton type="primary" block submit loading={isCreating}>Criar Processo</GovButton>
+            <GovButton type="primary" block submit loading={isSubmitting}>
+              {isEdit ? 'Salvar Alterações' : 'Criar Processo'}
+            </GovButton>
           </div>
         </form>
       </motion.div>
