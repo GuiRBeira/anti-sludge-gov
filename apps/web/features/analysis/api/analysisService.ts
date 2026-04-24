@@ -99,5 +99,15 @@ export const analysisService = {
       method: "POST",
       body: JSON.stringify(data),
     });
+  },
+
+  /**
+   * Cria um novo critério de barreira para uma etapa.
+   */
+  async createCriterio(data: any): Promise<any> {
+    return apiFetch("/analysis_results/criterios-barreira", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
   }
 };

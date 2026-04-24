@@ -53,7 +53,7 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
       // Chama a API do backend para criar o critério na etapa
       // Nota: No nosso backend atual, a criação de CriterioBarreira pede nome, pergunta e notas.
       // Aqui estamos simplificando usando os dados do template.
-      await analysisService.createCriterion({
+      await analysisService.createCriterio({
         etapa_id: etapaId,
         criterio_template_id: template.id,
         nome: template.nome,

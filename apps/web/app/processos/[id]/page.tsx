@@ -2,7 +2,6 @@
 
 import React, { useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { GovButton, GovIcon, GovCard, GovTag } from "@/components/gov";
 import { ArrowLeft, Edit, Trash2, Layout, Info } from "lucide-react";
@@ -12,6 +11,7 @@ import { EtapaModal } from "@/features/processes/components/EtapaModal";
 import { useProcessDetail, useDeleteProcessMutation, useDeleteEtapaMutation } from "@/features/processes/api/useProcessQueries";
 import { useProcessAnalysis } from "@/features/analysis/api/useAnalysisQueries";
 import { Etapa } from "@/features/processes/api/processService";
+import { Layers } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 
 export default function ProcessoDetailPage({ params }: { params: Promise<{ id: string }> }) {
