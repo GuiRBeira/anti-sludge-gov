@@ -24,28 +24,14 @@ export function EtapaModal({ processoId, initialData, onClose }: EtapaModalProps
   const { data: tiposComportamento = [] } = useTiposComportamento();
 
   const [formData, setFormData] = useState({
-    processo_id: processoId,
-    comportamento: "",
-    ordem: 1,
-    categoria_id: 0,
-    tipo_comportamento_id: 0,
-    e_obrigatorio: false,
-    tempo_planejado: "00:05:00",
+    processo_id: initialData?.processo_id || processoId,
+    comportamento: initialData?.comportamento || "",
+    ordem: initialData?.ordem || 1,
+    categoria_id: initialData?.categoria_id || 0,
+    tipo_comportamento_id: initialData?.tipo_comportamento_id || 0,
+    e_obrigatorio: initialData?.e_obrigatorio || false,
+    tempo_planejado: initialData?.tempo_planejado || "00:05:00",
   });
-
-  useEffect(() => {
-    if (initialData) {
-      setFormData({
-        processo_id: initialData.processo_id,
-        comportamento: initialData.comportamento,
-        ordem: initialData.ordem,
-        categoria_id: initialData.categoria_id,
-        tipo_comportamento_id: initialData.tipo_comportamento_id,
-        e_obrigatorio: initialData.e_obrigatorio,
-        tempo_planejado: initialData.tempo_planejado || "00:05:00",
-      });
-    }
-  }, [initialData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,7 +1,7 @@
 // apps/web/components/analysis/ExtensionLinkerModal.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { GovModal, GovButton, GovTag } from "@/components/gov";
 import { extensionService, SessaoExtensao, SessaoExtensaoDetail, InteracaoSummary } from "@/features/analysis/api/extensionService";
 import { analysisService } from "@/features/analysis/api/analysisService";
@@ -29,17 +29,7 @@ export function ExtensionLinkerModal({ isOpen, onClose, jornadaId, etapaId, etap
   const [startPoint, setStartPoint] = useState<number | null>(null);
   const [endPoint, setEndPoint] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadSessions();
-    } else {
-      setSelectedSession(null);
-      setStartPoint(null);
-      setEndPoint(null);
-    }
-  }, [isOpen, processoId]);
-
-  async function loadSessions() {
+  const loadSessions = useCallback(async () => {
     setLoading(true);
     try {
       const res = await extensionService.listByProcess(processoId);
@@ -49,7 +39,7 @@ export function ExtensionLinkerModal({ isOpen, onClose, jornadaId, etapaId, etap
     } finally {
       setLoading(false);
     }
-  }
+  }, [processoId]);
 
   async function selectSession(session: SessaoExtensao) {
     setLoading(true);
@@ -83,6 +73,16 @@ export function ExtensionLinkerModal({ isOpen, onClose, jornadaId, etapaId, etap
     }
   };
 
+    useEffect(() => {
+      if (isOpen) {
+        loadSessions();
+      } else {
+        setSelectedSession(null);
+        setStartPoint(null);
+        setEndPoint(null);
+      }
+    }, [isOpen, processoId, loadSessions]);
+
   // Flatten and sort interactions
   const allInteractions = selectedSession?.paginas
     .flatMap(p => p.interacoes.map(i => ({ ...i, url: p.url })))
@@ -105,7 +105,7 @@ export function ExtensionLinkerModal({ isOpen, onClose, jornadaId, etapaId, etap
             ) : sessions.length > 0 ? (
               <div className="grid grid-cols-1 gap-3">
                 {sessions.map(s => (
-                  <button 
+                  <button
                     key={s.id}
                     onClick={() => selectSession(s)}
                     className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl hover:border-blue-300 hover:shadow-md transition-all group"
@@ -133,7 +133,7 @@ export function ExtensionLinkerModal({ isOpen, onClose, jornadaId, etapaId, etap
           </div>
         ) : (
           <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-            <button 
+            <button
               onClick={() => setSelectedSession(null)}
               className="text-[10px] font-black text-blue-600 hover:underline flex items-center gap-1 uppercase tracking-widest"
             >
@@ -161,12 +161,12 @@ export function ExtensionLinkerModal({ isOpen, onClose, jornadaId, etapaId, etap
                {allInteractions.map((inter, i) => {
                  const isStart = startPoint === inter.timestamp_evento;
                  const isEnd = endPoint === inter.timestamp_evento;
-                 const isInRange = startPoint && endPoint && 
-                    inter.timestamp_evento >= Math.min(startPoint, endPoint) && 
+                 const isInRange = startPoint && endPoint &&
+                    inter.timestamp_evento >= Math.min(startPoint, endPoint) &&
                     inter.timestamp_evento <= Math.max(startPoint, endPoint);
 
                  return (
-                   <div 
+                   <div
                     key={i}
                     onClick={() => {
                       if (!startPoint || (startPoint && endPoint)) {
@@ -177,7 +177,7 @@ export function ExtensionLinkerModal({ isOpen, onClose, jornadaId, etapaId, etap
                       }
                     }}
                     className={`p-3 rounded-2xl cursor-pointer transition-all border ${
-                      isStart || isEnd ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-[1.02]' 
+                      isStart || isEnd ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-[1.02]'
                       : isInRange ? 'bg-blue-50 border-blue-100 text-blue-700'
                       : 'bg-white border-transparent hover:border-slate-200'
                     }`}
@@ -209,9 +209,9 @@ export function ExtensionLinkerModal({ isOpen, onClose, jornadaId, etapaId, etap
 
             <div className="flex gap-3">
                <GovButton type="secondary" onClick={onClose} className="flex-1">Cancelar</GovButton>
-               <GovButton 
-                type="primary" 
-                onClick={handleLink} 
+               <GovButton
+                type="primary"
+                onClick={handleLink}
                 className="flex-1"
                 disabled={!startPoint || !endPoint || submitting}
                >

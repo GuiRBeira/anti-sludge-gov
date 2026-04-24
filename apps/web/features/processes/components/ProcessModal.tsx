@@ -29,28 +29,14 @@ export function ProcessModal({ onClose, onSuccess, initialData }: ProcessModalPr
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   const [formData, setFormData] = useState({
-    nome: "",
-    descricao: "",
-    objetivo: "",
-    esfera_governo: EsferaGoverno.FEDERAL,
-    abrangencia: Abrangencia.PUBLICO_GERAL,
-    publico_alvo: "",
-    usuarios_estimados_ano: 0,
+    nome: initialData?.nome || "",
+    descricao: initialData?.descricao || "",
+    objetivo: initialData?.objetivo || "",
+    esfera_governo: initialData?.esfera_governo || EsferaGoverno.FEDERAL,
+    abrangencia: initialData?.abrangencia || Abrangencia.PUBLICO_GERAL,
+    publico_alvo: initialData?.publico_alvo || "",
+    usuarios_estimados_ano: initialData?.usuarios_estimados_ano || 0,
   });
-
-  useEffect(() => {
-    if (initialData) {
-      setFormData({
-        nome: initialData.nome || "",
-        descricao: initialData.descricao || "",
-        objetivo: initialData.objetivo || "",
-        esfera_governo: initialData.esfera_governo || EsferaGoverno.FEDERAL,
-        abrangencia: initialData.abrangencia || Abrangencia.PUBLICO_GERAL,
-        publico_alvo: initialData.publico_alvo || "",
-        usuarios_estimados_ano: initialData.usuarios_estimados_ano || 0,
-      });
-    }
-  }, [initialData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

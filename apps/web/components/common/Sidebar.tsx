@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -138,7 +139,7 @@ export function Sidebar() {
             className="mt-6 p-4 bg-slate-50 rounded-3xl border border-slate-100 flex items-center gap-3"
           >
             {user.picture ? (
-              <img
+              <Image
                 src={user.picture}
                 alt={user.name}
                 className="w-10 h-10 rounded-2xl border-2 border-white shadow-sm"

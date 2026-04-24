@@ -25,12 +25,6 @@ export default function Home() {
     setShowModal(true);
   };
 
-  useEffect(() => {
-    if (!showModal) {
-      setEditingProcess(null);
-    }
-  }, [showModal]);
-
   const stats = [
     {
       label: "Total de Processos",
@@ -182,7 +176,10 @@ export default function Home() {
 
       {showModal && (
         <ProcessModal
-          onClose={() => setShowModal(false)}
+          onClose={() => {
+            setShowModal(false);
+            setEditingProcess(null);
+          }}
           initialData={editingProcess || undefined}
         />
       )}

@@ -36,10 +36,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isReadOnly = user?.role === "supervisor" || user?.role === "visitor";
 
   return (
-    <AuthContext.Provider value={{ 
-      user: user ?? null, 
-      login, 
-      logout, 
+    <AuthContext.Provider value={{
+      user: user ?? null,
+      login,
+      logout,
       isLoading,
       isAdmin,
       canEdit,
