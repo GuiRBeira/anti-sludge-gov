@@ -28,7 +28,7 @@ export interface GovCardProps {
   onClick?: () => void;
   menuActions?: GovCardMenuAction[];
   /** Propriedades de imagem ou avatar podem ser adicionadas conforme necessário */
-  avatar?: unknown; 
+  avatar?: unknown;
   /** Ícone a ser exibido ao lado do título */
   icon?: string;
   /** Elemento opcional para exibir no cabeçalho (ex: botões de ação) */
@@ -39,7 +39,7 @@ export interface GovCardProps {
  * Skeleton para o BrCard renderizado no Servidor.
  * Mantém a estrutura visual básica para evitar CLS.
  */
-function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, className, children, icon }: GovCardProps) {
+function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, className, children, icon, headerAction }: GovCardProps) {
   return (
     <div className={clsx(
       "br-card",
@@ -47,7 +47,7 @@ function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, classNam
       fixedHeight && "fixed-height",
       className
     )}>
-      {(title || subtitle || props.headerAction) && (
+      {(title || subtitle || headerAction) && (
         <div className="card-header flex items-center justify-between pr-4">
           <div>
             {title && (
@@ -60,9 +60,9 @@ function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, classNam
             )}
             {subtitle && <div className="br-item header-subtitle">{subtitle}</div>}
           </div>
-          {props.headerAction && (
-            <div className="flex-shrink-0">
-              {props.headerAction}
+          {headerAction && (
+            <div className="shrink-0">
+              {headerAction}
             </div>
           )}
         </div>
@@ -80,7 +80,7 @@ function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, classNam
 }
 
 // Import dinâmico com Isolamento de tipos para React 19
-const BrCard = dynamic(() => import("@govbr-ds/react-components").then(m => m.BrCard as any), { 
+const BrCard = dynamic(() => import("@govbr-ds/react-components").then(m => m.BrCard as any), {
   ssr: false
 }) as React.ElementType;
 
