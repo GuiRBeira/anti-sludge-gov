@@ -20,6 +20,9 @@ class CatalogUseCases:
 	async def create_category(self, data: dict):
 		return await self.repository.create(data)
 
+	async def list_tipos(self):
+		return await self.repository.get_all_tipos()
+
 	async def get_allowed_criteria_for_step(self, etapa_id: int):
 		"""
 		Retorna a lista de critérios metodológicos (templates) permitidos para uma etapa,

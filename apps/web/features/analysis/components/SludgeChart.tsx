@@ -47,9 +47,17 @@ export function SludgeChart({ data }: SludgeChartProps) {
     }
   };
 
+  if (!data || data.length === 0) {
+    return (
+      <div className="h-[300px] w-full flex items-center justify-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+        <p className="text-sm font-medium text-slate-400 italic">Nenhum dado de análise disponível para este processo.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={300} debounce={50}>
         <BarChart
           data={data}
           margin={{ top: 20, right: 30, left: 0, bottom: 20 }}

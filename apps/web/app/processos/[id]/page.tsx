@@ -7,8 +7,10 @@ import { GovButton, GovIcon, GovCard, GovTag } from "@/components/gov";
 import { ArrowLeft, Edit, Trash2, Layout, Info } from "lucide-react";
 import { SludgeChart } from "@/features/analysis/components/SludgeChart";
 import { ProcessModal } from "@/features/processes/components/ProcessModal";
-import { useProcessDetail, useDeleteProcessMutation } from "@/features/processes/api/useProcessQueries";
+import { EtapaModal } from "@/features/processes/components/EtapaModal";
+import { useProcessDetail, useDeleteProcessMutation, useDeleteEtapaMutation } from "@/features/processes/api/useProcessQueries";
 import { useProcessAnalysis } from "@/features/analysis/api/useAnalysisQueries";
+import { Etapa } from "@/features/processes/api/processService";
 
 export default function ProcessoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -18,7 +20,11 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
   const { data: processo, isLoading: loadingProcesso, error: errorProcesso } = useProcessDetail(processId);
   const { data: analysis, isLoading: loadingAnalysis } = useProcessAnalysis(processId);
   const deleteMutation = useDeleteProcessMutation();
+  const deleteEtapaMutation = useDeleteEtapaMutation(processId);
+  
   const [showModal, setShowModal] = useState(false);
+  const [showEtapaModal, setShowEtapaModal] = useState(false);
+  const [editingEtapa, setEditingEtapa] = useState<Etapa | null>(null);
 
   const loading = loadingProcesso || loadingAnalysis;
   const error = errorProcesso;
@@ -54,6 +60,17 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
         // Erro já tratado no hook
       }
     }
+  };
+
+  const handleDeleteEtapa = async (etapaId: number) => {
+    if (confirm("Deseja remover esta etapa?")) {
+      await deleteEtapaMutation.mutateAsync(etapaId);
+    }
+  };
+
+  const handleEditEtapa = (etapa: Etapa) => {
+    setEditingEtapa(etapa);
+    setShowEtapaModal(true);
   };
 
   return (
@@ -157,14 +174,32 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
               </div>
            </GovCard>
 
-           <GovCard title="Lista de Etapas" icon="mdi:layers-outline">
+           <GovCard 
+             title="Lista de Etapas" 
+             icon="mdi:layers-outline"
+             headerAction={
+               <GovButton 
+                 type="secondary" 
+                 size="small" 
+                 className="h-8 text-[10px]"
+                 onClick={() => {
+                   setEditingEtapa(null);
+                   setShowEtapaModal(true);
+                 }}
+               >
+                 + Add Etapa
+               </GovButton>
+             }
+           >
               <div className="p-2 overflow-x-auto">
                  <table className="w-full text-left border-collapse">
                     <thead>
                        <tr className="border-b border-slate-50 italic">
                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Ordem</th>
                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Comportamento</th>
-                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Obrigatório</th>
+                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Planejado</th>
+                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Real (Médio)</th>
+                          <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase">Obrig.</th>
                           <th className="px-4 py-3 text-[10px] font-black text-slate-400 uppercase text-right">Ações</th>
                        </tr>
                     </thead>
@@ -173,16 +208,33 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
                           <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
                              <td className="px-4 py-4 text-xs font-black text-slate-300">#0{e.ordem}</td>
                              <td className="px-4 py-4 text-sm font-bold text-slate-800">{e.comportamento}</td>
+                             <td className="px-4 py-4 text-xs font-medium text-slate-500">
+                                {e.tempo_planejado ? `${e.tempo_planejado.split(':')[1]}m` : "--"}
+                             </td>
+                             <td className="px-4 py-4 text-xs font-bold text-blue-600">
+                                {e.duracao_media_observada ? `${e.duracao_media_observada.split(':')[1]}m` : "Sob análise"}
+                             </td>
                              <td className="px-4 py-4">
                                 <div className={`h-2 w-2 rounded-full ${e.e_obrigatorio ? 'bg-orange-400 shadow-lg shadow-orange-200' : 'bg-slate-200'}`} />
                              </td>
-                             <td className="px-4 py-4 text-right">
-                                <GovButton type="secondary" size="small" circle icon="fas fa-search" />
+                             <td className="px-4 py-4 text-right flex justify-end gap-2">
+                                <button 
+                                  onClick={() => handleEditEtapa(e)}
+                                  className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
+                                >
+                                  <Edit size={14} />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteEtapa(e.id)}
+                                  className="p-1.5 text-slate-400 hover:text-red-600 transition-colors"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
                              </td>
                           </tr>
                        )) : (
                           <tr>
-                             <td colSpan={4} className="py-10 text-center text-slate-400 text-sm italic font-medium">
+                             <td colSpan={6} className="py-10 text-center text-slate-400 text-sm italic font-medium">
                                 Nenhuma etapa cadastrada para este processo.
                              </td>
                           </tr>
@@ -198,6 +250,17 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
         <ProcessModal
           onClose={() => setShowModal(false)}
           initialData={processo}
+        />
+      )}
+
+      {showEtapaModal && (
+        <EtapaModal 
+          processoId={processId}
+          initialData={editingEtapa || undefined}
+          onClose={() => {
+            setShowEtapaModal(false);
+            setEditingEtapa(null);
+          }}
         />
       )}
     </div>

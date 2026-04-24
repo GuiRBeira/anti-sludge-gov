@@ -31,6 +31,8 @@ export interface GovCardProps {
   avatar?: unknown; 
   /** Ícone a ser exibido ao lado do título */
   icon?: string;
+  /** Elemento opcional para exibir no cabeçalho (ex: botões de ação) */
+  headerAction?: React.ReactNode;
 }
 
 /**
@@ -45,17 +47,24 @@ function GovCardSkeleton({ title, subtitle, footer, hover, fixedHeight, classNam
       fixedHeight && "fixed-height",
       className
     )}>
-      {(title || subtitle) && (
-        <div className="card-header">
-          {title && (
-            <div className="br-item header-title">
-              <div className="flex items-center gap-2">
-                {icon && <GovIcon icon={icon} size={20} className="text-gov-blue" />}
-                <span>{title}</span>
+      {(title || subtitle || props.headerAction) && (
+        <div className="card-header flex items-center justify-between pr-4">
+          <div>
+            {title && (
+              <div className="br-item header-title">
+                <div className="flex items-center gap-2">
+                  {icon && <GovIcon icon={icon} size={20} className="text-gov-blue" />}
+                  <span>{title}</span>
+                </div>
               </div>
+            )}
+            {subtitle && <div className="br-item header-subtitle">{subtitle}</div>}
+          </div>
+          {props.headerAction && (
+            <div className="flex-shrink-0">
+              {props.headerAction}
             </div>
           )}
-          {subtitle && <div className="br-item header-subtitle">{subtitle}</div>}
         </div>
       )}
       <div className="card-content">

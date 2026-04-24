@@ -76,3 +76,46 @@ export const useDeleteProcessMutation = () => {
     },
   });
 };
+
+// Etapas
+export const useCreateEtapaMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => processService.createEtapa(data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: processKeys.detail(variables.processo_id!) });
+      toast.success("Etapa criada com sucesso!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Erro ao criar etapa.");
+    },
+  });
+};
+
+export const useUpdateEtapaMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => processService.updateEtapa(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: processKeys.detail(variables.data.processo_id!) });
+      toast.success("Etapa atualizada com sucesso!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Erro ao atualizar etapa.");
+    },
+  });
+};
+
+export const useDeleteEtapaMutation = (processoId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => processService.deleteEtapa(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: processKeys.detail(processoId) });
+      toast.success("Etapa removida com sucesso!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Erro ao remover etapa.");
+    },
+  });
+};

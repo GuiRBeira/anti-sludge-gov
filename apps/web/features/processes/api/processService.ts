@@ -101,4 +101,25 @@ export const processService = {
       method: "DELETE",
     });
   },
+
+  // Etapas
+  async createEtapa(data: Partial<Etapa>): Promise<Etapa> {
+    return apiFetch<Etapa>("/etapas", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateEtapa(id: number, data: Partial<Etapa>): Promise<Etapa> {
+    return apiFetch<Etapa>(`/etapas/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async deleteEtapa(id: number): Promise<void> {
+    return apiFetch<void>(`/etapas/${id}`, {
+      method: "DELETE",
+    });
+  },
 };

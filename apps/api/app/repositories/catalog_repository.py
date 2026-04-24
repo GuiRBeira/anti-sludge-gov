@@ -34,6 +34,11 @@ class CatalogRepository(BaseRepository[Categoria]):
 		result = await self.session.execute(query)
 		return list(result.scalars().all())
 
+	async def get_all_tipos(self) -> list[TipoComportamento]:
+		query = select(TipoComportamento).order_by(TipoComportamento.nome)
+		result = await self.session.execute(query)
+		return list(result.scalars().all())
+
 	async def validate_compatibility(self, tipo_id: int, criterio_id: int) -> bool:
 		"""Verifica se um critério de barreira é permitido para um tipo de comportamento."""
 		query = select(TipoCriterio).where(
