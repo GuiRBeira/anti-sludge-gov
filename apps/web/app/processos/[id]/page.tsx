@@ -221,7 +221,7 @@ export default function ProcessoDetailPage({ params }: { params: Promise<{ id: s
                                    <div className="flex flex-col">
                                       <span className="text-sm font-bold text-slate-800">{e.comportamento}</span>
                                       {analysisStep?.recomendacao && isCritical && (
-                                         <span className="text-[10px] text-blue-600 font-bold mt-1 flex items-center gap-1 bg-blue-50 w-fit px-2 py-0.5 rounded-full">
+                                         <span className="text-xs text-slate-600 font-bold mt-1 flex items-center gap-1 bg-slate-50 w-fit px-2 py-0.5 rounded-full">
                                             <Info size={10} />
                                             {analysisStep.recomendacao}
                                          </span>
