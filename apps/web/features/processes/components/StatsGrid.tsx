@@ -3,14 +3,14 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { GovIcon } from "@/components/gov";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 interface StatItem {
   label: string;
   value: string | number;
-  icon: string;
+  icon: LucideIcon;
   color: string;
 }
 
@@ -35,10 +35,9 @@ export function StatsGrid({ stats }: StatsGridProps) {
                   "p-3 rounded-2xl text-white shadow-lg transition-transform group-hover:scale-110 duration-300",
                   stat.color
                 )}>
-                  <GovIcon icon={stat.icon} className="text-xl" />
+                  <stat.icon size={20} strokeWidth={2.5} />
                 </div>
                 
-                {/* Indicador sutil de tendência ou status */}
                 <div className="h-1.5 w-1.5 rounded-full bg-slate-200" />
               </div>
 

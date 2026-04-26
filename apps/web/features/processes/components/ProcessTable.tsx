@@ -4,7 +4,6 @@
 import React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { GovIcon } from "@/components/gov";
 import { Processo } from "../api/processService";
 import { Edit2, ArrowRight, Landmark, Activity, SearchX } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";

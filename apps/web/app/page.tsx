@@ -3,13 +3,25 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { GovIcon } from "@/components/gov";
 import { StatsGrid } from "@/features/processes/components/StatsGrid";
 import { ProcessTable } from "@/features/processes/components/ProcessTable";
 import { ProcessModal } from "@/features/processes/components/ProcessModal";
 import { SludgeChart } from "@/features/processes/components/DashboardSludgeChart";
 import { Processo } from "@/features/processes/api/processService";
-import { AlertCircle, TrendingUp, Calendar, Zap, Plus, History } from "lucide-react";
+import { 
+  AlertCircle, 
+  TrendingUp, 
+  Calendar, 
+  Zap, 
+  Plus, 
+  History, 
+  FileText, 
+  ShieldAlert, 
+  Eye, 
+  Activity,
+  BarChart3,
+  List
+} from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { useProcesses, useProcessSummary } from "@/features/processes/api/useProcessQueries";
 
@@ -40,25 +52,25 @@ export default function Home() {
     {
       label: "Total de Processos",
       value: summary?.total_processos || 0,
-      icon: "mdi:file-document",
+      icon: FileText,
       color: "bg-blue-600"
     },
     {
       label: "Processos Críticos",
       value: summary?.processos_criticos || 0,
-      icon: "mdi:alert-circle-outline",
+      icon: ShieldAlert,
       color: "bg-red-500"
     },
     {
       label: "Jornadas Observadas",
       value: summary?.total_jornadas || 0,
-      icon: "mdi:eye-outline",
+      icon: Eye,
       color: "bg-emerald-500"
     },
     {
       label: "Média Sludge",
       value: summary ? (summary.media_barreiras * summary.media_impactos).toFixed(1) : "0.0",
-      icon: "mdi:chart-bell-curve",
+      icon: Activity,
       color: "bg-indigo-600"
     },
   ];
@@ -111,7 +123,7 @@ export default function Home() {
           <CardHeader className="px-8 pt-8">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-slate-50 rounded-xl text-primary">
-                <GovIcon icon="mdi:chart-bar" className="text-xl" />
+                <BarChart3 className="w-5 h-5" />
               </div>
               <div>
                 <CardTitle className="text-xl font-black tracking-tighter uppercase">Índice de Sludge por Processo</CardTitle>
@@ -195,12 +207,12 @@ export default function Home() {
         <CardHeader className="px-8 pt-8 border-b border-slate-50 flex flex-row items-center justify-between">
           <div className="flex items-center gap-3">
              <div className="p-2 bg-slate-50 rounded-xl text-primary">
-                <GovIcon icon="mdi:format-list-bulleted" className="text-xl" />
+                <List className="w-5 h-5" />
              </div>
              <div>
                 <CardTitle className="text-xl font-black tracking-tighter uppercase">Listagem de Processos</CardTitle>
                 <CardDescription className="font-medium">Gestão centralizada de fluxos e scores de sludge</CardDescription>
-             </div>
+              </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
