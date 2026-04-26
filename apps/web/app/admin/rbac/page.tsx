@@ -2,16 +2,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  useRBACEmails, 
-  useCreateRBACMutation, 
-  useUpdateRBACMutation, 
-  useDeleteRBACMutation 
+import {
+  useRBACEmails,
+  useCreateRBACMutation,
+  useUpdateRBACMutation,
+  useDeleteRBACMutation
 } from "@/features/rbac/api/useRBACQueries";
 
-import { 
-  UserPlus, 
-  ShieldCheck, 
+import {
+  UserPlus,
+  ShieldCheck,
   Search,
   Mail,
   Calendar,
@@ -70,7 +70,7 @@ export default function RBACPage() {
   const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState("researcher");
 
-  const filteredEmails = emails?.filter(item => 
+  const filteredEmails = emails?.filter(item =>
     item.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -105,13 +105,15 @@ export default function RBACPage() {
         </div>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogTrigger asChild>
-            <Button size="lg" className="h-12 px-6 rounded-2xl font-bold gap-2 shadow-lg shadow-blue-500/20">
-              <UserPlus className="w-5 h-5" />
-              Conceder Acesso
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] rounded-[2rem] p-8">
+          <DialogTrigger
+            render={
+              <Button size="lg" className="h-12 px-6 rounded-2xl font-bold gap-2 shadow-lg shadow-blue-500/20">
+                <UserPlus className="w-5 h-5" />
+                Conceder Acesso
+              </Button>
+            }
+          />
+          <DialogContent className="sm:max-w-[425px] rounded-4xl p-8">
             <DialogHeader>
               <DialogTitle className="text-2xl font-black tracking-tighter uppercase">Conceder Acesso</DialogTitle>
               <DialogDescription className="text-slate-500 font-medium">
@@ -136,7 +138,7 @@ export default function RBACPage() {
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Papel / Nível</label>
-                <Select value={newRole} onValueChange={setNewRole}>
+                <Select value={newRole} onValueChange={(val) => val && setNewRole(val)}>
                   <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-medium focus:ring-blue-500">
                     <SelectValue placeholder="Selecione um papel" />
                   </SelectTrigger>
@@ -150,9 +152,9 @@ export default function RBACPage() {
               </div>
 
               <DialogFooter className="pt-4">
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 rounded-xl font-bold" 
+                <Button
+                  type="submit"
+                  className="w-full h-12 rounded-xl font-bold"
                   disabled={createMutation.isPending}
                 >
                   {createMutation.isPending ? "Processando..." : "Confirmar Acesso"}
@@ -222,7 +224,7 @@ export default function RBACPage() {
                       <TableCell className="px-8 py-6">
                         <Select
                           value={item.role}
-                          onValueChange={(val) => handleRoleChange(item.email, val)}
+                          onValueChange={(val) => val && handleRoleChange(item.email, val)}
                         >
                           <SelectTrigger className={`
                             h-10 w-[160px] rounded-xl text-[10px] font-black uppercase tracking-tighter

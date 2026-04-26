@@ -3,21 +3,21 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  useProcesses, 
-  useProcessSummary 
+import {
+  useProcesses,
+  useProcessSummary
 } from "@/features/processes/api/useProcessQueries";
 import { Processo } from "@/features/processes/api/processService";
 import { ProcessTable } from "@/features/processes/components/ProcessTable";
 import { ProcessModal } from "@/features/processes/components/ProcessModal";
 import { useAuth } from "@/features/auth/context/AuthContext";
 
-import { 
-  FileText, 
-  Plus, 
-  Search, 
-  Filter, 
-  ArrowRightLeft, 
+import {
+  FileText,
+  Plus,
+  Search,
+  Filter,
+  ArrowRightLeft,
   ShieldAlert,
   CheckCircle2,
   Clock
@@ -45,14 +45,14 @@ export default function ProcessosPage() {
   const { canEdit } = useAuth();
   const { data: processos = [], isLoading: loading, error } = useProcesses();
   const { data: summary } = useProcessSummary();
-  
+
   const [showModal, setShowModal] = useState(false);
   const [editingProcess, setEditingProcess] = useState<Processo | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
   const filteredProcessos = processos.filter(p => {
-    const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch = p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          p.descricao?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || p.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -77,7 +77,7 @@ export default function ProcessosPage() {
         </div>
 
         {canEdit && (
-          <Button 
+          <Button
             size="lg"
             className="h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-xs gap-2 shadow-xl shadow-primary/20"
             onClick={() => setShowModal(true)}
@@ -90,7 +90,7 @@ export default function ProcessosPage() {
 
       {/* Mini Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="rounded-3xl border-slate-100 shadow-sm bg-blue-50/50 border-blue-100/50">
+        <Card className="rounded-3xl shadow-sm bg-blue-50/50 border-blue-100/50">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-2 bg-blue-600 rounded-xl text-white">
               <FileText size={18} />
@@ -102,7 +102,7 @@ export default function ProcessosPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-slate-100 shadow-sm bg-red-50/50 border-red-100/50">
+        <Card className="rounded-3xl shadow-sm bg-red-50/50 border-red-100/50">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-2 bg-red-600 rounded-xl text-white">
               <ShieldAlert size={18} />
@@ -114,7 +114,7 @@ export default function ProcessosPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-slate-100 shadow-sm bg-emerald-50/50 border-emerald-100/50">
+        <Card className="rounded-3xl shadow-sm bg-emerald-50/50 border-emerald-100/50">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-2 bg-emerald-600 rounded-xl text-white">
               <CheckCircle2 size={18} />
@@ -128,7 +128,7 @@ export default function ProcessosPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-slate-100 shadow-sm bg-amber-50/50 border-amber-100/50">
+        <Card className="rounded-3xl shadow-sm bg-amber-50/50 border-amber-100/50">
           <CardContent className="p-4 flex items-center gap-4">
             <div className="p-2 bg-amber-500 rounded-xl text-white">
               <Clock size={18} />
@@ -156,13 +156,13 @@ export default function ProcessosPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest mr-2">
                 <Filter size={14} />
                 Filtrar:
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter} onValueChange={(val) => val && setStatusFilter(val)}>
                 <SelectTrigger className="h-12 w-[180px] rounded-xl bg-slate-50 border-none font-medium focus:ring-primary">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
@@ -176,7 +176,7 @@ export default function ProcessosPage() {
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent className="p-0">
           <ProcessTable
             processos={filteredProcessos}

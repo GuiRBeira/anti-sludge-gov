@@ -4,6 +4,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import icon from "@/assets/icon.png";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -53,31 +54,55 @@ export function Sidebar() {
       className="border-r border-slate-200 bg-white flex flex-col h-full sticky top-0 overflow-y-auto overflow-x-hidden z-30 shadow-sm"
     >
       {/* Header / Logo */}
-      <div className="p-6 flex items-center justify-between">
-        {!isCollapsed && (
-          <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex flex-col"
-          >
-            <h2 className="text-xl font-black text-slate-900 tracking-tighter leading-none">
-              Anti-Sludge
-            </h2>
-            <span className="text-xs font-black text-primary uppercase tracking-[0.2em] mt-2">
-              Ministério da Gestão
-            </span>
-          </motion.div>
-        )}
+      <div className={cn("p-6 flex items-center", isCollapsed ? "justify-center" : "justify-between")}>
+        <Link href="/" className="flex items-center gap-3">
+          <Image 
+            src={icon} 
+            alt="Anti-Sludge Logo" 
+            width={32} 
+            height={32} 
+            className="w-8 h-8 object-contain shadow-sm"
+          />
+          {!isCollapsed && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex flex-col"
+            >
+              <h2 className="text-lg font-black text-slate-900 tracking-tighter leading-none">
+                Anti-Sludge
+              </h2>
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.15em] mt-1">
+                Ministério da Gestão
+              </span>
+            </motion.div>
+          )}
+        </Link>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className={cn("rounded-xl hover:bg-slate-50 text-slate-400 hover:text-primary transition-all", !isCollapsed && "ml-auto")}
-        >
-          {isCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-        </Button>
+        {!isCollapsed && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="rounded-xl hover:bg-slate-50 text-slate-400 hover:text-primary transition-all ml-auto"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </Button>
+        )}
       </div>
+
+      {isCollapsed && (
+        <div className="flex justify-center pb-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="rounded-xl hover:bg-slate-50 text-slate-400 hover:text-primary transition-all"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </Button>
+        </div>
+      )}
 
       {/* Navigation Items */}
       <nav className="flex-1 px-4 space-y-1.5 mt-4">

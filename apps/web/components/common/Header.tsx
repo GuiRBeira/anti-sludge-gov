@@ -1,6 +1,5 @@
 import { Menu } from "lucide-react";
 import NextImage from "next/image";
-import { GovButton } from "@/components/gov/GovButton";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { LogOut, User } from "lucide-react";
 interface HeaderProps {
