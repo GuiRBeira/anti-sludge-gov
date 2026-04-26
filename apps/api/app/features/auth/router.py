@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from app.core.auth import (
 	verify_google_token,
 	create_access_token,
-	get_current_user,
+	get_current_user_optional,
 	get_user_role,
 )
 from app.core.database import get_db
@@ -81,8 +81,8 @@ async def logout(response: Response):
 
 
 @router.get("/me")
-async def get_me(current_user: dict = Depends(get_current_user)):
+async def get_me(current_user: dict | None = Depends(get_current_user_optional)):
 	"""
-	Retorna as informações do usuário logado.
+	Retorna as informações do usuário logado ou None se não autenticado.
 	"""
 	return current_user

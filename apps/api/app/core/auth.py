@@ -119,6 +119,35 @@ async def get_current_user(
 		raise credentials_exception from None
 
 
+async def get_current_user_optional(
+	request: Request,
+	db: AsyncSession = Depends(get_db),
+	token: str | None = Depends(oauth2_scheme),
+) -> dict | None:
+	"""
+	Versão opcional do get_current_user que retorna None em vez de disparar 401.
+	"""
+	# Tenta pegar do cookie se não veio no header
+	if not token:
+		token = request.cookies.get("access_token")
+
+	if not token:
+		return None
+
+	try:
+		payload = jwt.decode(
+			token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+		)
+		email: str = payload.get("sub")
+		if email is None:
+			return None
+
+		role = await get_user_role(email, db)
+		return {"email": email, "name": payload.get("name"), "role": role}
+	except JWTError:
+		return None
+
+
 def check_admin(current_user: dict = Depends(get_current_user)):
 	"""
 	Dependência que verifica se o usuário logado tem papel de admin.

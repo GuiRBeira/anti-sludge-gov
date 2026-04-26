@@ -3,7 +3,7 @@
 from app.core.crud import CRUDBase
 from app.core.database import get_db
 from app.features.analysis import results_schemas as schemas
-from app.features.catalog.schemas import catalog_schemas
+from app.features.catalog.schemas import CriterioTemplateOut
 from app.features.analysis.models import (
 	CriterioBarreira,
 	CriterioImpacto,
@@ -66,7 +66,7 @@ async def list_criterios_barreira(
 
 @router.get(
 	"/allowed-criteria/{etapa_id}",
-	response_model=list[catalog_schemas.CriterioTemplateOut],
+	response_model=list[CriterioTemplateOut],
 )
 async def get_allowed_criteria(etapa_id: int, db: AsyncSession = Depends(get_db)):
 	"""

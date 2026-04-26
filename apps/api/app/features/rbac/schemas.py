@@ -1,4 +1,4 @@
-s  # app/features/rbac/schemas.py
+# app/features/rbac/schemas.py
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field
 
