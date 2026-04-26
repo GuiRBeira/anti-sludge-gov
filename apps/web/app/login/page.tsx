@@ -1,9 +1,13 @@
+// apps/web/app/login/page.tsx
 "use client";
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { GovIcon } from "@/components/gov/GovIcon";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ShieldCheck, Info } from "lucide-react";
 
 export default function LoginPage() {
   const { user, login, isLoading } = useAuth();
@@ -61,72 +65,73 @@ export default function LoginPage() {
   if (isLoading) return null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f0f2f5]">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Header Estilo GOV.BR */}
-      <header className="bg-[#004b82] text-white py-4 px-6 shadow-md">
+      <header className="bg-primary text-primary-foreground py-6 px-8 shadow-xl shadow-primary/10">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-white p-1 rounded">
-                <GovIcon icon="bi:shield-check" className="text-[#004b82] text-2xl" />
+          <div className="flex items-center gap-4">
+            <div className="bg-white p-1.5 rounded-xl">
+                <ShieldCheck className="text-primary w-6 h-6" />
             </div>
-            <span className="font-bold text-xl tracking-tight">anti-sludge.gov</span>
+            <span className="font-black text-2xl tracking-tighter uppercase">anti-sludge.gov</span>
           </div>
-          <div className="hidden md:block text-sm opacity-80">
-            Plataforma de Redução de Carga Administrativa
-          </div>
+          <Badge variant="secondary" className="hidden md:flex font-black uppercase tracking-widest text-[10px] px-3 py-1">
+            Plataforma de Auditoria v1.0
+          </Badge>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden flex flex-col">
-          {/* Top Bar do Card */}
-          <div className="h-1 bg-[#004b82]"></div>
-
-          <div className="p-8">
-            <div className="flex justify-center mb-6 text-[#004b82]">
-                <GovIcon icon="ri:government-line" className="text-6xl" />
+      <main className="flex-1 flex items-center justify-center p-6">
+        <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/60 w-full max-w-md overflow-hidden flex flex-col border border-slate-100">
+          <div className="p-10">
+            <div className="flex justify-center mb-8">
+                <div className="p-5 bg-slate-50 rounded-[2rem] text-primary">
+                    <GovIcon icon="ri:government-line" className="text-5xl" />
+                </div>
             </div>
 
-            <h1 className="text-2xl font-bold text-center text-slate-800 mb-2">
-              Identifique-se no anti-sludge.gov
+            <h1 className="text-3xl font-black text-center text-slate-900 mb-2 tracking-tighter uppercase">
+              Identificação
             </h1>
-            <p className="text-center text-slate-500 mb-8 text-sm">
-              Para acessar o dashboard de análise de sludge, utilize sua conta Google autorizada.
+            <p className="text-center text-slate-500 mb-10 font-medium">
+              Acesse o dashboard utilizando sua conta Google autorizada pelo MGI.
             </p>
 
-            <div className="space-y-6 flex flex-col items-center">
+            <div className="space-y-8 flex flex-col items-center">
               {/* Container para o botão oficial do Google */}
               <div id="google-button" className="w-full flex justify-center"></div>
 
-              <div className="relative w-full py-4">
+              <div className="relative w-full">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-slate-200"></span>
+                  <span className="w-full border-t border-slate-100"></span>
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-slate-400">Ambiente Restrito</span>
+                <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest">
+                  <span className="bg-white px-4 text-slate-300">Outros Acessos</span>
                 </div>
               </div>
 
               <div className="w-full grid grid-cols-2 gap-4">
-                 <button disabled className="flex items-center justify-center gap-2 p-3 border border-slate-200 rounded text-slate-400 cursor-not-allowed text-xs transition-colors">
-                    <GovIcon icon="simple-icons:icloud" />
+                 <Button variant="outline" disabled className="h-14 rounded-2xl gap-2 border-slate-100 grayscale opacity-40">
+                    <GovIcon icon="simple-icons:icloud" className="w-4 h-4" />
                     gov.br
-                 </button>
-                 <button disabled className="flex items-center justify-center gap-2 p-3 border border-slate-200 rounded text-slate-400 cursor-not-allowed text-xs transition-colors">
-                    <GovIcon icon="simple-icons:microsoft" />
+                 </Button>
+                 <Button variant="outline" disabled className="h-14 rounded-2xl gap-2 border-slate-100 grayscale opacity-40">
+                    <GovIcon icon="simple-icons:microsoft" className="w-4 h-4" />
                     Outlook
-                 </button>
+                 </Button>
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-50 p-6 border-t border-slate-100">
-             <div className="flex items-start gap-3 text-xs text-slate-500 leading-relaxed">
-                <GovIcon icon="bi:info-circle" className="text-blue-500 mt-0.5 shrink-0" size={16} />
-                <p>
-                  Esta é uma ferramenta de pesquisa acadêmica para redução de burocracia.
-                  Ao entrar, você concorda com a coleta de métricas de uso anônimas para o TCC.
+          <div className="bg-slate-50/50 p-8 border-t border-slate-50">
+             <div className="flex items-start gap-4">
+                <div className="mt-1 p-1 bg-blue-100 rounded-lg text-blue-600">
+                    <Info className="w-4 h-4" />
+                </div>
+                <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                  Esta ferramenta faz parte de uma pesquisa acadêmica para redução de burocracia governamental.
+                  O acesso é restrito a pesquisadores e servidores autorizados.
                 </p>
              </div>
           </div>
@@ -134,7 +139,7 @@ export default function LoginPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-slate-400 text-xs">
+      <footer className="py-8 text-center text-slate-400 text-[10px] font-black uppercase tracking-widest">
         &copy; 2026 Anti-Sludge Gov — Laboratório de Inovação em Gestão Pública
       </footer>
     </div>

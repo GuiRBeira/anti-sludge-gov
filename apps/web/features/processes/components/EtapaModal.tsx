@@ -1,13 +1,32 @@
 // apps/web/features/processes/components/EtapaModal.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Clock, Layers, AlertCircle } from "lucide-react";
-import { GovButton, GovIcon } from "@/components/gov";
+import React, { useState } from "react";
+import { Clock, Layers, Save } from "lucide-react";
 import { Etapa } from "../api/processService";
 import { useCreateEtapaMutation, useUpdateEtapaMutation } from "../api/useProcessQueries";
 import { useCategorias, useTiposComportamento } from "@/features/catalog/api/useCatalogQueries";
+
+// shadcn/ui components
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 interface EtapaModalProps {
   processoId: number;
@@ -36,7 +55,7 @@ export function EtapaModal({ processoId, initialData, onClose }: EtapaModalProps
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (isEditing) {
+      if (isEditing && initialData) {
         await updateMutation.mutateAsync({ id: initialData.id, data: formData });
       } else {
         await createMutation.mutateAsync(formData);
@@ -48,39 +67,33 @@ export function EtapaModal({ processoId, initialData, onClose }: EtapaModalProps
   };
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white rounded-[32px] shadow-2xl w-full max-w-xl overflow-hidden"
-      >
-        {/* Header */}
-        <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-600 rounded-xl text-white">
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[600px] rounded-[2.5rem] p-8 overflow-hidden flex flex-col max-h-[90vh]">
+        <DialogHeader>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-primary rounded-xl text-white">
               <Layers size={20} />
             </div>
-            <div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight">
+            <div className="space-y-0.5">
+              <DialogTitle className="text-2xl font-black tracking-tighter uppercase leading-none">
                 {isEditing ? "Editar Etapa" : "Nova Etapa"}
-              </h2>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
-                MAPEAMENTO DE FLUXO
-              </p>
+              </DialogTitle>
+              <DialogDescription className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Mapeamento de Fluxo Operacional
+              </DialogDescription>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 transition-colors">
-            <X size={24} />
-          </button>
-        </div>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 py-4 overflow-y-auto pr-2">
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comportamento (O que o usuário faz?)</label>
-            <input
+            <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              Comportamento (O que o usuário faz?)
+            </Label>
+            <Input
               required
-              className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-              placeholder="Ex: Realizar login no portal"
+              placeholder="Ex: Realizar login no portal gov.br"
+              className="h-12 rounded-xl bg-slate-50 border-none font-medium focus-visible:ring-primary"
               value={formData.comportamento}
               onChange={(e) => setFormData({ ...formData, comportamento: e.target.value })}
             />
@@ -88,21 +101,21 @@ export function EtapaModal({ processoId, initialData, onClose }: EtapaModalProps
 
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ordem</label>
-              <input
+              <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Ordem no Fluxo</Label>
+              <Input
                 type="number"
                 required
-                className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="h-12 rounded-xl bg-slate-50 border-none font-medium focus-visible:ring-primary"
                 value={formData.ordem}
                 onChange={(e) => setFormData({ ...formData, ordem: parseInt(e.target.value) })}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tempo Planejado (Min)</label>
+              <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tempo Planejado (HH:MM:SS)</Label>
               <div className="relative">
-                <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <input
-                   className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <Input
+                   className="h-12 pl-11 rounded-xl bg-slate-50 border-none font-medium focus-visible:ring-primary"
                    placeholder="00:05:00"
                    value={formData.tempo_planejado}
                    onChange={(e) => setFormData({ ...formData, tempo_planejado: e.target.value })}
@@ -113,70 +126,76 @@ export function EtapaModal({ processoId, initialData, onClose }: EtapaModalProps
 
           <div className="grid grid-cols-2 gap-6">
              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Categoria</label>
-                <select
-                  required
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  value={formData.categoria_id}
-                  onChange={(e) => setFormData({ ...formData, categoria_id: parseInt(e.target.value) })}
+                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Categoria de Sludge</Label>
+                <Select
+                  value={formData.categoria_id.toString()}
+                  onValueChange={(val) => setFormData({ ...formData, categoria_id: parseInt(val) })}
                 >
-                  <option value={0}>Selecione...</option>
-                  {categorias.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.nome}</option>
-                  ))}
-                </select>
+                  <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-medium focus:ring-primary">
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl shadow-xl">
+                    {categorias.map(cat => (
+                      <SelectItem key={cat.id} value={cat.id.toString()}>{cat.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
              </div>
              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tipo de Comportamento</label>
-                <select
-                  required
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  value={formData.tipo_comportamento_id}
-                  onChange={(e) => setFormData({ ...formData, tipo_comportamento_id: parseInt(e.target.value) })}
+                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tipo de Comportamento</Label>
+                <Select
+                  disabled={!formData.categoria_id}
+                  value={formData.tipo_comportamento_id.toString()}
+                  onValueChange={(val) => setFormData({ ...formData, tipo_comportamento_id: parseInt(val) })}
                 >
-                  <option value={0}>Selecione...</option>
-                  {tiposComportamento
-                    .filter(t => !formData.categoria_id || t.categoria_id === formData.categoria_id)
-                    .map(tipo => (
-                      <option key={tipo.id} value={tipo.id}>{tipo.nome}</option>
-                  ))}
-                </select>
+                  <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-medium focus:ring-primary">
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl shadow-xl">
+                    {tiposComportamento
+                      .filter(t => !formData.categoria_id || t.categoria_id === formData.categoria_id)
+                      .map(tipo => (
+                        <SelectItem key={tipo.id} value={tipo.id.toString()}>{tipo.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
              </div>
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-2xl border border-blue-100">
-             <input
-                type="checkbox"
+          <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100 transition-all hover:bg-slate-100/50">
+             <div className="space-y-0.5">
+                <Label htmlFor="e_obrigatorio" className="text-sm font-bold text-slate-900 cursor-pointer">
+                   Etapa Obrigatória
+                </Label>
+                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-tight">O cidadão não pode pular este passo</p>
+             </div>
+             <Switch
                 id="e_obrigatorio"
-                className="w-5 h-5 rounded-lg border-blue-200 text-blue-600 focus:ring-blue-500"
                 checked={formData.e_obrigatorio}
-                onChange={(e) => setFormData({ ...formData, e_obrigatorio: e.target.checked })}
+                onCheckedChange={(checked) => setFormData({ ...formData, e_obrigatorio: checked })}
              />
-             <label htmlFor="e_obrigatorio" className="text-sm font-bold text-blue-900 cursor-pointer">
-                Esta etapa é obrigatória para a conclusão do processo?
-             </label>
           </div>
 
-          <div className="pt-4 flex gap-4">
-            <GovButton
-              type="primary"
-              submit={true}
-              className="flex-1 py-4 shadow-xl shadow-blue-500/20"
-              disabled={createMutation.isPending || updateMutation.isPending}
-            >
-              <Save size={18} className="mr-2" />
-              {isEditing ? "Salvar Alterações" : "Criar Etapa"}
-            </GovButton>
-            <button
+          <DialogFooter className="pt-6 gap-3 sm:gap-0">
+            <Button
               type="button"
+              variant="ghost"
               onClick={onClose}
-              className="px-8 py-4 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
+              className="rounded-xl font-bold h-12 px-6"
             >
               Cancelar
-            </button>
-          </div>
+            </Button>
+            <Button
+              type="submit"
+              disabled={createMutation.isPending || updateMutation.isPending}
+              className="rounded-xl font-bold h-12 px-8 shadow-lg shadow-primary/20 gap-2"
+            >
+              <Save size={18} />
+              {isEditing ? "Salvar Alterações" : "Mapear Etapa"}
+            </Button>
+          </DialogFooter>
         </form>
-      </motion.div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,19 +1,33 @@
+// apps/web/features/processes/components/ProcessModal.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { 
-  GovButton, 
-  GovInput, 
-  GovSelect, 
-  GovIcon 
-} from "@/components/gov";
+import React, { useState } from "react";
 import { 
   EsferaGoverno, 
   Abrangencia,
   Processo
 } from "../api/processService";
 import { useCreateProcessMutation, useUpdateProcessMutation } from "../api/useProcessQueries";
+
+// shadcn/ui components
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProcessModalProps {
   onClose: () => void;
@@ -54,74 +68,98 @@ export function ProcessModal({ onClose, onSuccess, initialData }: ProcessModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <motion.div 
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
-      >
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-          <h3 className="text-lg font-black text-gov-blue uppercase italic">
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] p-8 overflow-hidden flex flex-col max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-black tracking-tighter uppercase">
             {isEdit ? 'Editar Processo' : 'Novo Processo'}
-          </h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
-            <GovIcon icon="mdi:close" size={24} />
-          </button>
-        </div>
+          </DialogTitle>
+          <DialogDescription className="font-medium text-slate-500">
+            {isEdit ? 'Atualize as informações do processo mapeado.' : 'Preencha os dados básicos para iniciar o mapeamento de sludge.'}
+          </DialogDescription>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
-          <GovInput 
-            label="Nome do Processo" 
-            placeholder="Ex: Cadastro de Artesão" 
-            value={formData.nome}
-            onChange={(e) => setFormData({...formData, nome: e.target.value})}
-            required
-          />
+        <form onSubmit={handleSubmit} className="space-y-6 py-4 overflow-y-auto pr-2">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nome do Processo</Label>
+            <Input 
+              placeholder="Ex: Cadastro de Artesão" 
+              className="h-12 rounded-xl bg-slate-50 border-none font-medium focus-visible:ring-primary"
+              value={formData.nome}
+              onChange={(e) => setFormData({...formData, nome: e.target.value})}
+              required
+            />
+          </div>
           
           <div className="grid grid-cols-2 gap-4">
-            <GovSelect 
-              label="Esfera"
-              options={[
-                { label: "Federal", value: EsferaGoverno.FEDERAL },
-                { label: "Estadual", value: EsferaGoverno.ESTADUAL },
-                { label: "Municipal", value: EsferaGoverno.MUNICIPAL },
-              ]}
-              value={formData.esfera_governo}
-              onChange={(value: unknown) => setFormData({...formData, esfera_governo: value as EsferaGoverno})}
-            />
-            <GovSelect 
-              label="Abrangência"
-              options={[
-                { label: "Público Geral", value: Abrangencia.PUBLICO_GERAL },
-                { label: "Público Específico", value: Abrangencia.PUBLICO_ESPECIFICO },
-              ]}
-              value={formData.abrangencia}
-              onChange={(value: unknown) => setFormData({...formData, abrangencia: value as Abrangencia})}
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Esfera</Label>
+              <Select 
+                value={formData.esfera_governo} 
+                onValueChange={(val) => setFormData({...formData, esfera_governo: val as EsferaGoverno})}
+              >
+                <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-medium focus:ring-primary">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl shadow-xl">
+                  <SelectItem value={EsferaGoverno.FEDERAL}>Federal</SelectItem>
+                  <SelectItem value={EsferaGoverno.ESTADUAL}>Estadual</SelectItem>
+                  <SelectItem value={EsferaGoverno.MUNICIPAL}>Municipal</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Abrangência</Label>
+              <Select 
+                value={formData.abrangencia} 
+                onValueChange={(val) => setFormData({...formData, abrangencia: val as Abrangencia})}
+              >
+                <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-medium focus:ring-primary">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl shadow-xl">
+                  <SelectItem value={Abrangencia.PUBLICO_GERAL}>Público Geral</SelectItem>
+                  <SelectItem value={Abrangencia.PUBLICO_ESPECIFICO}>Público Específico</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Objetivo</Label>
+            <Input 
+              placeholder="Qual o objetivo deste processo?" 
+              className="h-12 rounded-xl bg-slate-50 border-none font-medium focus-visible:ring-primary"
+              value={formData.objetivo}
+              onChange={(e) => setFormData({...formData, objetivo: e.target.value})}
             />
           </div>
 
-          <GovInput 
-            label="Objetivo" 
-            placeholder="Qual o objetivo deste processo?" 
-            value={formData.objetivo}
-            onChange={(e) => setFormData({...formData, objetivo: e.target.value})}
-          />
-
-          <GovInput 
-            label="Público Alvo" 
-            placeholder="Quem utiliza este serviço?" 
-            value={formData.publico_alvo}
-            onChange={(e) => setFormData({...formData, publico_alvo: e.target.value})}
-          />
-
-          <div className="pt-4 flex gap-3">
-            <GovButton type="secondary" block onClick={onClose}>Cancelar</GovButton>
-            <GovButton type="primary" block submit loading={isSubmitting}>
-              {isEdit ? 'Salvar Alterações' : 'Criar Processo'}
-            </GovButton>
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Público Alvo</Label>
+            <Input 
+              placeholder="Quem utiliza este serviço?" 
+              className="h-12 rounded-xl bg-slate-50 border-none font-medium focus-visible:ring-primary"
+              value={formData.publico_alvo}
+              onChange={(e) => setFormData({...formData, publico_alvo: e.target.value})}
+            />
           </div>
+
+          <DialogFooter className="pt-6 gap-3 sm:gap-0">
+            <Button type="button" variant="ghost" className="rounded-xl font-bold h-12 px-6" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button 
+              type="submit" 
+              className="rounded-xl font-bold h-12 px-8 shadow-lg shadow-primary/20" 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Processando...' : isEdit ? 'Salvar Alterações' : 'Criar Processo'}
+            </Button>
+          </DialogFooter>
         </form>
-      </motion.div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
