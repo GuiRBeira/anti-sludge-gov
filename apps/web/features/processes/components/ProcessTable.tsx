@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface ProcessTableProps {
@@ -123,16 +123,16 @@ export function ProcessTable({ processos, loading, error, onEdit }: ProcessTable
                           <Edit2 size={16} />
                         </Button>
                       )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        asChild
-                        className="h-9 w-9 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all"
+                      <Link
+                        href={`/processos/${p.id}`}
+                        className={cn(
+                          buttonVariants({ variant: "ghost", size: "icon" }),
+                          "h-9 w-9 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all"
+                        )}
+                        title="Ver Detalhes"
                       >
-                        <Link href={`/processos/${p.id}`}>
-                          <ArrowRight size={18} />
-                        </Link>
-                      </Button>
+                        <ArrowRight size={18} />
+                      </Link>
                     </div>
                   </TableCell>
                 </motion.tr>
