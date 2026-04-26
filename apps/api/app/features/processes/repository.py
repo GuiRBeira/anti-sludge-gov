@@ -1,8 +1,8 @@
 # app/repositories/process_repository.py
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.process_model import Processo, Etapa
-from app.repositories.base_repository import BaseRepository
+from app.features.processes.models import Processo, Etapa
+from app.core.base_repository import BaseRepository
 
 
 class ProcessRepository(BaseRepository[Processo]):

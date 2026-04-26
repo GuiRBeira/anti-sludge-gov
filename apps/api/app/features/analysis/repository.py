@@ -1,14 +1,14 @@
 # app/repositories/analysis_repository.py
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.analysis_model import (
+from app.features.analysis.models import (
 	AvaliacaoBarreira,
 	AvaliacaoImpacto,
 	ResultadoAnalise,
 	CriterioBarreira,
 	CriterioImpacto,
 )
-from app.repositories.base_repository import BaseRepository
+from app.core.base_repository import BaseRepository
 
 
 class AnalysisRepository(BaseRepository[ResultadoAnalise]):

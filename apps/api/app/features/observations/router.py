@@ -3,9 +3,9 @@
 from app.core.crud import CRUDBase
 from app.core.database import get_db
 from app.features.observations import schemas
-from app.models.observation_model import JornadaObservada, TempoEtapa
-from app.repositories.observation_repository import ObservationRepository
-from app.repositories.process_repository import ProcessRepository
+from app.features.observations.models import JornadaObservada, TempoEtapa
+from app.features.observations.repository import ObservationRepository
+from app.features.processes.repository import ProcessRepository
 from app.use_cases.observation_use_cases import CalculateJourneyDifferentialUseCase
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession

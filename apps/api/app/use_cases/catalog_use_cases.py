@@ -1,6 +1,6 @@
 # app/use_cases/catalog_use_cases.py
-from app.repositories.catalog_repository import CatalogRepository
-from app.repositories.process_repository import ProcessRepository
+from app.features.catalog.repository import CatalogRepository
+from app.features.processes.repository import ProcessRepository
 from fastapi import HTTPException
 
 

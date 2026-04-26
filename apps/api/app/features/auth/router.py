@@ -2,7 +2,14 @@
 from fastapi import APIRouter, Response, Request, Depends
 from pydantic import BaseModel
 
-from app.core.auth import verify_google_token, create_access_token, get_current_user
+from app.core.auth import (
+	verify_google_token,
+	create_access_token,
+	get_current_user,
+	get_user_role,
+)
+from app.core.database import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.limiter import limiter
 
@@ -21,7 +28,12 @@ class TokenResponse(BaseModel):
 
 @router.post("/google", response_model=TokenResponse)
 @limiter.limit("5/minute")
-async def google_auth(request: Request, payload: TokenRequest, response: Response):
+async def google_auth(
+	request: Request,
+	payload: TokenRequest,
+	response: Response,
+	db: AsyncSession = Depends(get_db),
+):
 	"""
 	Recebe o ID Token do Google, valida e emite um JWT próprio via Cookie e Body.
 	"""
@@ -34,22 +46,7 @@ async def google_auth(request: Request, payload: TokenRequest, response: Respons
 		data={"sub": user_info["email"], "name": user_info.get("name")}
 	)
 
-	# Determinar Role
-	admins = [e.strip() for e in settings.ADMIN_EMAILS.split(",") if e.strip()]
-	researchers = [
-		e.strip() for e in settings.RESEARCHER_EMAILS.split(",") if e.strip()
-	]
-	supervisors = [
-		e.strip() for e in settings.SUPERVISOR_EMAILS.split(",") if e.strip()
-	]
-
-	role = "visitor"
-	if user_info["email"] in admins:
-		role = "admin"
-	elif user_info["email"] in researchers:
-		role = "researcher"
-	elif user_info["email"] in supervisors:
-		role = "supervisor"
+	role = await get_user_role(user_info["email"], db)
 
 	# Configurar Cookie HttpOnly
 	response.set_cookie(

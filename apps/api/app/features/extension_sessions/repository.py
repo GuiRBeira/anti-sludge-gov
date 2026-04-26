@@ -1,8 +1,12 @@
 # app/repositories/extension_repository.py
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.extension_model import SessaoExtensao, InteracaoExtensao, PaginaExtensao
-from app.repositories.base_repository import BaseRepository
+from app.features.extension_sessions.models import (
+	SessaoExtensao,
+	InteracaoExtensao,
+	PaginaExtensao,
+)
+from app.core.base_repository import BaseRepository
 
 
 class ExtensionRepository(BaseRepository[SessaoExtensao]):

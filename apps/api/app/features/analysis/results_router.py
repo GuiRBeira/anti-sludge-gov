@@ -2,16 +2,16 @@
 
 from app.core.crud import CRUDBase
 from app.core.database import get_db
-from app.features.analysis_results import schemas
-from app.features.catalog import schemas as catalog_schemas
-from app.models.analysis_model import (
+from app.features.analysis import results_schemas as schemas
+from app.features.catalog.schemas import catalog_schemas
+from app.features.analysis.models import (
 	CriterioBarreira,
 	CriterioImpacto,
 	ResultadoAnalise,
 )
-from app.repositories.analysis_repository import AnalysisRepository
-from app.repositories.catalog_repository import CatalogRepository
-from app.repositories.process_repository import ProcessRepository
+from app.features.analysis.repository import AnalysisRepository
+from app.features.catalog.repository import CatalogRepository
+from app.features.processes.repository import ProcessRepository
 from app.use_cases.analysis_use_cases import CalculateProcessSludgeUseCase
 from app.use_cases.catalog_use_cases import CatalogUseCases
 from fastapi import APIRouter, Depends, HTTPException

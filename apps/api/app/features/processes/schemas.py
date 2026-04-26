@@ -2,7 +2,7 @@
 import uuid
 from datetime import datetime, timedelta
 
-from app.models.base_model import AbrangenciaEnum, EsferaGovernoEnum
+from app.core.base_model import AbrangenciaEnum, EsferaGovernoEnum
 from pydantic import BaseModel, ConfigDict
 
 

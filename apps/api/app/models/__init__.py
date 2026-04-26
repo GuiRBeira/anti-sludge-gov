@@ -1,13 +1,13 @@
 # app/models/__init__.py
-from app.models.analysis_model import (
+from app.features.analysis.models import (
 	AvaliacaoBarreira,
 	AvaliacaoImpacto,
 	CriterioBarreira,
 	CriterioImpacto,
 	ResultadoAnalise,
 )
-from app.models.base_model import Base
-from app.models.catalog_model import (
+from app.core.base_model import Base
+from app.features.catalog.models import (
 	Categoria,
 	CriterioTemplate,
 	EscalaAvaliacao,
@@ -16,13 +16,14 @@ from app.models.catalog_model import (
 	TipoComportamento,
 	TipoCriterio,
 )
-from app.models.extension_model import (
+from app.features.extension_sessions.models import (
 	InteracaoExtensao,
 	PaginaExtensao,
 	SessaoExtensao,
 )
-from app.models.observation_model import JornadaObservada, Observador, TempoEtapa
-from app.models.process_model import Etapa, Processo
+from app.features.observations.models import JornadaObservada, Observador, TempoEtapa
+from app.features.processes.models import Etapa, Processo
+from app.features.rbac.models import RBACEmail
 
 __all__ = [
 	"AvaliacaoBarreira",
@@ -46,4 +47,5 @@ __all__ = [
 	"InteracaoExtensao",
 	"PaginaExtensao",
 	"SessaoExtensao",
+	"RBACEmail",
 ]

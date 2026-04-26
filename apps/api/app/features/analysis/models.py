@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from app.models.base_model import Base, CriterioImpactoEnum, TipoEvidenciaEnum
+from app.core.base_model import Base, CriterioImpactoEnum, TipoEvidenciaEnum
 from sqlalchemy import (
 	Boolean,
 	CheckConstraint,
@@ -22,9 +22,9 @@ from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-	from app.models.catalog_model import CriterioTemplate
-	from app.models.observation_model import JornadaObservada
-	from app.models.process_model import Etapa, Processo
+	from app.features.catalog.models import CriterioTemplate
+	from app.features.observations.models import JornadaObservada
+	from app.features.processes.models import Etapa, Processo
 
 
 class CriterioBarreira(Base):

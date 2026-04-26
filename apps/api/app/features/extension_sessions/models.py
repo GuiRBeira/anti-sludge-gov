@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from app.models.base_model import Base
+from app.core.base_model import Base
 from sqlalchemy import (
 	BigInteger,
 	Boolean,
@@ -25,8 +25,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-	from app.models.observation_model import JornadaObservada
-	from app.models.process_model import Processo
+	from app.features.observations.models import JornadaObservada
+	from app.features.processes.models import Processo
 
 
 class TipoInteracaoEnum(str, Enum):

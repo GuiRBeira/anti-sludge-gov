@@ -1,14 +1,14 @@
 # app/repositories/catalog_repository.py
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.catalog_model import (
+from app.features.catalog.models import (
 	Categoria,
 	TipoComportamento,
 	TipoCriterio,
 	CriterioTemplate,
 	EscalaAvaliacao,
 )
-from app.repositories.base_repository import BaseRepository
+from app.core.base_repository import BaseRepository
 
 
 class CatalogRepository(BaseRepository[Categoria]):

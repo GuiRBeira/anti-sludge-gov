@@ -2,8 +2,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.observation_model import JornadaObservada, TempoEtapa
-from app.repositories.base_repository import BaseRepository
+from app.features.observations.models import JornadaObservada, TempoEtapa
+from app.core.base_repository import BaseRepository
 
 
 class ObservationRepository(BaseRepository[JornadaObservada]):

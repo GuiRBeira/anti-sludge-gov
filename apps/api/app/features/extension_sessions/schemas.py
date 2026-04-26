@@ -1,7 +1,7 @@
 # app/features/extension_sessions/schemas.py
 from datetime import datetime
 
-from app.models.extension_model import TipoInteracaoEnum
+from app.features.extension_sessions.models import TipoInteracaoEnum
 from pydantic import BaseModel, ConfigDict, Field
 
 

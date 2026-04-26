@@ -1,7 +1,7 @@
 # app/features/extension_sessions/router.py
 from app.core.database import get_db
 from app.features.extension_sessions import schemas
-from app.models.extension_model import (
+from app.features.extension_sessions.models import (
 	InteracaoExtensao,
 	PaginaExtensao,
 	SessaoExtensao,
@@ -139,8 +139,8 @@ async def link_interactions_to_step(
 	Associa um intervalo de tempo da extensão a uma etapa específica da jornada.
 	Calcula automaticamente a duração real e os cliques.
 	"""
-	from app.repositories.extension_repository import ExtensionRepository
-	from app.repositories.observation_repository import ObservationRepository
+	from app.features.extension_sessions.repository import ExtensionRepository
+	from app.features.observations.repository import ObservationRepository
 	from app.use_cases.extension_use_cases import LinkExtensionToStepUseCase
 
 	ext_repo = ExtensionRepository(db)

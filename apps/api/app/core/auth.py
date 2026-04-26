@@ -8,6 +8,10 @@ from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 
 from app.core.config import settings
+from app.core.database import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from app.features.rbac.models import RBACEmail
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/google", auto_error=False)
 
@@ -51,7 +55,42 @@ def verify_google_token(token: str) -> dict:
 		) from e
 
 
-def get_current_user(request: Request, token: str | None = Depends(oauth2_scheme)):
+async def get_user_role(email: str, db: AsyncSession) -> str:
+	"""
+	Determina o papel (role) do usuário buscando na tabela rbac_emails
+	e usando as variáveis de ambiente como fallback.
+	"""
+	# 1. Tenta buscar no Banco de Dados (Prioridade)
+	result = await db.execute(select(RBACEmail).where(RBACEmail.email == email))
+	rbac_entry = result.scalar_one_or_none()
+
+	if rbac_entry:
+		return rbac_entry.role
+
+	# 2. Fallback para variáveis de ambiente (Bootstrapping / Legado)
+	admins = [e.strip() for e in settings.ADMIN_EMAILS.split(",") if e.strip()]
+	researchers = [
+		e.strip() for e in settings.RESEARCHER_EMAILS.split(",") if e.strip()
+	]
+	supervisors = [
+		e.strip() for e in settings.SUPERVISOR_EMAILS.split(",") if e.strip()
+	]
+
+	if email in admins:
+		return "admin"
+	if email in researchers:
+		return "researcher"
+	if email in supervisors:
+		return "supervisor"
+
+	return "visitor"
+
+
+async def get_current_user(
+	request: Request,
+	token: str | None = Depends(oauth2_scheme),
+	db: AsyncSession = Depends(get_db),
+):
 	credentials_exception = HTTPException(
 		status_code=status.HTTP_401_UNAUTHORIZED,
 		detail="Não foi possível validar as credenciais",
@@ -73,26 +112,35 @@ def get_current_user(request: Request, token: str | None = Depends(oauth2_scheme
 		if email is None:
 			raise credentials_exception
 
-		# Validação de lista de emails e atribuição de ROLES
-		admins = [e.strip() for e in settings.ADMIN_EMAILS.split(",") if e.strip()]
-		researchers = [
-			e.strip() for e in settings.RESEARCHER_EMAILS.split(",") if e.strip()
-		]
-		supervisors = [
-			e.strip() for e in settings.SUPERVISOR_EMAILS.split(",") if e.strip()
-		]
-
-		role = "visitor"
-		if email in admins:
-			role = "admin"
-		elif email in researchers:
-			role = "researcher"
-		elif email in supervisors:
-			role = "supervisor"
+		role = await get_user_role(email, db)
 
 		return {"email": email, "name": payload.get("name"), "role": role}
 	except JWTError:
 		raise credentials_exception from None
+
+
+def check_admin(current_user: dict = Depends(get_current_user)):
+	"""
+	Dependência que verifica se o usuário logado tem papel de admin.
+	"""
+	if current_user.get("role") != "admin":
+		raise HTTPException(
+			status_code=status.HTTP_403_FORBIDDEN,
+			detail="Acesso negado: Requer privilégios de administrador",
+		)
+	return current_user
+
+
+def check_at_least_researcher(current_user: dict = Depends(get_current_user)):
+	"""
+	Dependência que verifica se o usuário logado é ao menos pesquisador ou admin.
+	"""
+	if current_user.get("role") not in ["admin", "researcher", "supervisor"]:
+		raise HTTPException(
+			status_code=status.HTTP_403_FORBIDDEN,
+			detail="Acesso negado: Requer privilégios de pesquisador ou superior",
+		)
+	return current_user
 
 
 def check_extension_key(api_key: str):

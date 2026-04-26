@@ -3,7 +3,7 @@
 from app.core.crud import CRUDBase
 from app.core.database import get_db
 from app.features.processes import schemas
-from app.models.process_model import Etapa, Processo
+from app.features.processes.models import Etapa, Processo
 from app.core.auth import get_current_user, check_extension_key
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy import select

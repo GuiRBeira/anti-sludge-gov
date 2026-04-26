@@ -1,8 +1,8 @@
 from sqlalchemy import select
-from app.models.process_model import Processo
+from app.features.processes.models import Processo
 from app.domain.sludge_logic import SludgeCalculator
-from app.repositories.analysis_repository import AnalysisRepository
-from app.repositories.process_repository import ProcessRepository
+from app.features.analysis.repository import AnalysisRepository
+from app.features.processes.repository import ProcessRepository
 
 
 class CalculateProcessSludgeUseCase:

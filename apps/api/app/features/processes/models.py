@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
-from app.models.base_model import AbrangenciaEnum, Base, EsferaGovernoEnum
+from app.core.base_model import AbrangenciaEnum, Base, EsferaGovernoEnum
 from sqlalchemy import (
 	Boolean,
 	DateTime,
@@ -22,13 +22,13 @@ from sqlalchemy.dialects.postgresql import INTERVAL, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-	from app.models.analysis_model import (
+	from app.features.analysis.models import (
 		CriterioBarreira,
 		CriterioImpacto,
 		ResultadoAnalise,
 	)
-	from app.models.catalog_model import Categoria, TipoComportamento
-	from app.models.observation_model import JornadaObservada, TempoEtapa
+	from app.features.catalog.models import Categoria, TipoComportamento
+	from app.features.observations.models import JornadaObservada, TempoEtapa
 
 
 class Processo(Base):
