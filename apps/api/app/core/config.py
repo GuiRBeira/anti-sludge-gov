@@ -54,12 +54,22 @@ class Settings(BaseSettings):
 	# Security Settings
 	ALLOWED_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,http://0.0.0.0:3000,https://anti-sludge-gov.vercel.app"
 	RATE_LIMIT_DEFAULT: str = "60/minute"
-	AUTH_COOKIE_SECURE: bool = False  # True em prod
-	AUTH_COOKIE_SAMESITE: str = "lax"
+	AUTH_COOKIE_SECURE: bool = True  # Obrigatório para SameSite=None
+	AUTH_COOKIE_SAMESITE: str = (
+		"none"  # Necessário para domínios diferentes (Vercel -> Render)
+	)
 	DISCORD_WEBHOOK_URL: str | None = None
 
 	@model_validator(mode="after")
 	def check_secret_key(self) -> "Settings":
+		# Ajusta segurança de cookies conforme o ambiente
+		if self.DEBUG:
+			self.AUTH_COOKIE_SECURE = False
+			self.AUTH_COOKIE_SAMESITE = "lax"
+		else:
+			self.AUTH_COOKIE_SECURE = True
+			self.AUTH_COOKIE_SAMESITE = "none"
+
 		# Permitimos a chave padrão apenas em DEBUG ou durante TESTES
 		is_test = "pytest" in sys.modules or self.DEBUG
 		if not is_test and self.SECRET_KEY == "super-secret-key-change-it-in-prod":
