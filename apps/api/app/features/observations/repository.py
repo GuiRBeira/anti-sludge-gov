@@ -1,5 +1,5 @@
 # app/repositories/observation_repository.py
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.features.observations.models import JornadaObservada, TempoEtapa
