@@ -1,3 +1,51 @@
+## [1.22.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.21.0...web-1.22.0) (2026-04-24)
+
+### Features
+
+* add headerAction support to GovCardSkeleton and optimize layout styling ([7e8e851](https://github.com/GuiRBeira/anti-sludge-gov/commit/7e8e851b78109adedc025afff13bcc14445125a9))
+* implement analysis queries, add feedback component, and migrate authentication services ([e57ce69](https://github.com/GuiRBeira/anti-sludge-gov/commit/e57ce69f2e9f9f3bdb244b4f7f8e5ae63ed499d8))
+* implement catalog service, etapa management CRUD, and update database seed for analysis results ([322f017](https://github.com/GuiRBeira/anti-sludge-gov/commit/322f017518bcfdf3b29fc438e27718bf96fbd39f))
+* implement createCriterio endpoint and update modal call, plus import missing icon ([5adcf70](https://github.com/GuiRBeira/anti-sludge-gov/commit/5adcf702d39b90e15e58014825ee855906d558cb))
+* implement dynamic process editing and deletion with unified ProcessModal component ([7a27be6](https://github.com/GuiRBeira/anti-sludge-gov/commit/7a27be6941710bd4e1d9b5968b88600d8981a78b))
+* implement heuristic analysis logic for sludge index calculation and add recommendation support to UI ([772643d](https://github.com/GuiRBeira/anti-sludge-gov/commit/772643da2785804a93c685e99561604d9808ec16))
+* implement role-based access control for researchers and supervisors with updated UI authorization logic ([6bfc6d0](https://github.com/GuiRBeira/anti-sludge-gov/commit/6bfc6d054836e9806261472352cd83c53052bd8c))
+* implement user feedback system with Discord integration and floating UI component ([59e8d15](https://github.com/GuiRBeira/anti-sludge-gov/commit/59e8d15293c583ec492f41d75c99629b801bef97))
+* replace GovCard with custom component, add API endpoints for etapas, and enhance UI for process management ([8b7e176](https://github.com/GuiRBeira/anti-sludge-gov/commit/8b7e1769c0dcdc5fe7ba4a2e3802a50df3025213))
+
+## [1.21.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.20.0...web-1.21.0) (2026-04-23)
+
+### Features
+
+* implement secure HttpOnly cookie-based authentication with rate limiting ([6d98dcf](https://github.com/GuiRBeira/anti-sludge-gov/commit/6d98dcf488909d1ca7bcb119d1e36b04642920a5))
+
+## [1.20.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.19.1...web-1.20.0) (2026-04-21)
+
+### Features
+
+* add system architecture documentation and update Obsidian workspace configuration ([c638e7e](https://github.com/GuiRBeira/anti-sludge-gov/commit/c638e7e9bf76823f63e8e2c7c2b1e47d41f41d62))
+* **api:** implement google auth and protected routes ([4d69dd6](https://github.com/GuiRBeira/anti-sludge-gov/commit/4d69dd62ea667efed8604c003f5c3c877008a2da))
+* **extension:** add api key and device identification headers ([a19cc29](https://github.com/GuiRBeira/anti-sludge-gov/commit/a19cc2914119f6fe4253b54c16003efac9639b10))
+* implement google authentication flow and login page with protected routes ([a170d41](https://github.com/GuiRBeira/anti-sludge-gov/commit/a170d41ad8dd85824ead0d140d4f44798e272713))
+* implement role-based access control with admin, analyst, and visitor roles across frontend and backend services ([53b477a](https://github.com/GuiRBeira/anti-sludge-gov/commit/53b477a1c9af909fcbfcf93e990863e8b37d2639))
+* **web:** add AuthProvider and context for session management ([31d92cb](https://github.com/GuiRBeira/anti-sludge-gov/commit/31d92cbfb277ef9125a721cc55337afbaa008652))
+
+## [1.19.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.19.0...web-1.19.1) (2026-04-19)
+
+### Bug Fixes
+
+* allow extension version tags to trigger artifact release attachment ([33c3eab](https://github.com/GuiRBeira/anti-sludge-gov/commit/33c3eabde5df2cc6d1bc7a487710ac620c57cc93))
+
+## [1.19.0](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.18.1...web-1.19.0) (2026-04-19)
+
+### Features
+
+* add date-fns dependency to project ([2a958d9](https://github.com/GuiRBeira/anti-sludge-gov/commit/2a958d98d414d805e634c24efc1c6457720f981e))
+* implement extension session linking service and UI modal to associate user logs with process steps ([f6175d1](https://github.com/GuiRBeira/anti-sludge-gov/commit/f6175d1dbfac3c40ca9d99e53e58bd2df1ee2fcc))
+
+### Bug Fixes
+
+* stage govmodal on commit ([188d8f1](https://github.com/GuiRBeira/anti-sludge-gov/commit/188d8f1c84b7c777b73cef12275968fb56d9cb8d))
+
 ## [1.18.1](https://github.com/GuiRBeira/anti-sludge-gov/compare/web-1.18.0...web-1.18.1) (2026-04-18)
 
 ### Bug Fixes
