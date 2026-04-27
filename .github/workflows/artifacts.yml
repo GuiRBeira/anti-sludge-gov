@@ -92,7 +92,8 @@ jobs:
       - name: 🔨 Build Extension (Production)
         run: pnpm turbo build --filter extension
         env:
-          PLASMO_PUBLIC_API_URL: ${{ vars.PLASMO_PUBLIC_API_URL || 'https://anti-sludge-gov.onrender.com/api/v1' }}
+          PLASMO_PUBLIC_API_URL: ${{ secrets.PROD_API_URL }}
+          PLASMO_PUBLIC_EXTENSION_API_KEY: ${{ secrets.PROD_EXTENSION_API_KEY }}
 
       - name: 📁 Verify build output
         run: |
