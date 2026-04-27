@@ -22,11 +22,11 @@ class Base(DeclarativeBase):
 # =========================
 class TimestampMixin:
 	"""
-	Mixin opcional para tabelas que possuem created_at / updated_at.
+	    Mixin opcional para tabelas que possuem created_at / updated_at.
 
-	Use somente nas tabelas que realmente possuem essas colunas no banco.
-	Ex:
-	    class Processo(TimestampMixin, Base): ...
+	    Use somente nas tabelas que realmente possuem essas colunas no banco.
+	    Ex:
+	class Processo(TimestampMixin, Base): ...
 	"""
 
 	created_at: Mapped[datetime] = mapped_column(
