@@ -65,7 +65,8 @@
   "pnpm": {
     "overrides": {
       "@types/react": "^19",
-      "@types/react-dom": "^19"
+      "@types/react-dom": "^19",
+      "jiti": "1.21.6"
     }
   },
   "dependencies": {
