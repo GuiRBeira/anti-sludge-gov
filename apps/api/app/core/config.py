@@ -21,10 +21,14 @@ class Settings(BaseSettings):
 	DB_NAME: str = "antisludge"
 	DB_SSLMODE: str = "disable"
 
-	@property
-	def DATABASE_URL(self) -> str:
-		# Forçamos o uso do driver psycopg (v3) para suporte assíncrono
-		return f"postgresql+psycopg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?sslmode={self.DB_SSLMODE}"
+	# Connection
+	DATABASE_URL: str | None = None
+
+	@model_validator(mode="after")
+	def assemble_db_url(self) -> "Settings":
+		if not self.DATABASE_URL:
+			self.DATABASE_URL = f"postgresql+psycopg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?sslmode={self.DB_SSLMODE}"
+		return self
 
 	# Pool Settings
 	DATABASE_POOL_SIZE: int = 5
@@ -48,9 +52,7 @@ class Settings(BaseSettings):
 	SUPERVISOR_EMAILS: str = ""  # Comma separated (Supervisors)
 
 	# Security Settings
-	ALLOWED_ORIGINS: str = (
-		"http://localhost:3000,http://127.0.0.1:3000,http://0.0.0.0:3000"
-	)
+	ALLOWED_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,http://0.0.0.0:3000,https://anti-sludge-gov.vercel.app"
 	RATE_LIMIT_DEFAULT: str = "60/minute"
 	AUTH_COOKIE_SECURE: bool = False  # True em prod
 	AUTH_COOKIE_SAMESITE: str = "lax"
