@@ -77,6 +77,7 @@ class Processo(Base):
 	status: Mapped[str] = mapped_column(
 		String(50), server_default=text("'Em Andamento'"), nullable=False
 	)
+	padrao_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
 	created_at: Mapped[datetime] = mapped_column(
 		DateTime, server_default=func.current_timestamp(), nullable=False
 	)

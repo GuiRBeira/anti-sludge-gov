@@ -10,7 +10,7 @@ import {
   TrendingUp,
   Lock,
   Mail,
-  Landmark
+  Landmark,
 } from "lucide-react";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,13 +21,9 @@ declare global {
   }
 }
 
-
 // shadcn/ui components
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export default function LoginPage() {
@@ -43,14 +39,18 @@ export default function LoginPage() {
     }
   }, [user, router, searchParams]);
 
-  const handleGoogleResponse = useCallback(async (response: any) => {
-    try {
-      await login(response.credential);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Falha na autenticação com Google.");
-    }
-  }, [login]);
-
+  const handleGoogleResponse = useCallback(
+    async (response: any) => {
+      try {
+        await login(response.credential);
+      } catch (err: any) {
+        setError(
+          err.response?.data?.detail || "Falha na autenticação com Google.",
+        );
+      }
+    },
+    [login],
+  );
 
   useEffect(() => {
     // Inicia o script do Google One Tap / Login
@@ -75,8 +75,8 @@ export default function LoginPage() {
             width: 320,
             text: "signin_with",
             shape: "pill",
-            logo_alignment: "left"
-          }
+            logo_alignment: "left",
+          },
         );
       }
     };
@@ -98,7 +98,7 @@ export default function LoginPage() {
         <Card className="rounded-[2.5rem] border-slate-100 shadow-2xl shadow-slate-200/50 overflow-hidden bg-white/80 backdrop-blur-xl">
           <CardContent className="p-10">
             <div className="flex flex-col items-center text-center space-y-6 mb-10">
-              <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.2em]">
+              <div className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-[0.2em]">
                 <TrendingUp size={14} />
                 Analytics Framework
               </div>
@@ -125,7 +125,10 @@ export default function LoginPage() {
                   exit={{ opacity: 0, height: 0 }}
                   className="mb-8 p-4 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-start gap-3"
                 >
-                  <AlertCircle className="text-destructive shrink-0 mt-0.5" size={18} />
+                  <AlertCircle
+                    className="text-destructive shrink-0 mt-0.5"
+                    size={18}
+                  />
                   <p className="text-xs font-bold text-destructive leading-relaxed uppercase tracking-tight">
                     {error}
                   </p>
@@ -134,55 +137,90 @@ export default function LoginPage() {
             </AnimatePresence>
 
             <p className="text-center text-slate-500 text-sm font-medium leading-relaxed mb-8">
-              Utilize sua conta institucional para acessar o painel de auditoria e monitoramento.
+              Utilize sua conta institucional para acessar o painel de auditoria
+              e monitoramento.
             </p>
 
             <div className="space-y-8 flex flex-col items-center">
               {/* Container para o botão oficial do Google */}
-              <div id="google-button" className="w-full flex justify-center scale-110"></div>
+              <div
+                id="google-button"
+                className="w-full flex justify-center scale-110"
+              ></div>
 
               <div className="relative w-full">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t border-slate-100"></span>
                 </div>
-                <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest">
-                  <span className="bg-white px-4 text-slate-300">Outros Acessos</span>
+                <div className="relative flex justify-center text-xs uppercase font-black tracking-widest">
+                  <span className="bg-white px-4 text-slate-300">
+                    Outros Acessos
+                  </span>
                 </div>
               </div>
 
               <div className="w-full grid grid-cols-2 gap-4">
-                 <Button variant="outline" disabled className="h-14 rounded-2xl gap-2 border-slate-100 grayscale opacity-40">
-                    <ShieldCheck size={16} className="text-slate-400" />
-                    gov.br
-                 </Button>
-                 <Button variant="outline" disabled className="h-14 rounded-2xl gap-2 border-slate-100 grayscale opacity-40">
-                    <Mail size={16} className="text-slate-400" />
-                    Outlook
-                 </Button>
+                <Button
+                  variant="outline"
+                  disabled
+                  className="h-14 rounded-2xl gap-2 border-slate-100 grayscale opacity-40"
+                >
+                  <ShieldCheck size={16} className="text-slate-400" />
+                  gov.br
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled
+                  className="h-14 rounded-2xl gap-2 border-slate-100 grayscale opacity-40"
+                >
+                  <Mail size={16} className="text-slate-400" />
+                  Outlook
+                </Button>
               </div>
             </div>
 
             <div className="mt-12 flex flex-col items-center gap-4">
-              <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-300 uppercase tracking-widest">
+              <div className="flex items-center gap-1.5 text-xs font-black text-slate-300 uppercase tracking-widest">
                 <Lock size={10} />
                 Ambiente Seguro & Auditado
               </div>
               <div className="flex gap-3">
-                 <Badge variant="outline" className="border-slate-100 text-slate-400 font-bold text-[9px] uppercase tracking-tighter h-5">MGI</Badge>
-                 <Badge variant="outline" className="border-slate-100 text-slate-400 font-bold text-[9px] uppercase tracking-tighter h-5">UTFPR</Badge>
-                 <Badge variant="outline" className="border-slate-100 text-slate-400 font-bold text-[9px] uppercase tracking-tighter h-5">MCTI</Badge>
+                <Badge
+                  variant="outline"
+                  className="border-slate-100 text-slate-400 font-bold text-xs uppercase tracking-tighter h-5"
+                >
+                  MGI
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="border-slate-100 text-slate-400 font-bold text-xs uppercase tracking-tighter h-5"
+                >
+                  UTFPR
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="border-slate-100 text-slate-400 font-bold text-xs uppercase tracking-tighter h-5"
+                >
+                  MCTI
+                </Badge>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <div className="mt-8 flex justify-center items-center gap-2">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          <p className="text-xs font-black text-slate-400 uppercase tracking-widest">
             Não possui acesso?
           </p>
-          <Button variant="link" className="text-[10px] font-black text-primary p-0 h-auto uppercase tracking-widest group">
+          <Button
+            variant="link"
+            className="text-xs font-black text-primary p-0 h-auto uppercase tracking-widest group"
+          >
             Solicitar Credenciais
-            <ArrowRight size={10} className="ml-1 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight
+              size={10}
+              className="ml-1 group-hover:translate-x-1 transition-transform"
+            />
           </Button>
         </div>
       </motion.div>

@@ -31,14 +31,14 @@ export function PageList({ pages, isActive }: PageListProps) {
         <BrItem key={index} className="tw:p-3 tw:hover:bg-slate-50 tw:rounded-xl tw:transition-colors">
           <div className="tw:w-full">
             <div className="tw:flex tw:justify-between tw:items-start tw:mb-1">
-              <div className="tw:text-[13px] tw:font-black tw:text-slate-800 tw:truncate tw:max-w-[180px]">
+              <div className="tw:text-sm tw:font-black tw:text-slate-800 tw:truncate tw:max-w-[180px]">
                 {page.title}
               </div>
-              <div className="tw:text-[10px] tw:font-bold tw:text-blue-600 tw:bg-blue-50 tw:px-2 tw:py-0.5 tw:rounded-full">
+              <div className="tw:text-xs tw:font-bold tw:text-blue-600 tw:bg-blue-50 tw:px-2 tw:py-0.5 tw:rounded-full">
                 {getPageDuration(page)}
               </div>
             </div>
-            <div className="tw:text-[10px] tw:text-slate-400 tw:mb-3 tw:truncate">
+            <div className="tw:text-xs tw:text-slate-400 tw:mb-3 tw:truncate">
               {formatUrl(page.url)}
             </div>
 
@@ -48,7 +48,7 @@ export function PageList({ pages, isActive }: PageListProps) {
                 color="warning"
                 icon="far fa-hand-point-up"
                 value={`${page.clicks} CLIQUES`}
-                className="tw:text-[9px] tw:font-black tw:rounded-lg tw:py-1 tw:px-2"
+                className="tw:text-xs tw:font-black tw:rounded-lg tw:py-1 tw:px-2"
               />
               {page.interactions?.length > 0 && (
                 <BrTag
@@ -56,7 +56,7 @@ export function PageList({ pages, isActive }: PageListProps) {
                   color="info"
                   icon="fas fa-mouse-pointer"
                   value={`${page.interactions.length} INT.`}
-                  className="tw:text-[9px] tw:font-black tw:rounded-lg tw:py-1 tw:px-2"
+                  className="tw:text-xs tw:font-black tw:rounded-lg tw:py-1 tw:px-2"
                 />
               )}
               {page.scrolled && (
@@ -65,7 +65,7 @@ export function PageList({ pages, isActive }: PageListProps) {
                   color="success"
                   icon="fas fa-arrows-alt-v"
                   value="SCROLL"
-                  className="tw:text-[9px] tw:font-black tw:rounded-lg tw:py-1 tw:px-2"
+                  className="tw:text-xs tw:font-black tw:rounded-lg tw:py-1 tw:px-2"
                 />
               )}
             </div>

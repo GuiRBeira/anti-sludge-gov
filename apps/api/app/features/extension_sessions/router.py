@@ -26,7 +26,7 @@ router = APIRouter()
 async def create_sessao_extensao(
 	obj_in: schemas.SessaoExtensaoCreate,
 	db: AsyncSession = Depends(get_db),
-	x_api_key: str = Header(...),
+	x_api_key: str = Header(..., alias="X-API-KEY"),
 ):
 	"""Recebe e persiste uma sessão completa da extensão, incluindo páginas e interações."""
 	check_extension_key(x_api_key)

@@ -4,7 +4,11 @@ from app.core.crud import CRUDBase
 from app.core.database import get_db
 from app.features.processes import schemas
 from app.features.processes.models import Etapa, Processo
-from app.core.auth import get_current_user, check_extension_key
+from app.core.auth import (
+	get_current_user,
+	get_current_user_optional,
+	check_extension_key,
+)
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,8 +38,8 @@ async def list_processos(
 	skip: int = 0,
 	limit: int = 100,
 	db: AsyncSession = Depends(get_db),
-	x_api_key: str | None = Header(None),
-	current_user: dict | None = Depends(get_current_user),
+	x_api_key: str | None = Header(None, alias="X-API-KEY"),
+	current_user: dict | None = Depends(get_current_user_optional),
 ):
 	if not current_user and not (x_api_key and check_extension_key(x_api_key)):
 		raise HTTPException(status_code=401, detail="Acesso não autorizado")

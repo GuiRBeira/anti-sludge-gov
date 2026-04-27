@@ -96,7 +96,7 @@ export default function ProcessosPage() {
               <FileText size={18} />
             </div>
             <div>
-              <p className="text-[10px] font-black text-blue-600/60 uppercase tracking-widest">Total</p>
+              <p className="text-xs font-black text-blue-600/60 uppercase tracking-widest">Total</p>
               <p className="text-xl font-black text-blue-900">{processos.length}</p>
             </div>
           </CardContent>
@@ -108,7 +108,7 @@ export default function ProcessosPage() {
               <ShieldAlert size={18} />
             </div>
             <div>
-              <p className="text-[10px] font-black text-red-600/60 uppercase tracking-widest">Críticos</p>
+              <p className="text-xs font-black text-red-600/60 uppercase tracking-widest">Críticos</p>
               <p className="text-xl font-black text-red-900">{summary?.processos_criticos || 0}</p>
             </div>
           </CardContent>
@@ -120,7 +120,7 @@ export default function ProcessosPage() {
               <CheckCircle2 size={18} />
             </div>
             <div>
-              <p className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest">Finalizados</p>
+              <p className="text-xs font-black text-emerald-600/60 uppercase tracking-widest">Finalizados</p>
               <p className="text-xl font-black text-emerald-900">
                 {processos.filter(p => p.status === "Finalizado").length}
               </p>
@@ -134,7 +134,7 @@ export default function ProcessosPage() {
               <Clock size={18} />
             </div>
             <div>
-              <p className="text-[10px] font-black text-amber-600/60 uppercase tracking-widest">Em Análise</p>
+              <p className="text-xs font-black text-amber-600/60 uppercase tracking-widest">Em Análise</p>
               <p className="text-xl font-black text-amber-900">
                 {processos.filter(p => p.status === "Em Análise").length}
               </p>

@@ -67,6 +67,7 @@ class ProcessoBase(BaseModel):
 	registros_reclamacao: str | None = None
 	registros_satisfacao: str | None = None
 	status: str = "Em Andamento"
+	padrao_url: str | None = None
 
 
 class ProcessoCreate(ProcessoBase):

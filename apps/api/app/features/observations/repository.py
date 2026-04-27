@@ -63,4 +63,24 @@ class ObservationRepository(BaseRepository[JornadaObservada]):
 				observacao=observacao,
 			)
 			self.session.add(new_tempo)
-			return new_tempo
+			result = new_tempo
+
+		# Recalcular média da etapa
+		await (
+			self.session.flush()
+		)  # Garante que o ID e o dado novo estão disponíveis para a query
+		avg_query = select(func.avg(TempoEtapa.tempo_realizado)).where(
+			TempoEtapa.etapa_id == etapa_id
+		)
+		avg_res = await self.session.execute(avg_query)
+		new_avg = avg_res.scalar()
+
+		if new_avg:
+			from app.features.processes.models import Etapa
+
+			update_stmt = select(Etapa).where(Etapa.id == etapa_id)
+			etapa_res = await self.session.execute(update_stmt)
+			etapa = etapa_res.scalar_one()
+			etapa.duracao_media_observada = new_avg
+
+		return result

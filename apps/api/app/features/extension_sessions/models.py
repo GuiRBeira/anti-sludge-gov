@@ -91,7 +91,7 @@ class PaginaExtensao(Base):
 		ForeignKey("sessao_extensao.id", ondelete="CASCADE"), nullable=False
 	)
 	url: Mapped[str] = mapped_column(Text, nullable=False)
-	titulo: Mapped[str | None] = mapped_column(String(500), nullable=True)
+	titulo: Mapped[str | None] = mapped_column(String(1000), nullable=True)
 	tempo_inicio_unix: Mapped[int] = mapped_column(BigInteger, nullable=False)
 	tempo_fim_unix: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
 	duracao_segundos: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -135,10 +135,10 @@ class InteracaoExtensao(Base):
 	pos_y: Mapped[int | None] = mapped_column(Integer, nullable=True)
 	pos_x_relativa: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
 	pos_y_relativa: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
-	elemento_tag: Mapped[str | None] = mapped_column(String(50), nullable=True)
-	elemento_id: Mapped[str | None] = mapped_column(String(200), nullable=True)
-	elemento_classe: Mapped[str | None] = mapped_column(String(500), nullable=True)
-	elemento_texto: Mapped[str | None] = mapped_column(String(200), nullable=True)
+	elemento_tag: Mapped[str | None] = mapped_column(String(100), nullable=True)
+	elemento_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+	elemento_classe: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+	elemento_texto: Mapped[str | None] = mapped_column(String(1000), nullable=True)
 	timestamp_evento: Mapped[int] = mapped_column(BigInteger, nullable=False)
 	created_at: Mapped[datetime] = mapped_column(
 		DateTime, server_default=func.current_timestamp(), nullable=False

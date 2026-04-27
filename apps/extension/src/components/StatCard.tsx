@@ -1,11 +1,11 @@
-import React from "react"
-import { BrTag } from "@govbr-ds/react-components"
+import React from "react";
+import { BrTag } from "@govbr-ds/react-components";
 
 interface StatCardProps {
-  label: string
-  value: string
-  icon: string
-  color: string
+  label: string;
+  value: string;
+  icon: string;
+  color: string;
 }
 
 export function StatCard({ label, value, icon, color }: StatCardProps) {
@@ -18,7 +18,7 @@ export function StatCard({ label, value, icon, color }: StatCardProps) {
         className={`tw:w-10 tw:h-10 tw:rounded-xl tw:bg-linear-to-br ${color} tw:flex tw:items-center tw:justify-center tw:text-white tw:shadow-lg tw:border-none`}
       />
       <div className="tw:min-w-0">
-        <div className="tw:text-[9px] tw:font-bold tw:text-slate-400 tw:uppercase tw:tracking-wider tw:truncate">
+        <div className="tw:text-xs tw:font-bold tw:text-slate-400 tw:uppercase tw:tracking-wider tw:truncate">
           {label}
         </div>
         <div className="tw:text-lg tw:font-black tw:text-slate-800 tw:leading-none">
@@ -26,5 +26,5 @@ export function StatCard({ label, value, icon, color }: StatCardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

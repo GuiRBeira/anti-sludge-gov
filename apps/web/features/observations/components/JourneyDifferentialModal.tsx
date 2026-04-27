@@ -2,8 +2,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { analysisService, JourneyDifferential } from "@/features/analysis/api/analysisService";
-import { Clock, AlertTriangle, CheckCircle2, ArrowRight, TrendingUp, Info } from "lucide-react";
+import {
+  analysisService,
+  JourneyDifferential,
+} from "@/features/analysis/api/analysisService";
+import {
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+  ArrowRight,
+  TrendingUp,
+  Info,
+  ChevronRight,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // shadcn/ui components
 import {
@@ -26,7 +38,12 @@ interface JourneyDifferentialModalProps {
   jornadaProtocolo: string;
 }
 
-export function JourneyDifferentialModal({ isOpen, onClose, jornadaId, jornadaProtocolo }: JourneyDifferentialModalProps) {
+export function JourneyDifferentialModal({
+  isOpen,
+  onClose,
+  jornadaId,
+  jornadaProtocolo,
+}: JourneyDifferentialModalProps) {
   const [data, setData] = useState<JourneyDifferential | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -67,7 +84,7 @@ export function JourneyDifferentialModal({ isOpen, onClose, jornadaId, jornadaPr
               <DialogTitle className="text-2xl font-black tracking-tighter uppercase leading-none">
                 Análise Comparativa
               </DialogTitle>
-              <DialogDescription className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <DialogDescription className="text-xs font-black text-slate-400 uppercase tracking-widest">
                 Protocolo: {jornadaProtocolo}
               </DialogDescription>
             </div>
@@ -91,29 +108,49 @@ export function JourneyDifferentialModal({ isOpen, onClose, jornadaId, jornadaPr
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <Card className="rounded-2xl border-slate-100 shadow-sm bg-slate-50/50">
                     <CardContent className="p-4">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Eficiência Global</p>
-                      <p className={cn(
-                        "text-2xl font-black tabular-nums",
-                        data.indice_eficiencia_global > 1.2 ? 'text-destructive' : 'text-emerald-600'
-                      )}>
+                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">
+                        Eficiência Global
+                      </p>
+                      <p
+                        className={cn(
+                          "text-2xl font-black tabular-nums",
+                          data.indice_eficiencia_global > 1.2
+                            ? "text-destructive"
+                            : "text-emerald-600",
+                        )}
+                      >
                         {data.indice_eficiencia_global.toFixed(2)}x
                       </p>
                     </CardContent>
                   </Card>
                   <Card className="rounded-2xl border-slate-100 shadow-sm bg-slate-50/50">
                     <CardContent className="p-4">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Tempo Real</p>
-                      <p className="text-2xl font-black text-slate-900 tabular-nums">{formatTime(data.total_real_segundos)}</p>
+                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">
+                        Tempo Real
+                      </p>
+                      <p className="text-2xl font-black text-slate-900 tabular-nums">
+                        {formatTime(data.total_real_segundos)}
+                      </p>
                     </CardContent>
                   </Card>
                   <Card className="rounded-2xl border-slate-100 shadow-sm bg-slate-50/50">
                     <CardContent className="p-4">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Desvio Total</p>
-                      <p className={cn(
-                        "text-2xl font-black tabular-nums",
-                        data.total_real_segundos > data.total_planejado_segundos ? 'text-destructive' : 'text-slate-900'
-                      )}>
-                        {formatTime(data.total_real_segundos - data.total_planejado_segundos)}
+                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">
+                        Desvio Total
+                      </p>
+                      <p
+                        className={cn(
+                          "text-2xl font-black tabular-nums",
+                          data.total_real_segundos >
+                            data.total_planejado_segundos
+                            ? "text-destructive"
+                            : "text-slate-900",
+                        )}
+                      >
+                        {formatTime(
+                          data.total_real_segundos -
+                            data.total_planejado_segundos,
+                        )}
                       </p>
                     </CardContent>
                   </Card>
@@ -121,81 +158,124 @@ export function JourneyDifferentialModal({ isOpen, onClose, jornadaId, jornadaPr
 
                 {/* Steps Comparison */}
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Diferencial por Etapa</h4>
+                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest ml-1">
+                    Diferencial por Etapa
+                  </h4>
                   <div className="space-y-3">
-                    {data.detalhe_etapas.sort((a,b) => a.ordem - b.ordem).map((step) => (
-                      <div 
-                        key={step.etapa_id}
-                        className={cn(
-                          "p-4 rounded-2xl border transition-all flex items-center justify-between group hover:shadow-lg hover:shadow-slate-200/40",
-                          step.status === 'Omitida' ? 'bg-destructive/5 border-destructive/10' : 'bg-white border-slate-100'
-                        )}
-                      >
-                        <div className="flex items-center gap-4">
-                           <div className={cn(
-                             "w-8 h-8 rounded-full flex items-center justify-center text-xs font-black",
-                             step.status === 'Omitida' ? 'bg-destructive/10 text-destructive' : 'bg-slate-100 text-slate-700'
-                           )}>
-                              {step.ordem}
-                           </div>
-                           <div>
-                              <p className="text-sm font-bold text-slate-900 uppercase tracking-tighter">{step.etapa_nome}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                 {step.status === 'Omitida' ? (
-                                   <Badge variant="destructive" className="text-[9px] font-black uppercase tracking-tighter px-2 h-4 gap-1">
-                                      <AlertTriangle size={10} /> Omitida
-                                   </Badge>
-                                 ) : (
-                                   <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-                                      <CheckCircle2 size={12} className="text-emerald-500" /> 
-                                      Realizada em <span className="text-slate-600 ml-1">{formatTime(step.tempo_real)}</span>
-                                   </div>
-                                 )}
+                    <AnimatePresence mode="popLayout">
+                      {data.detalhe_etapas
+                        .sort((a, b) => a.ordem - b.ordem)
+                        .map((step, index) => (
+                          <motion.div
+                            key={step.etapa_id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className={cn(
+                              "p-4 rounded-2xl border transition-all flex items-center justify-between group hover:shadow-lg hover:shadow-slate-200/40",
+                              step.status === "Omitida"
+                                ? "bg-destructive/5 border-destructive/10"
+                                : "bg-white border-slate-100",
+                            )}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div
+                                className={cn(
+                                  "w-8 h-8 rounded-full flex items-center justify-center text-xs font-black",
+                                  step.status === "Omitida"
+                                    ? "bg-destructive/10 text-destructive"
+                                    : "bg-slate-100 text-slate-700",
+                                )}
+                              >
+                                {step.ordem}
                               </div>
-                           </div>
-                        </div>
+                              <div>
+                                <p className="text-sm font-bold text-slate-900 uppercase tracking-tighter">
+                                  {step.etapa_nome}
+                                </p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  {step.status === "Omitida" ? (
+                                    <Badge
+                                      variant="destructive"
+                                      className="text-xs font-black uppercase tracking-tighter px-2 h-4 gap-1"
+                                    >
+                                      <AlertTriangle size={10} /> Omitida
+                                    </Badge>
+                                  ) : (
+                                    <div className="flex items-center gap-1 text-xs font-bold text-slate-400 uppercase tracking-tight">
+                                      <CheckCircle2
+                                        size={12}
+                                        className="text-emerald-500"
+                                      />
+                                      Realizada em{" "}
+                                      <span className="text-slate-600 ml-1">
+                                        {formatTime(step.tempo_real)}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
 
-                        <div className="text-right">
-                           <div className="flex items-center gap-2 justify-end mb-1">
-                              <span className="text-[10px] text-slate-400 font-bold tabular-nums">{formatTime(step.tempo_planejado)}</span>
-                              <ArrowRight size={10} className="text-slate-300" />
-                              <span className={cn(
-                                "text-[10px] font-black tabular-nums",
-                                step.desvio_segundos > 0 ? 'text-destructive' : 'text-emerald-600'
-                              )}>
-                                 {formatTime(step.tempo_real)}
-                              </span>
-                           </div>
-                           <p className={cn(
-                             "text-[10px] font-black uppercase tracking-widest",
-                             step.indice_eficiencia > 1.2 ? 'text-destructive' : 'text-slate-400'
-                           )}>
-                              EF: {step.indice_eficiencia.toFixed(2)}x
-                           </p>
-                        </div>
-                      </div>
-                    ))}
+                            <div className="text-right">
+                              <div className="flex items-center gap-2 justify-end mb-1">
+                                <span className="text-xs text-slate-400 font-bold tabular-nums">
+                                  {formatTime(step.tempo_planejado)}
+                                </span>
+                                <ArrowRight
+                                  size={10}
+                                  className="text-slate-300"
+                                />
+                                <span
+                                  className={cn(
+                                    "text-xs font-black tabular-nums",
+                                    step.desvio_segundos > 0
+                                      ? "text-destructive"
+                                      : "text-emerald-600",
+                                  )}
+                                >
+                                  {formatTime(step.tempo_real)}
+                                </span>
+                              </div>
+                              <p
+                                className={cn(
+                                  "text-xs font-black uppercase tracking-widest px-2 py-0.5 rounded-lg inline-block",
+                                  step.indice_eficiencia > 1.5
+                                    ? "bg-red-100 text-red-600"
+                                    : step.indice_eficiencia > 1.1
+                                      ? "bg-amber-100 text-amber-600"
+                                      : "bg-emerald-100 text-emerald-600",
+                                )}
+                              >
+                                EF: {step.indice_eficiencia.toFixed(2)}x
+                              </p>
+                            </div>
+                          </motion.div>
+                        ))}
+                    </AnimatePresence>
                   </div>
                 </div>
 
                 {/* Conclusion Card */}
-                <Card className="bg-slate-900 border-none text-white rounded-[2rem] relative overflow-hidden shrink-0">
+                <Card className="bg-linear-to-br from-slate-900 to-slate-800 border-none text-white rounded-[2.5rem] relative overflow-hidden shrink-0 shadow-2xl shadow-slate-900/20">
                   <CardContent className="p-8">
                     <div className="relative z-10">
-                       <div className="flex items-center gap-2 mb-4 opacity-50">
-                         <Info size={14} />
-                         <p className="text-[10px] font-black uppercase tracking-[0.2em]">Conclusão Metodológica</p>
-                       </div>
-                       <p className="text-sm font-medium leading-relaxed italic text-slate-300">
-                          {data.indice_eficiencia_global > 1.5 
-                            ? "A jornada apresenta alto índice de atrito. O desvio significativo sugere Sludge informacional ou processual crítico."
-                            : data.indice_eficiencia_global > 1.1
+                      <div className="flex items-center gap-2 mb-4 opacity-50">
+                        <Info size={14} />
+                        <p className="text-xs font-black uppercase tracking-[0.2em]">
+                          Conclusão Metodológica
+                        </p>
+                      </div>
+                      <p className="text-sm font-medium leading-relaxed italic text-slate-300">
+                        {data.indice_eficiencia_global > 1.5
+                          ? "A jornada apresenta alto índice de atrito. O desvio significativo sugere Sludge informacional ou processual crítico."
+                          : data.indice_eficiencia_global > 1.1
                             ? "Fricção moderada detectada. Recomenda-se revisar as etapas com baixo índice de eficiência."
                             : "Jornada dentro do padrão de eficiência ideal mapeado."}
-                       </p>
+                      </p>
                     </div>
                     <div className="absolute -bottom-8 -right-8 opacity-10">
-                       <Clock size={140} />
+                      <Clock size={140} />
                     </div>
                   </CardContent>
                 </Card>

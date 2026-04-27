@@ -1,0 +1,159 @@
+{
+  "id": "mnz1rgh36hga8n",
+  "processoId": null,
+  "processoNome": "Sessão Avulsa",
+  "totalTime": 30,
+  "pages": [
+    {
+      "url": "https://sso.acesso.gov.br/login?client_id=www.gov.br&authorization_id=19d8d784f08",
+      "title": "gov.br - Acesse sua conta",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 0,
+      "interactions": []
+    },
+    {
+      "url": "https://www.gov.br/govbrportal/inicializacao-autenticacao-openid.html",
+      "title": "gov.br OAuth2 Authorization",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 1,
+      "interactions": []
+    },
+    {
+      "url": "https://www.gov.br/pt-br",
+      "title": "GOV.BR",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 1,
+      "interactions": []
+    },
+    {
+      "url": "https://www.google.com/search?q=gov&oq=gov&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQABiPAjIHCAIQABiPAjIHCAMQABiPAjIGCAQQRRg80gEHMzI2ajBqN6gCB7ACAfEF9iHE8Y2p2z7xBfYhxPGNqds-&sourceid=chrome&ie=UTF-8&sei=eZXeaYC-J4ar1sQPyNqc0Q4",
+      "title": "gov - Pesquisa Google",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 2,
+      "interactions": [
+        {
+          "elementoClasse": "",
+          "elementoId": "",
+          "elementoTag": "span",
+          "elementoTexto": "O gov.br reúne, em um só lugar, serviços para o cidadão e informações sobre a atuação de todas as áreas do governo.",
+          "posX": 235,
+          "posXRelativa": 12.24,
+          "posY": 248,
+          "posYRelativa": 27.34,
+          "timestampEvento": 1776196887230,
+          "tipo": "click"
+        }
+      ]
+    },
+    {
+      "url": "https://www.gov.br/pt-br",
+      "title": "GOV.BR",
+      "clicks": 0,
+      "scrolled": true,
+      "time": 9,
+      "interactions": [
+        {
+          "elementoClasse": "outstanding-title",
+          "elementoId": "",
+          "elementoTag": "h2",
+          "elementoTexto": "Serviços para você",
+          "posX": 526,
+          "posXRelativa": 27.4,
+          "posY": 332,
+          "posYRelativa": 36.6,
+          "timestampEvento": 1776196894648,
+          "tipo": "click"
+        }
+      ]
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/consultar-meu-imposto-de-renda?origem=maisacessado_home",
+      "title": "Consultar Meu Imposto de Renda",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 3,
+      "interactions": []
+    },
+    {
+      "url": "https://sso.acesso.gov.br/authorize?response_type=code&client_id=mir.receita.fazenda.gov.br&scope=openid+email+profile+govbr_confiabilidades&redirect_uri=https%3A%2F%2Fmir.receita.fazenda.gov.br%2Fcallback&nonce=19daaccd381aa&state=6c13dc320db2&code_challenge=pZ67S7Au6vl0lpn5BeNKyzV9x37reVlbflzD-T6qZi0&code_challenge_method=S256",
+      "title": "sso.acesso.gov.br/authorize?response_type=code&client_id=mir.receita.fazenda.gov.br&scope=openid+email+profile+govbr_confiabilidades&redirect_uri=https%3A%2F%2Fmir.receita.fazenda.gov.br%2Fcallback&nonce=19daaccd381aa&state=6c13dc320db2&code_challenge=pZ67S7Au6vl0lpn5BeNKyzV9x37reVlbflzD-T6qZi0&code_challenge_method=S256",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 3,
+      "interactions": []
+    },
+    {
+      "url": "https://sso.acesso.gov.br/login?client_id=mir.receita.fazenda.gov.br&authorization_id=19d8d95dd89",
+      "title": "gov.br - Acesse sua conta",
+      "clicks": 5,
+      "scrolled": false,
+      "time": 6,
+      "interactions": [
+        {
+          "elementoClasse": "accordion-panel",
+          "elementoId": "accordion-panel-id",
+          "elementoTag": "div",
+          "elementoTexto": "Digite seu CPF para criar ou acessar sua conta gov.br\n\t\t\t\t\tCPF\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\tContinuar\n            \t\t\t\n\t  \t\t\t\t\t\t\tdocument.getElementById(\"enter-account-id\").addEventListener(\"click\", event=>onSubm",
+          "posX": 1375,
+          "posXRelativa": 71.61,
+          "posY": 273,
+          "posYRelativa": 30.1,
+          "timestampEvento": 1776196904389,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "",
+          "elementoId": "accountId",
+          "elementoTag": "input",
+          "elementoTexto": "",
+          "posX": 1373,
+          "posXRelativa": 71.51,
+          "posY": 287,
+          "posYRelativa": 31.64,
+          "timestampEvento": 1776196904684,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "button-continuar loading",
+          "elementoId": "enter-account-id",
+          "elementoTag": "button",
+          "elementoTexto": "Continuar",
+          "posX": 1473,
+          "posXRelativa": 76.72,
+          "posY": 365,
+          "posYRelativa": 40.24,
+          "timestampEvento": 1776196905572,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "",
+          "elementoId": "password",
+          "elementoTag": "input",
+          "elementoTexto": "",
+          "posX": 1333,
+          "posXRelativa": 69.43,
+          "posY": 276,
+          "posYRelativa": 30.43,
+          "timestampEvento": 1776196907420,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "",
+          "elementoId": "password",
+          "elementoTag": "input",
+          "elementoTexto": "",
+          "posX": 1333,
+          "posXRelativa": 69.43,
+          "posY": 276,
+          "posYRelativa": 30.43,
+          "timestampEvento": 1776196907772,
+          "tipo": "click"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "id": "mnz0lq0foj7zac",
+  "processoId": null,
+  "processoNome": "Sessão Avulsa",
+  "totalTime": 70,
+  "pages": [
+    {
+      "url": "https://www.google.com/sorry/index?continue=https://www.google.com/search%3Fq%3Dgov%26oq%3Dgov%26gs_lcrp%3DEgZjaHJvbWUyBggAEEUYOTIHCAEQABiPAjIHCAIQABiPAjIHCAMQABiPAjIGCAQQRRg80gEHMzI2ajBqN6gCB7ACAfEF9iHE8Y2p2z7xBfYhxPGNqds-%26sourceid%3Dchrome%26ie%3DUTF-8%26sei%3DeZXeaYC-J4ar1sQPyNqc0Q4&q=EhAoBA1VeTZfAB7_MHF7PCfJGPmq-s4GIjBACtp8JgtFHioQsrHPKve7FHh_uo-2FFE_Lv5jYvVRgg_O7xqFNUCGuq6oodquA88yAVJaAUM",
+      "title": "https://www.google.com/search?q=gov&oq=gov&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQABiPAjIHCAIQABiPAjIHCAMQABiPAjIGCAQQRRg80gEHMzI2ajBqN6gCB7ACAfEF9iHE8Y2p2z7xBfYhxPGNqds-&sourceid=chrome&ie=UTF-8&sei=eZXeaYC-J4ar1sQPyNqc0Q4",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 9,
+      "interactions": []
+    },
+    {
+      "url": "https://www.google.com/search?q=gov&oq=gov&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQABiPAjIHCAIQABiPAjIHCAMQABiPAjIGCAQQRRg80gEHMzI2ajBqN6gCB7ACAfEF9iHE8Y2p2z7xBfYhxPGNqds-&sourceid=chrome&ie=UTF-8&sei=eZXeaYC-J4ar1sQPyNqc0Q4",
+      "title": "gov - Pesquisa Google",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 3,
+      "interactions": [
+        {
+          "elementoClasse": "LC20lb MBeuO DKV0Md",
+          "elementoId": "_g5XeaYTjPK7a1sQP1KDjsAI_38",
+          "elementoTag": "h3",
+          "elementoTexto": "GOV.BR",
+          "posX": 262,
+          "posXRelativa": 13.65,
+          "posY": 226,
+          "posYRelativa": 24.92,
+          "timestampEvento": 1776194950135,
+          "tipo": "click"
+        }
+      ]
+    },
+    {
+      "url": "https://www.gov.br/pt-br",
+      "title": "GOV.BR",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 11,
+      "interactions": [
+        {
+          "elementoClasse": "width100 shadow-none show-contrast-toggle",
+          "elementoId": "barra-govbr",
+          "elementoTag": "barra-govbr",
+          "elementoTexto": "",
+          "posX": 1227,
+          "posXRelativa": 63.91,
+          "posY": 336,
+          "posYRelativa": 37.05,
+          "timestampEvento": 1776194960656,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "width100 shadow-none show-contrast-toggle",
+          "elementoId": "barra-govbr",
+          "elementoTag": "barra-govbr",
+          "elementoTexto": "",
+          "posX": 1385,
+          "posXRelativa": 72.14,
+          "posY": 52,
+          "posYRelativa": 5.73,
+          "timestampEvento": 1776194961661,
+          "tipo": "click"
+        }
+      ]
+    },
+    {
+      "url": "https://www.gov.br/govbrportal/inicializacao-autenticacao-openid.html",
+      "title": "gov.br OAuth2 Authorization",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 1,
+      "interactions": []
+    },
+    {
+      "url": "https://sso.acesso.gov.br/authorize?response_type=code&client_id=www.gov.br&scope=openid%20profile%20email%20govbr_confiabilidades&redirect_uri=https%3A%2F%2Fwww.gov.br%2Fgovbrportal%2Fretorno-autenticacao-openid.html&state=eyJraWQiOiJnb3ZicnBvcnRhbGJmZi5vcGVuSWRJbnRlZ3JhdGlvbi5vcGVuSWRBdXRoZW50aWNhdGVkU2Vzc2lvbi5zdGF0ZU1hbmFnZW1lbnQiLCJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..bSB5dCwdDmhQH8mb.rE6uY2psHEeqS3_zCnz7cVngaVhs1X__vVr2a74olD9VV5rBd5-1vnpTAbVUwEKQ1DpdiycbjYiXlXVdNzOQMBgyNu0Y1gFvz6DS6m4_TW5VDZ3CM26lfT8-cjNjvXRvO0ZTsJ7VnKd4TMmyuOvpMJ1xyEWkxWUEiRlJ-LK6K90BhH1J4CWbvKW8Gh2r2nvaG23oSaMH7EToFt5k7d5Z3HqCNO72whu3hxh5PbaxrgfsDQJiW7GOsfspiCQxA2DIJvww1SwDtppf.pD69acIcuXgbgcff3Ltz7g&nonce=a29f3383&code_challenge=BAxi_EseLcLiY7_GY0TS2DMu9e8Qo8Qujx5cft9lL9I&code_challenge_method=S256",
+      "title": "sso.acesso.gov.br/authorize?response_type=code&client_id=www.gov.br&scope=openid profile email govbr_confiabilidades&redirect_uri=https%3A%2F%2Fwww.gov.br%2Fgovbrportal%2Fretorno-autenticacao-openid.html&state=eyJraWQiOiJnb3ZicnBvcnRhbGJmZi5vcGVuSWRJbnRlZ3JhdGlvbi5vcGVuSWRBdXRoZW50aWNhdGVkU2Vzc2lvbi5zdGF0ZU1hbmFnZW1lbnQiLCJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..bSB5dCwdDmhQH8mb.rE6uY2psHEeqS3_zCnz7cVngaVhs1X__vVr2a74olD9VV5rBd5-1vnpTAbVUwEKQ1DpdiycbjYiXlXVdNzOQMBgyNu0Y1gFvz6DS6m4_TW5VDZ3CM26lfT8-cjNjvXRvO0ZTsJ7VnKd4TMmyuOvpMJ1xyEWkxWUEiRlJ-LK6K90BhH1J4CWbvKW8Gh2r2nvaG23oSaMH7EToFt5k7d5Z3HqCNO72whu3hxh5PbaxrgfsDQJiW7GOsfspiCQxA2DIJvww1SwDtppf.pD69acIcuXgbgcff3Ltz7g&nonce=a29f3383&code_challenge=BAxi_EseLcLiY7_GY0TS2DMu9e8Qo8Qujx5cft9lL9I&code_challenge_method=S256",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 3,
+      "interactions": []
+    },
+    {
+      "url": "https://sso.acesso.gov.br/login?client_id=www.gov.br&authorization_id=19d8d784f08",
+      "title": "gov.br - Acesse sua conta",
+      "clicks": 0,
+      "scrolled": false,
+      "time": 37,
+      "interactions": [
+        {
+          "elementoClasse": "",
+          "elementoId": "accountId",
+          "elementoTag": "input",
+          "elementoTexto": "",
+          "posX": 1449,
+          "posXRelativa": 75.47,
+          "posY": 298,
+          "posYRelativa": 32.86,
+          "timestampEvento": 1776194967196,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "button-continuar loading",
+          "elementoId": "enter-account-id",
+          "elementoTag": "button",
+          "elementoTexto": "Continuar",
+          "posX": 0,
+          "posXRelativa": 0,
+          "posY": 0,
+          "posYRelativa": 0,
+          "timestampEvento": 1776194971407,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "",
+          "elementoId": "password",
+          "elementoTag": "input",
+          "elementoTexto": "",
+          "posX": 1366,
+          "posXRelativa": 71.15,
+          "posY": 285,
+          "posYRelativa": 31.42,
+          "timestampEvento": 1776194973771,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "fa fa-fw toggle-password fa-eye-slash",
+          "elementoId": "",
+          "elementoTag": "span",
+          "elementoTexto": "",
+          "posX": 1462,
+          "posXRelativa": 76.15,
+          "posY": 285,
+          "posYRelativa": 31.42,
+          "timestampEvento": 1776194978573,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "fa fa-fw toggle-password fa-eye",
+          "elementoId": "",
+          "elementoTag": "span",
+          "elementoTexto": "",
+          "posX": 1462,
+          "posXRelativa": 76.15,
+          "posY": 285,
+          "posYRelativa": 31.42,
+          "timestampEvento": 1776194978715,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "button-ok",
+          "elementoId": "submit-button",
+          "elementoTag": "button",
+          "elementoTexto": "Entrar",
+          "posX": 1421,
+          "posXRelativa": 74.01,
+          "posY": 371,
+          "posYRelativa": 40.9,
+          "timestampEvento": 1776194979084,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "gdd-close-btn",
+          "elementoId": "gdd-close-hint",
+          "elementoTag": "button",
+          "elementoTexto": "X",
+          "posX": 1077,
+          "posXRelativa": 56.09,
+          "posY": 307,
+          "posYRelativa": 33.85,
+          "timestampEvento": 1776194983547,
+          "tipo": "click"
+        },
+        {
+          "elementoClasse": "gdd-checkbox-input-default",
+          "elementoId": "device",
+          "elementoTag": "input",
+          "elementoTexto": "",
+          "posX": 803,
+          "posXRelativa": 41.82,
+          "posY": 336,
+          "posYRelativa": 37.05,
+          "timestampEvento": 1776194984987,
+          "tipo": "click"
+        }
+      ]
+    }
+  ]
+}

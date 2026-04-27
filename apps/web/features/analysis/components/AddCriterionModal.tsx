@@ -2,7 +2,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { analysisService, CriterioTemplate } from "@/features/analysis/api/analysisService";
+import {
+  analysisService,
+  CriterioTemplate,
+} from "@/features/analysis/api/analysisService";
 import { Info, AlertCircle, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -34,7 +37,13 @@ interface AddCriterionModalProps {
   onSuccess: () => void;
 }
 
-export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSuccess }: AddCriterionModalProps) {
+export function AddCriterionModal({
+  isOpen,
+  onClose,
+  etapaId,
+  etapaNome,
+  onSuccess,
+}: AddCriterionModalProps) {
   const [templates, setTemplates] = useState<CriterioTemplate[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -64,7 +73,7 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
 
     setSubmitting(true);
     try {
-      const template = templates.find(t => t.id === Number(selectedTemplate));
+      const template = templates.find((t) => t.id === Number(selectedTemplate));
       if (!template) return;
 
       await analysisService.createCriterio({
@@ -86,7 +95,9 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
     }
   };
 
-  const selectedTemplateData = templates.find(t => t.id === Number(selectedTemplate));
+  const selectedTemplateData = templates.find(
+    (t) => t.id === Number(selectedTemplate),
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -100,7 +111,7 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
               <DialogTitle className="text-2xl font-black tracking-tighter uppercase leading-none">
                 Critério Metodológico
               </DialogTitle>
-              <DialogDescription className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <DialogDescription className="text-xs font-black text-slate-400 uppercase tracking-widest">
                 Etapa: {etapaNome}
               </DialogDescription>
             </div>
@@ -110,8 +121,9 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
         <div className="space-y-6 py-4">
           <div className="bg-blue-50/80 p-4 rounded-2xl border border-blue-100 flex gap-3">
             <Info className="text-blue-500 shrink-0" size={18} />
-            <p className="text-[11px] text-blue-700 font-bold leading-relaxed uppercase tracking-tight">
-              A lista abaixo foi filtrada automaticamente baseada no comportamento desta etapa (Metodologia F5).
+            <p className="text-xs text-blue-700 font-bold leading-relaxed uppercase tracking-tight">
+              A lista abaixo foi filtrada automaticamente baseada no
+              comportamento desta etapa (Metodologia F5).
             </p>
           </div>
 
@@ -123,14 +135,23 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
           ) : (
             <>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Selecione o Critério</Label>
-                <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                <Label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+                  Selecione o Critério
+                </Label>
+                <Select
+                  value={selectedTemplate}
+                  onValueChange={setSelectedTemplate}
+                >
                   <SelectTrigger className="h-14 rounded-xl bg-slate-50 border-none font-bold text-slate-900 focus:ring-primary">
                     <SelectValue placeholder="Escolha um critério para auditoria..." />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl shadow-xl border-slate-100">
-                    {templates.map(t => (
-                      <SelectItem key={t.id} value={t.id.toString()} className="font-medium">
+                    {templates.map((t) => (
+                      <SelectItem
+                        key={t.id}
+                        value={t.id.toString()}
+                        className="font-medium"
+                      >
                         {t.nome}
                       </SelectItem>
                     ))}
@@ -146,7 +167,7 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-2"
                   >
-                    <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
                       <AlertCircle size={14} className="text-primary" />
                       Conceito Aplicado
                     </h4>
@@ -161,7 +182,11 @@ export function AddCriterionModal({ isOpen, onClose, etapaId, etapaNome, onSucce
         </div>
 
         <DialogFooter className="pt-6 gap-3 sm:gap-0">
-          <Button variant="ghost" onClick={onClose} className="rounded-xl font-bold h-12 px-6">
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            className="rounded-xl font-bold h-12 px-6"
+          >
             Cancelar
           </Button>
           <Button
