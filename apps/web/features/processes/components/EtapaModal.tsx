@@ -161,7 +161,7 @@ export function EtapaModal({
               <Select
                 value={formData.categoria_id.toString()}
                 onValueChange={(val) =>
-                  setFormData({ ...formData, categoria_id: parseInt(val) })
+                  setFormData({ ...formData, categoria_id: Number(val) })
                 }
               >
                 <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-medium focus:ring-primary">
@@ -186,7 +186,7 @@ export function EtapaModal({
                 onValueChange={(val) =>
                   setFormData({
                     ...formData,
-                    tipo_comportamento_id: parseInt(val),
+                    tipo_comportamento_id: Number(val),
                   })
                 }
               >

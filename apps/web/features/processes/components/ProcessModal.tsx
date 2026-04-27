@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 
 import { useAuth } from "@/features/auth/context/AuthContext";
+import { cn } from "@/lib/utils";
 
 interface ProcessModalProps {
   onClose: () => void;
@@ -58,6 +59,7 @@ export function ProcessModal({
     publico_alvo: initialData?.publico_alvo || "",
     usuarios_estimados_ano: initialData?.usuarios_estimados_ano || 0,
     status: initialData?.status || "Em Análise",
+    padrao_url: initialData?.padrao_url || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -162,7 +164,7 @@ export function ProcessModal({
                 value={formData.status}
                 disabled={!canApprove}
                 onValueChange={(val) =>
-                  setFormData({ ...formData, status: val })
+                  setFormData({ ...formData, status: val || "" })
                 }
               >
                 <SelectTrigger className={cn(
@@ -190,7 +192,8 @@ export function ProcessModal({
                   id="padrao_url"
                   placeholder="Ex: detran.sp.gov.br"
                   className="rounded-xl border-slate-200 focus:ring-primary/20"
-                  {...register("padrao_url")}
+                  value={formData.padrao_url}
+                  onChange={(e) => setFormData({ ...formData, padrao_url: e.target.value })}
                 />
                 <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
                   A extensão usará este padrão para validar se a jornada capturada pertence a este processo.

@@ -140,7 +140,7 @@ export function AddCriterionModal({
                 </Label>
                 <Select
                   value={selectedTemplate}
-                  onValueChange={setSelectedTemplate}
+                  onValueChange={(val) => setSelectedTemplate(val || "")}
                 >
                   <SelectTrigger className="h-14 rounded-xl bg-slate-50 border-none font-bold text-slate-900 focus:ring-primary">
                     <SelectValue placeholder="Escolha um critério para auditoria..." />
