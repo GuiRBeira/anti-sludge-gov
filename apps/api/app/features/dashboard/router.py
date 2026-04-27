@@ -3,12 +3,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, desc
 from app.core.database import get_db
-from app.models.process_model import Processo, Etapa
-from app.models.observation_model import JornadaObservada
-from app.models.analysis_model import ResultadoAnalise
+from app.features.processes.models import Processo, Etapa
+from app.features.observations.models import JornadaObservada
+from app.features.analysis.models import ResultadoAnalise
 from app.features.dashboard import schemas
-from app.repositories.analysis_repository import AnalysisRepository
-from app.repositories.process_repository import ProcessRepository
+from app.features.analysis.repository import AnalysisRepository
+from app.features.processes.repository import ProcessRepository
 from app.use_cases.analysis_use_cases import CalculateProcessSludgeUseCase
 
 

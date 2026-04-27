@@ -1,13 +1,16 @@
+// apps/web/features/processes/components/StatsGrid.tsx
 "use client";
 
 import React from "react";
 import { motion } from "framer-motion";
-import { GovIcon } from "@/components/gov";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 interface StatItem {
   label: string;
   value: string | number;
-  icon: string;
+  icon: LucideIcon;
   color: string;
 }
 
@@ -17,29 +20,40 @@ interface StatsGridProps {
 
 export function StatsGrid({ stats }: StatsGridProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, idx) => (
         <motion.div
           key={stat.label}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: idx * 0.1 }}
-          className="glass p-3 md:p-4 rounded-3xl shadow-sm border border-slate-200/50 flex items-center gap-4"
+          className="h-full"
         >
-          <div
-            className={`${stat.color} p-2 md:p-3 border rounded-2xl text-white shadow-md shrink-0`}
-          >
-            <GovIcon icon={stat.icon} size={20} />
-          </div>
-          <div className="flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 min-w-0">
-            <span className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">
-              {stat.label}
-            </span>
-            <div className="hidden md:block h-4 w-px bg-slate-200 self-center" />
-            <span className="text-xl md:text-2xl font-black text-slate-800 tabular-nums leading-none">
-              {stat.value}
-            </span>
-          </div>
+          <Card className="h-full rounded-[2.5rem] border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden group hover:border-primary/20 transition-all">
+            <CardContent className="py-2 px-5 flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div
+                  className={cn(
+                    "p-3 rounded-2xl text-white shadow-lg transition-transform group-hover:scale-110 duration-300",
+                    stat.color,
+                  )}
+                >
+                  <stat.icon size={16} strokeWidth={3.5} />
+                </div>
+
+                <div className="h-1.5 w-1.5 rounded-full bg-slate-200" />
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                  {stat.label}
+                </p>
+                <h3 className="text-3xl font-black tabular-nums tracking-tighter">
+                  {stat.value}
+                </h3>
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       ))}
     </div>

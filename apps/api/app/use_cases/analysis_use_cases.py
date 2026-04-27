@@ -1,8 +1,8 @@
 from sqlalchemy import select
-from app.models.process_model import Processo
+from app.features.processes.models import Processo
 from app.domain.sludge_logic import SludgeCalculator
-from app.repositories.analysis_repository import AnalysisRepository
-from app.repositories.process_repository import ProcessRepository
+from app.features.analysis.repository import AnalysisRepository
+from app.features.processes.repository import ProcessRepository
 
 
 class CalculateProcessSludgeUseCase:
@@ -57,16 +57,23 @@ class CalculateProcessSludgeUseCase:
 				barrier_scores = [min(base_barrier, 5.0)]
 
 			if not impact_scores:
-				# Heurística de Impacto
-				base_impact = 2.5
-				if etapa.e_obrigatorio:
-					base_impact += 1.0
+				# Heurística de Impacto baseada no tempo observado (Extensão)
+				if etapa.duracao_media_observada:
+					# Converte timedelta para segundos
+					obs_seconds = etapa.duracao_media_observada.total_seconds()
+					real_impact = self.calculator.scale_time_to_score(obs_seconds)
+					impact_scores = [real_impact]
+				else:
+					# Fallback para heurística teórica
+					base_impact = 2.5
+					if etapa.e_obrigatorio:
+						base_impact += 1.0
 
-				# Se tivermos tempo planejado (mock de impacto por tempo)
-				if etapa.tempo_planejado:
-					base_impact += 0.5  # Punição padrão por exigir tempo do cidadão
+					# Se tivermos tempo planejado (mock de impacto por tempo)
+					if etapa.tempo_planejado:
+						base_impact += 0.5
 
-				impact_scores = [min(base_impact, 5.0)]
+					impact_scores = [min(base_impact, 5.0)]
 
 			# 3. Calcular médias
 			avg_barrier = self.calculator.calculate_average(barrier_scores)
@@ -105,7 +112,7 @@ class CalculateProcessSludgeUseCase:
 				"Redesenho crítico necessário: eliminar etapa ou automatizar via API."
 			)
 		if index > 12:
-			return "Simplificar interface e reduzir número de campos obrigatórios."
+			return "Simplificar interface."
 		if index > 6:
 			return "Otimizar tempo de resposta e melhorar orientações ao usuário."
 		return "Etapa saudável, manter monitoramento contínuo."

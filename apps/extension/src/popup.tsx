@@ -1,12 +1,12 @@
-import React from "react"
-import govbr from "data-base64:../assets/govbr.png"
-import { BrTag, BrSwitch, BrSelect } from "@govbr-ds/react-components"
-import "./popup.css"
-import { usePopupState } from "./hooks/usePopupState"
-import { PopupHeader } from "./components/PopupHeader"
-import { StatCard } from "./components/StatCard"
-import { FinishedBanner } from "./components/FinishedBanner"
-import { PageList } from "./components/PageList"
+import React from "react";
+import govbr from "data-base64:../assets/govbr.png";
+import { BrTag, BrSwitch, BrSelect } from "@govbr-ds/react-components";
+import "./popup.css";
+import { usePopupState } from "./hooks/usePopupState";
+import { PopupHeader } from "./components/PopupHeader";
+import { StatCard } from "./components/StatCard";
+import { FinishedBanner } from "./components/FinishedBanner";
+import { PageList } from "./components/PageList";
 
 export default function IndexPopup() {
   const {
@@ -21,9 +21,12 @@ export default function IndexPopup() {
     canStart,
     handleToggle,
     setSelectedProcessoId,
-  } = usePopupState()
+  } = usePopupState();
 
-  const processoOptions = processos.map((p) => ({ label: p.nome, value: String(p.id) }))
+  const processoOptions = processos.map((p) => ({
+    label: p.nome,
+    value: String(p.id),
+  }));
 
   return (
     <div className="tw:flex tw:flex-col tw:h-screen tw:bg-slate-50">
@@ -38,8 +41,12 @@ export default function IndexPopup() {
         <div className="tw:space-y-4">
           <header className="tw:flex tw:justify-between tw:items-end">
             <div>
-              <h3 className="tw:text-2xl tw:font-black tw:tracking-tight">Monitoramento</h3>
-              <p className="tw:text-[11px] tw:text-slate-500">Controle a gravação de fricção digital.</p>
+              <h3 className="tw:text-2xl tw:font-black tw:tracking-tight">
+                Monitoramento
+              </h3>
+              <p className="tw:text-xs tw:text-slate-500">
+                Controle a gravação de fricção digital.
+              </p>
             </div>
             <BrSwitch
               onChange={handleToggle}
@@ -52,13 +59,15 @@ export default function IndexPopup() {
           {/* Seletor de processo — visível apenas quando inativo */}
           {!isActive && (
             <div className="tw:space-y-1">
-              <label className="tw:text-[10px] tw:font-bold tw:text-slate-500 tw:uppercase tw:tracking-wider">
+              <label className="tw:text-xs tw:font-bold tw:text-slate-500 tw:uppercase tw:tracking-wider">
                 Processo a monitorar
               </label>
               {loadingProcessos ? (
-                <p className="tw:text-[11px] tw:text-slate-400">Carregando processos...</p>
+                <p className="tw:text-xs tw:text-slate-400">
+                  Carregando processos...
+                </p>
               ) : processos.length === 0 ? (
-                <p className="tw:text-[11px] tw:text-amber-600 tw:font-semibold">
+                <p className="tw:text-xs tw:text-amber-600 tw:font-semibold">
                   Nenhum processo cadastrado na API.
                 </p>
               ) : (
@@ -67,22 +76,29 @@ export default function IndexPopup() {
                   label=""
                   placeholder="Selecione um processo..."
                   options={processoOptions}
-                  value={selectedProcessoId !== null ? String(selectedProcessoId) : null}
+                  value={
+                    selectedProcessoId !== null
+                      ? String(selectedProcessoId)
+                      : null
+                  }
                   onChange={(val: string | null) => {
-                    setSelectedProcessoId(val ? Number(val) : null)
+                    setSelectedProcessoId(val ? Number(val) : null);
                   }}
                 />
               )}
               {!canStart && processos.length > 0 && (
-                <p className="tw:text-[10px] tw:text-slate-400">Selecione um processo para iniciar.</p>
+                <p className="tw:text-xs tw:text-slate-400">
+                  Selecione um processo para iniciar.
+                </p>
               )}
             </div>
           )}
 
           {/* Processo ativo */}
           {isActive && session?.processoNome && (
-            <div className="tw:text-[11px] tw:text-slate-600 tw:font-semibold tw:bg-blue-50 tw:px-3 tw:py-2 tw:rounded-xl tw:border tw:border-blue-100">
-              Processo: <span className="tw:text-blue-700">{session.processoNome}</span>
+            <div className="tw:text-xs tw:text-slate-600 tw:font-semibold tw:bg-blue-50 tw:px-3 tw:py-2 tw:rounded-xl tw:border tw:border-blue-100">
+              Processo:{" "}
+              <span className="tw:text-blue-700">{session.processoNome}</span>
             </div>
           )}
 
@@ -133,10 +149,10 @@ export default function IndexPopup() {
       </div>
 
       <div className="tw:px-4 tw:py-3 tw:bg-white tw:border-t tw:border-slate-100 tw:text-center">
-        <div className="tw:text-[9px] tw:font-black tw:text-slate-300 tw:uppercase tw:tracking-widest">
+        <div className="tw:text-xs tw:font-black tw:text-slate-300 tw:uppercase tw:tracking-widest">
           UTFPR &amp; CINCO/MGI — Auditoria v1.0
         </div>
       </div>
     </div>
-  )
+  );
 }

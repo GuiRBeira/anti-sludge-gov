@@ -2,7 +2,7 @@
 import uuid
 from datetime import datetime, timedelta
 
-from app.models.base_model import AbrangenciaEnum, EsferaGovernoEnum
+from app.core.base_model import AbrangenciaEnum, EsferaGovernoEnum
 from pydantic import BaseModel, ConfigDict
 
 
@@ -67,6 +67,7 @@ class ProcessoBase(BaseModel):
 	registros_reclamacao: str | None = None
 	registros_satisfacao: str | None = None
 	status: str = "Em Andamento"
+	padrao_url: str | None = None
 
 
 class ProcessoCreate(ProcessoBase):

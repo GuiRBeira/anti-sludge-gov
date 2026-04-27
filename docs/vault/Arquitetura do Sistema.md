@@ -78,9 +78,9 @@ sequenceDiagram
 
 A aplicação utiliza um sistema de filtros baseado em e-mails configurados via ambiente:
 
-| Nível | Identificação | Permissões |
-| :--- | :--- | :--- |
-| **Admin** | Lista `ADMIN_EMAILS` | Gestão completa e acesso a todas as métricas. |
-| **Analista** | Lista `ANALYST_EMAILS` | Atribuição de notas de sludge e consulta. |
+| Nível         | Identificação              | Permissões                                         |
+| :------------ | :------------------------- | :------------------------------------------------- |
+| **Admin**     | Lista `ADMIN_EMAILS`       | Gestão completa e acesso a todas as métricas.      |
+| **Analista**  | Lista `ANALYST_EMAILS`     | Atribuição de notas de sludge e consulta.          |
 | **Visitante** | Qualquer outro Google Auth | Redirecionamento automático para GitHub (Externo). |
-| **Extensão** | `X-API-KEY` | Apenas escrita de dados de telemetria. |
+| **Extensão**  | `X-API-KEY`                | Apenas escrita de dados de telemetria.             |

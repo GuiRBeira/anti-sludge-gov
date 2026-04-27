@@ -2,7 +2,7 @@
 
 from app.core.database import get_db
 from app.features.catalog import schemas
-from app.repositories.catalog_repository import CatalogRepository
+from app.features.catalog.repository import CatalogRepository
 from app.use_cases.catalog_use_cases import CatalogUseCases
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession

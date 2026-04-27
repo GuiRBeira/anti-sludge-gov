@@ -58,7 +58,7 @@ export const FeedbackButton = () => {
                     key={t}
                     type="button"
                     onClick={() => setType(t)}
-                    className={`flex flex-1 flex-col items-center gap-1 rounded-lg border py-2 text-[10px] font-medium transition-all ${
+                    className={`flex flex-1 flex-col items-center gap-1 rounded-lg border py-2 text-xs font-medium transition-all ${
                       type === t
                         ? "border-slate-900 bg-slate-900 text-white"
                         : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"

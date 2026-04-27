@@ -1,7 +1,7 @@
 # app/use_cases/extension_use_cases.py
 from typing import Any
-from app.repositories.extension_repository import ExtensionRepository
-from app.repositories.observation_repository import ObservationRepository
+from app.features.extension_sessions.repository import ExtensionRepository
+from app.features.observations.repository import ObservationRepository
 
 
 class LinkExtensionToStepUseCase:

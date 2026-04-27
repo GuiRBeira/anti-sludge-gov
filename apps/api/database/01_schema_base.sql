@@ -305,3 +305,15 @@ CREATE TABLE resultado_analise (
 );
 
 CREATE INDEX idx_resultado_processo ON resultado_analise(processo_id);
+-- ============================================
+-- TABELA: CONTROLE DE ACESSO (RBAC)
+-- ============================================
+
+CREATE TABLE rbac_emails (
+    email VARCHAR(255) PRIMARY KEY,
+    role VARCHAR(50) NOT NULL CHECK (role IN ('admin', 'researcher', 'supervisor', 'visitor')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE rbac_emails IS 'Tabela isolada para controle de acesso via Role-Based Access Control (RBAC)';

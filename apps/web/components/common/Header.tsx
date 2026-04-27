@@ -1,106 +1,106 @@
-import { Menu } from "lucide-react";
-import NextImage from "next/image";
-import { GovButton } from "@/components/gov/GovButton";
-import { useAuth } from "@/features/auth/context/AuthContext";
-import { LogOut, User } from "lucide-react";
-interface HeaderProps {
-  onMenuClick?: () => void;
-}
+"use client";
 
-export function Header({ onMenuClick }: HeaderProps) {
-  const { user, logout } = useAuth();
+import React from "react";
+import NextImage from "next/image";
+import { usePathname } from "next/navigation";
+import { ChevronRight, ShieldCheck, Activity } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { version } from "../../package.json";
+
+export function Header() {
+  const pathname = usePathname();
+
+  // Mapeamento simples para breadcrumbs
+  const getBreadcrumbs = () => {
+    const paths = pathname.split("/").filter(Boolean);
+    if (paths.length === 0) return [{ label: "Dashboard", href: "/" }];
+
+    return paths.map((path, index) => {
+      const href = `/${paths.slice(0, index + 1).join("/")}`;
+      const label = path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, " ");
+      return { label, href };
+    });
+  };
+
+  const breadcrumbs = getBreadcrumbs();
 
   return (
-    <header className="br-header mb-0 border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm py-1 transition-all duration-300">
-      <div className="container-lg flex flex-col pl-4 md:pl-6 pr-4 md:pr-8 py-4">
-        {/* Linha 1: Branding e Ações */}
-        <div className="w-full flex items-center justify-between">
-          <div className="flex items-center gap-3 md:gap-5">
-            {/* Burger Menu Button (Mobile) */}
-            {onMenuClick && (
-              <button
-                onClick={onMenuClick}
-                className="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
-                aria-label="Menu"
-              >
-                <Menu size={20} />
-              </button>
-            )}
-            {/* Logo Oficial gov.br */}
-            <a
-              href="https://www.gov.br"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:opacity-80 transition-opacity"
-            >
-              <NextImage
-                src="https://www.gov.br/++theme++padrao_govbr/img/govbr-logo-large.png"
-                alt="Logo gov.br"
-                width={120}
-                height={35}
-                priority
-                className="h-10 w-auto"
-              />
-            </a>
-            <div className="h-8 w-px bg-slate-200" />
-
-            {/* Nome do Sistema (h1 para SEO/Acessibilidade) */}
-            <h1 className="text-lg md:text-2xl font-black text-gov-blue-light tracking-tight m-0 p-0 group cursor-default">
-              Anti-Sludge{" "}
-              <span className="text-blue-600 transition-colors duration-300 group-hover:text-blue-500">
-                Gov
-              </span>
-            </h1>
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/80 backdrop-blur-xl transition-all">
+      <div className="flex h-28 items-center justify-between px-3">
+        <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="h-14 w-14 rounded-[1.25rem] hover:bg-slate-100 transition-colors" />
+            <div className="h-10 w-px bg-slate-200 mx-2 hidden md:block" />
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Badge de Versão - Toque Profissional de TCC */}
-            <div className="hidden sm:flex items-center px-3 py-1 bg-slate-100 rounded-full border border-slate-200 text-slate-500 text-[10px] font-bold tracking-widest uppercase mr-2">
-              {process.env.APP_VERSION}
+          {/* Branding & Breadcrumbs */}
+          <div className="flex flex-col px-4">
+            <div className="flex items-center gap-2">
+              <a
+                href="https://www.gov.br"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity hidden sm:block"
+              >
+                <NextImage
+                  src="https://www.gov.br/++theme++padrao_govbr/img/govbr-logo-large.png"
+                  alt="Logo gov.br"
+                  width={130}
+                  height={40}
+                  priority
+                  className="h-10 w-auto"
+                />
+              </a>
+              <ChevronRight className="size-6 text-slate-300 hidden sm:block" />
+              <span className="text-2xl md:text-3xl font-black text-slate-900 tracking-tighter">
+                Anti-Sludge <span className="text-blue-600">Gov</span>
+              </span>
             </div>
 
-            <div className="flex items-center gap-4">
-              {user && (
-                <div className="hidden md:flex flex-col items-end mr-2">
-                  <span className="text-xs font-bold text-slate-700">{user.name}</span>
-                  <span className="text-[10px] text-slate-500 truncate max-w-[150px]">{user.email}</span>
-                </div>
-              )}
-
-              <div className="flex gap-2">
-                <div className="relative group">
-                  {user?.picture ? (
-                    <NextImage
-                      src={user.picture}
-                      alt={user.name || "User"}
-                      width={32}
-                      height={32}
-                      className="rounded-full border-2 border-blue-100 group-hover:border-blue-400 transition-colors"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                      <User size={16} />
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  onClick={logout}
-                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                  title="Sair do sistema"
-                >
-                  <LogOut size={20} />
-                </button>
-              </div>
-            </div>
+            {/* Breadcrumb Path */}
+            <nav className="flex items-center gap-2.5 text-base font-bold uppercase tracking-[0.2em] text-slate-400 group cursor-default">
+              {breadcrumbs.map((crumb, i) => (
+                <React.Fragment key={crumb.href}>
+                  {i > 0 && <ChevronRight className="size-5 text-slate-300" />}
+                  <span className={cn(
+                    "transition-colors",
+                    i === breadcrumbs.length - 1 ? "text-slate-500" : "hover:text-blue-500"
+                  )}>
+                    {crumb.label}
+                  </span>
+                </React.Fragment>
+              ))}
+            </nav>
           </div>
         </div>
 
-        {/* Linha 2: Subtítulo/Status de Auditoria */}
-        <div className="flex items-center gap-2 md:gap-3 mt-4 pb-1 overflow-x-hidden">
-          <div className="shrink-0 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <div className="text-[10px] md:text-sm font-bold text-slate-500 tracking-widest md:tracking-[0.2em] uppercase leading-none truncate">
-            Auditoria de Carga Administrativa
+        <div className="flex items-center gap-5">
+          {/* Status de Auditoria - Estilo Badge Tecnológico */}
+          <div className="hidden lg:flex items-center gap-6 px-8 py-2 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="relative flex h-4 w-4">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500"></span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-black text-slate-400 uppercase tracking-[0.3em] leading-none mb-2">
+                Status de Auditoria
+              </span>
+              <span className="text-lg font-bold text-slate-700 leading-none flex items-center gap-2.5">
+                <ShieldCheck className="size-4 text-emerald-600" />
+                Monitoramento Ativo
+              </span>
+            </div>
+          </div>
+
+          <div className="h-14 w-px bg-slate-100 hidden sm:block" />
+
+          {/* Badge de Versão */}
+          <div className="flex items-center gap-3 px-6 py-3 bg-blue-500/20 rounded-2xl border border-blue-500">
+            <Activity className="size-6 text-blue-600" />
+            <span className="text-base font-black text-blue-600 uppercase tracking-widest">
+              v{version}
+            </span>
           </div>
         </div>
       </div>

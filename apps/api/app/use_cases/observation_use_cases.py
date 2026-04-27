@@ -1,8 +1,8 @@
 # app/use_cases/observation_use_cases.py
 from typing import Any
 from app.domain.sludge_logic import SludgeCalculator
-from app.repositories.observation_repository import ObservationRepository
-from app.repositories.process_repository import ProcessRepository
+from app.features.observations.repository import ObservationRepository
+from app.features.processes.repository import ProcessRepository
 
 
 class CalculateJourneyDifferentialUseCase:

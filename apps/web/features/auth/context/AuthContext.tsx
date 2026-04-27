@@ -12,6 +12,8 @@ interface AuthContextType {
   isLoading: boolean;
   isAdmin: boolean;
   canEdit: boolean;
+  canDelete: boolean;
+  canApprove: boolean;
   isReadOnly: boolean;
 }
 
@@ -33,6 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAdmin = user?.role === "admin";
   const canEdit = user?.role === "admin" || user?.role === "researcher";
+  const canDelete = user?.role === "admin";
+  const canApprove = user?.role === "admin" || user?.role === "supervisor";
   const isReadOnly = user?.role === "supervisor" || user?.role === "visitor";
 
   return (
@@ -43,6 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       isAdmin,
       canEdit,
+      canDelete,
+      canApprove,
       isReadOnly
     }}>
       {children}

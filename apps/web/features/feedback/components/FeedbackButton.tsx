@@ -2,14 +2,24 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, X, Send, Bug, Lightbulb, MessageCircle } from "lucide-react";
+import {
+  MessageSquare,
+  X,
+  Send,
+  Bug,
+  Lightbulb,
+  MessageCircle,
+} from "lucide-react";
 import { useFeedbackMutation } from "../api/useFeedbackMutation";
 
 export const FeedbackButton = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [type, setType] = useState<"feedback" | "bug" | "suggestion">("feedback");
+  const [type, setType] = useState<"feedback" | "bug" | "suggestion">(
+    "feedback",
+  );
   const [message, setMessage] = useState("");
-  const { mutateAsync: sendFeedback, isPending: isSending } = useFeedbackMutation();
+  const { mutateAsync: sendFeedback, isPending: isSending } =
+    useFeedbackMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +69,7 @@ export const FeedbackButton = () => {
                     key={t}
                     type="button"
                     onClick={() => setType(t)}
-                    className={`flex flex-1 flex-col items-center gap-1 rounded-lg border py-2 text-[10px] font-medium transition-all ${
+                    className={`flex flex-1 flex-col items-center gap-1 rounded-lg border py-2 text-xs font-medium transition-all ${
                       type === t
                         ? "border-slate-900 bg-slate-900 text-white"
                         : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
@@ -80,8 +90,8 @@ export const FeedbackButton = () => {
                   type === "bug"
                     ? "O que aconteceu de errado?"
                     : type === "suggestion"
-                    ? "Como podemos melhorar?"
-                    : "Deixe seu comentário..."
+                      ? "Como podemos melhorar?"
+                      : "Deixe seu comentário..."
                 }
                 className="h-24 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm focus:border-slate-900 focus:outline-none transition-all"
               />

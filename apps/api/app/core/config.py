@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -9,7 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 class Settings(BaseSettings):
 	model_config = SettingsConfigDict(
-		env_file=(".env.local",), env_file_encoding="utf-8", extra="ignore"
+		env_file=(".env", ".env.local"), env_file_encoding="utf-8", extra="ignore"
 	)
 
 	# Supabase / Postgres Credentials
@@ -54,6 +55,14 @@ class Settings(BaseSettings):
 	AUTH_COOKIE_SECURE: bool = False  # True em prod
 	AUTH_COOKIE_SAMESITE: str = "lax"
 	DISCORD_WEBHOOK_URL: str | None = None
+
+	@model_validator(mode="after")
+	def check_secret_key(self) -> "Settings":
+		if not self.DEBUG and self.SECRET_KEY == "super-secret-key-change-it-in-prod":
+			raise ValueError(
+				"SECRET_KEY must be changed in production mode for security reasons."
+			)
+		return self
 
 	@property
 	def VERSION(self) -> str:

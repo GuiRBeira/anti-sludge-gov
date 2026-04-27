@@ -40,6 +40,7 @@ export interface Processo {
   usuarios_estimados_ano?: number;
   perfil_foco_mapeamento?: string;
   status: string;
+  padrao_url?: string;
   created_at: string;
   updated_at: string;
 }
@@ -57,6 +58,7 @@ export interface CreateProcessoDTO {
   publico_alvo?: string;
   usuarios_estimados_ano?: number;
   status?: string;
+  padrao_url?: string;
 }
 
 export interface DashboardSummary {

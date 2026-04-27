@@ -8,6 +8,18 @@ class SludgeCalculator:
 	"""
 
 	@staticmethod
+	def scale_time_to_score(seconds: float) -> float:
+		"""
+		Converte tempo absoluto em nota de 1 a 5 (Metodologia F5).
+		Baseado na regra da planilha: 101s = 5.0 | 14s = 1.13
+		Fórmula: (segundos * 0.04448) + 0.507
+		"""
+		if not seconds or seconds <= 0:
+			return 1.0
+		score = (seconds * 0.04448) + 0.507
+		return round(min(max(score, 1.0), 5.0), 2)
+
+	@staticmethod
 	def calculate_sludge_index(barrier_score: float, impact_score: float) -> float:
 		"""
 		Calcula o Índice de Sludge bruto.

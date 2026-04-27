@@ -23,6 +23,7 @@ import { AuthProvider } from "@/features/auth/context/AuthContext";
 import { FeedbackButton } from "@/features/feedback/components/FeedbackButton";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function RootLayout({
   children,
@@ -37,9 +38,11 @@ export default function RootLayout({
       <body className="min-h-full bg-slate-50 text-slate-900">
         <QueryProvider>
           <AuthProvider>
-            <Shell>{children}</Shell>
-            <FeedbackButton />
-            <Toaster position="top-right" expand={false} richColors />
+            <TooltipProvider>
+              <Shell>{children}</Shell>
+              <FeedbackButton />
+              <Toaster position="top-right" expand={false} richColors />
+            </TooltipProvider>
           </AuthProvider>
         </QueryProvider>
       </body>
