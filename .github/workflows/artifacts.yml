@@ -15,7 +15,6 @@ on:
         default: ""
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   REGISTRY: ghcr.io
   IMAGE_OWNER: ${{ github.repository_owner }}
 
@@ -83,7 +82,7 @@ jobs:
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: "20"
           cache: "pnpm"
 
       - name: 🛠️ Install Dependencies
