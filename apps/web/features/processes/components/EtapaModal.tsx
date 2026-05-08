@@ -124,11 +124,12 @@ export function EtapaModal({
               </Label>
               <Input
                 type="number"
+                min="1"
                 required
                 className="h-12 rounded-xl bg-slate-50 border-none font-medium focus-visible:ring-primary"
                 value={formData.ordem}
                 onChange={(e) =>
-                  setFormData({ ...formData, ordem: parseInt(e.target.value) })
+                  setFormData({ ...formData, ordem: Math.max(1, parseInt(e.target.value) || 1) })
                 }
               />
             </div>
@@ -145,7 +146,7 @@ export function EtapaModal({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      tempo_planejado: e.target.value,
+                      tempo_planejado: e.target.value.replace(/-/g, ""),
                     })
                   }
                 />

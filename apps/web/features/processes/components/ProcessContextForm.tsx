@@ -162,9 +162,10 @@ export function ProcessContextForm({ processo }: ProcessContextFormProps) {
                 <Label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Usuários/Ano (Est.)</Label>
                 <Input
                   type="number"
+                  min="0"
                   className="rounded-xl border-slate-200 h-11 font-medium"
                   value={formData.usuarios_estimados_ano}
-                  onChange={(e) => handleChange("usuarios_estimados_ano", parseInt(e.target.value) || 0)}
+                  onChange={(e) => handleChange("usuarios_estimados_ano", Math.max(0, parseInt(e.target.value) || 0))}
                 />
               </div>
               <div className="space-y-2">

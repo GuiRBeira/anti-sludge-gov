@@ -57,7 +57,7 @@ export function ProcessModal({
     esfera_governo: initialData?.esfera_governo || EsferaGoverno.FEDERAL,
     abrangencia: initialData?.abrangencia || Abrangencia.PUBLICO_GERAL,
     publico_alvo: initialData?.publico_alvo || "",
-    usuarios_estimados_ano: initialData?.usuarios_estimados_ano || 0,
+    usuarios_estimados_ano: Math.max(0, initialData?.usuarios_estimados_ano || 0),
     status: initialData?.status || "Em Análise",
     padrao_url: initialData?.padrao_url || "",
   });
