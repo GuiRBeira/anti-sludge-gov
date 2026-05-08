@@ -18,7 +18,7 @@ from sqlalchemy.orm import sessionmaker
 # Se preenchido, o script usará esta URL em vez do arquivo .env
 # Exemplo: "postgresql+psycopg://postgres:senha@db.supabase.com:5432/postgres"
 # =================================================================
-DATABASE_URL_OVERRIDE = "postgresql+psycopg://postgres:Low0lOmevJjl6QTGDq29@db.xrnxscbewxkswxkjgeet.supabase.co:5432/postgres"
+DATABASE_URL_OVERRIDE = ""
 
 
 def get_session():
