@@ -1,1 +1,4 @@
+# Roda o gitleaks para evitar vazamento de segredos
+pre-commit run gitleaks --all-files
+
 pnpm exec lint-staged

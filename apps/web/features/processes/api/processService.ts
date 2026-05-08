@@ -39,6 +39,13 @@ export interface Processo {
   publico_alvo?: string;
   usuarios_estimados_ano?: number;
   perfil_foco_mapeamento?: string;
+  jornada_planejada_descricao?: string;
+  necessidade_usuario?: string;
+  tempo_medio_estimado?: string;
+  indicadores_desempenho?: string;
+  hipoteses_dificuldades?: string;
+  registros_reclamacao?: string;
+  registros_satisfacao?: string;
   status: string;
   padrao_url?: string;
   created_at: string;
@@ -57,6 +64,14 @@ export interface CreateProcessoDTO {
   abrangencia?: Abrangencia;
   publico_alvo?: string;
   usuarios_estimados_ano?: number;
+  perfil_foco_mapeamento?: string;
+  jornada_planejada_descricao?: string;
+  necessidade_usuario?: string;
+  tempo_medio_estimado?: string;
+  indicadores_desempenho?: string;
+  hipoteses_dificuldades?: string;
+  registros_reclamacao?: string;
+  registros_satisfacao?: string;
   status?: string;
   padrao_url?: string;
 }
