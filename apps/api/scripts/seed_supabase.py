@@ -1,5 +1,6 @@
 # apps/api/scripts/seed_supabase.py
 import sys
+import contextlib
 from pathlib import Path
 from sqlalchemy import text, select
 from sqlalchemy.orm import Session
@@ -92,10 +93,8 @@ def main():
 		sys.exit(1)
 	finally:
 		# Garante que a sessão seja fechada se ainda estiver aberta
-		try:
+		with contextlib.suppress(Exception):
 			db.close()
-		except:
-			pass
 
 
 if __name__ == "__main__":
