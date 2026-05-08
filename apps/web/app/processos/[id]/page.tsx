@@ -57,6 +57,7 @@ import { cn } from "@/lib/utils";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CapturedSessions } from "@/features/processes/components/CapturedSessions";
+import { ProcessContextForm } from "@/features/processes/components/ProcessContextForm";
 
 export default function ProcessoDetailPage({
   params,
@@ -286,8 +287,11 @@ export default function ProcessoDetailPage({
 
         {/* Right Column: Chart & Steps */}
         <div className="lg:col-span-2 space-y-8">
-          <Tabs defaultValue="analise" className="w-full">
+          <Tabs defaultValue="contexto" className="w-full">
             <TabsList className="mb-8 p-1 bg-slate-100 rounded-2xl w-fit">
+              <TabsTrigger value="contexto" className="rounded-xl px-8 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                Contexto do Serviço
+              </TabsTrigger>
               <TabsTrigger value="analise" className="rounded-xl px-8 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white data-[state=active]:shadow-sm">
                 Análise de Sludge
               </TabsTrigger>
@@ -296,6 +300,10 @@ export default function ProcessoDetailPage({
                 <Badge variant="secondary" className="h-5 px-1.5 font-black text-[10px] bg-primary/10 text-primary border-none">LIVE</Badge>
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="contexto" className="mt-0 border-none p-0 outline-none">
+              <ProcessContextForm processo={processo} />
+            </TabsContent>
 
             <TabsContent value="analise" className="space-y-8 mt-0 border-none p-0 outline-none">
               <Card className="rounded-[2.5rem] border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden">

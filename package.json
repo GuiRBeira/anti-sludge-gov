@@ -9,6 +9,7 @@
     "lint": "turbo lint",
     "test": "turbo test",
     "dev:web": "turbo dev --filter web",
+    "dev:full": "bash scripts/dev.sh",
     "build:web": "turbo build --filter web",
     "start:web": "pnpm --filter web start",
     "lint:web": "turbo lint --filter web",

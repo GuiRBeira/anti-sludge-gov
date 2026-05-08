@@ -6,22 +6,22 @@ from datetime import date, timedelta
 from random import choice, randint, random
 
 from app.core.database import SessionLocal
-from app.models.analysis_model import (
+from app.models import (
 	AvaliacaoBarreira,
 	AvaliacaoImpacto,
 	CriterioBarreira,
 	CriterioImpacto,
 	ResultadoAnalise,
 )
-from app.models.base_model import CriterioImpactoEnum, TipoEvidenciaEnum
-from app.models.catalog_model import (
+from app.core.base_model import CriterioImpactoEnum, TipoEvidenciaEnum
+from app.models import (
 	Categoria,
 	CriterioTemplate,
 	EscalaAvaliacao,
 	TipoComportamento,
 )
-from app.models.observation_model import JornadaObservada, Observador, TempoEtapa
-from app.models.process_model import Etapa, Processo
+from app.models import JornadaObservada, Observador, TempoEtapa
+from app.models import Etapa, Processo
 from faker import Faker
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -335,8 +335,12 @@ def seed_resultados(db: Session, processo: Processo, etapas: list[Etapa]):
 	db.commit()
 
 
-def main():
-	db = SessionLocal()
+def main(db: Session | None = None):
+	should_close = False
+	if db is None:
+		db = SessionLocal()
+		should_close = True
+
 	try:
 		# parâmetros do “enchimento”
 		N_PROCESSOS = 5
@@ -375,7 +379,8 @@ def main():
 			"✅ Seed completo: processos/etapas/critérios/jornadas/avaliações/tempos/resultados."
 		)
 	finally:
-		db.close()
+		if should_close:
+			db.close()
 
 
 if __name__ == "__main__":

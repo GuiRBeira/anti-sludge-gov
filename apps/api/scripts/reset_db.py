@@ -14,13 +14,15 @@ TRUNCATE
   resultado_analise,
   criterio_barreira,
   criterio_impacto,
-  etapa,
+f  etapa,
   processo,
   observador
 RESTART IDENTITY CASCADE;
 """
 
-CHECK_ENV_SQL = "SELECT current_database() AS db, current_schema() AS schema, current_user AS user;"
+CHECK_ENV_SQL = (
+	"SELECT current_database() AS db, current_schema() AS schema, current_user AS user;"
+)
 COUNTS_SQL = """
 SELECT
   (SELECT count(*) FROM observador) AS observador,
@@ -37,42 +39,42 @@ SELECT
 
 
 def mask_db_url(url: str) -> str:
-    # mascara senha: postgresql://user:pass@host/db
-    if "://" not in url or "@" not in url:
-        return url
-    prefix, rest = url.split("://", 1)
-    creds, tail = rest.split("@", 1)
-    if ":" in creds:
-        user, _pwd = creds.split(":", 1)
-        return f"{prefix}://{user}:***@{tail}"
-    return f"{prefix}://***@{tail}"
+	# mascara senha: postgresql://user:pass@host/db
+	if "://" not in url or "@" not in url:
+		return url
+	prefix, rest = url.split("://", 1)
+	creds, tail = rest.split("@", 1)
+	if ":" in creds:
+		user, _pwd = creds.split(":", 1)
+		return f"{prefix}://{user}:***@{tail}"
+	return f"{prefix}://***@{tail}"
 
 
 def main() -> None:
-    db = SessionLocal()
-    try:
-        print(f"DB_URL: {mask_db_url(settings.DATABASE_URL)}")
+	db = SessionLocal()
+	try:
+		print(f"DB_URL: {mask_db_url(settings.DATABASE_URL)}")
 
-        env = db.execute(text(CHECK_ENV_SQL)).mappings().one()
-        print(f"Connected to: db={env['db']} schema={env['schema']} user={env['user']}")
+		env = db.execute(text(CHECK_ENV_SQL)).mappings().one()
+		print(f"Connected to: db={env['db']} schema={env['schema']} user={env['user']}")
 
-        before = db.execute(text(COUNTS_SQL)).mappings().one()
-        print("Counts BEFORE:", dict(before))
+		before = db.execute(text(COUNTS_SQL)).mappings().one()
+		print("Counts BEFORE:", dict(before))
 
-        db.execute(text(TRUNCATE_SQL))
-        db.commit()
+		db.execute(text(TRUNCATE_SQL))
+		db.commit()
 
-        after = db.execute(text(COUNTS_SQL)).mappings().one()
-        print("Counts AFTER: ", dict(after))
+		after = db.execute(text(COUNTS_SQL)).mappings().one()
+		print("Counts AFTER: ", dict(after))
 
-        print("✅ Reset concluído com sucesso.")
-    except Exception:
-        db.rollback()
-        print("❌ Erro ao resetar o banco. Fiz rollback.")
-        raise
-    finally:
-        db.close()
+		print("✅ Reset concluído com sucesso.")
+	except Exception:
+		db.rollback()
+		print("❌ Erro ao resetar o banco. Fiz rollback.")
+		raise
+	finally:
+		db.close()
 
 
 if __name__ == "__main__":
-    main()
+	main()
