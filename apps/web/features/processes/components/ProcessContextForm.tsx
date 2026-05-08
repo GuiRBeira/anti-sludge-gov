@@ -56,15 +56,6 @@ export function ProcessContextForm({ processo }: ProcessContextFormProps) {
 
   const [isDirty, setIsDirty] = useState(false);
 
-  useEffect(() => {
-    setIsDirty(true);
-  }, [formData]);
-
-  // Reset dirty on mount
-  useEffect(() => {
-    setIsDirty(false);
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -81,6 +72,7 @@ export function ProcessContextForm({ processo }: ProcessContextFormProps) {
 
   const handleChange = (field: keyof Processo, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setIsDirty(true);
   };
 
   return (
