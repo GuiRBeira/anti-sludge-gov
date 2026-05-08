@@ -5,6 +5,7 @@ Bem-vindo ao vault de documentação do projeto. Este espaço serve como reposit
 ## 🎯 Seções Principais
 
 - [[01 - Visão Geral do Projeto]]
+- [[Backlog de Desenvolvimento]]
 - [[Decisões de Arquitetura (ADRs)]]
 - [[Mapa de Requisitos]]
 - [[Guia de Manutenção do Banco (Alembic)]]
