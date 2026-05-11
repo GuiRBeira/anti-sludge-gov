@@ -96,5 +96,4 @@ erDiagram
     USER ||--o{ PROCESSO : gerencia
 ```
 
-> [!NOTE]
-> Para detalhes específicos de cada tabela, consulte o documento [[BANCO]] disponível no Vault.
+> Para detalhes específicos de cada tabela, consulte o documento [[Manuais/Guia de Manutenção do Banco (Alembic)|Guia de Manutenção do Banco (Alembic)]] disponível no Vault.

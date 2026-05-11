@@ -1,36 +1,44 @@
 # 📋 Backlog de Desenvolvimento
 
-Lista de tarefas, melhorias e débitos técnicos priorizados para o projeto **Anti-Sludge Gov**.
+Lista de funcionalidades e melhorias priorizadas para o projeto **Anti-Sludge Gov**.
 
-## 🔴 Prioridade Alta (Segurança e Conformidade)
+## 🔴 Funcionalidades Essenciais (Faltando)
 
-- [ ] **Trilha de Auditoria (Database Triggers)**
-    - Criar tabela `audit_logs` para registrar quem mudou o quê e quando.
-    - Implementar triggers no PostgreSQL para as tabelas `processos`, `etapas` e `observacoes`.
-    - Garantir que o `auth.uid()` do Supabase seja capturado nos logs.
-- [ ] **Conformidade LGPD**
-    - Adicionar checkbox de consentimento e termos de uso no fluxo de criação de processos.
-    - Implementar política de privacidade básica no sistema.
+- [ ] **Módulo de Plano de Ação (Etapa 5)**
+    - Interface para sugerir intervenções (Nudges) para cada sludge identificado.
+    - Espaço para documentar o "estado futuro" desejado para o serviço.
+- [ ] **Painel Consolidado de Diagnóstico (Etapa 4)**
+    - Visualização de indicadores de carga administrativa (tempo total, esforço cognitivo).
+    - Gráficos de calor identificando em quais etapas o "Sludge" está mais concentrado.
+- [ ] **Geração de Relatório de Auditoria (PDF)**
+    - Exportação automática de um dossiê técnico com todo o mapeamento, pronto para ser entregue aos gestores do serviço seguindo o padrão Gov.br.
+- [ ] **Sistema de Sugestão de Melhorias (Recomendação)**
+    - Motor que sugere soluções baseadas no tipo de fricção detectada (ex: se for erro de preenchimento, sugerir simplificação de formulário).
+
+## 🟡 Funcionalidades de Gestão e UX
+
+- [ ] **Comparativo de Serviços (Benchmarking)**
+    - Ferramenta para comparar o nível de sludge entre diferentes órgãos ou esferas do governo.
+- [ ] **Gestão de Usuários e Permissões (RBAC)**
+    - Interface para convidar pesquisadores e definir quem pode editar quais diagnósticos.
+- [ ] **Módulo de Notificações e Alertas**
+    - Avisos automáticos quando um serviço atinge níveis críticos de carga administrativa.
 - [ ] **Acessibilidade (WCAG)**
-    - Revisar componentes do Shadcn/UI para garantir tags ARIA corretas.
-    - Realizar auditoria via Lighthouse em todas as rotas principais.
+    - Revisão completa de tags ARIA e navegação por teclado para garantir conformidade legal.
 
-## 🟡 Prioridade Média (Funcionalidades e UX)
+## 🟢 Melhorias de Qualidade de Uso
 
-- [ ] **Finalizar Etapa 4 (Análise)**
-    - Implementar dashboards de visualização de dados.
-    - Criar gráficos de distribuição de tipo de sludge e comportamento.
-- [ ] **Geração de Relatórios PDF**
-    - Criar funcionalidade para exportar o diagnóstico completo em formato PDF (padrão Gov.br).
-- [ ] **Gestão de Roles (RBAC)**
-    - Criar interface administrativa para gerenciar permissões de usuários (já que os dados foram movidos para a tabela).
-
-## 🟢 Prioridade Baixa (Melhorias Contínuas)
-
-- [ ] **Documentação de Nova Feature**
-    - Criar template de "Boilerplate" para novas fatias verticais (Vertical Slices).
-- [ ] **Histórico de Capturas**
-    - Refinar a visualização de sessões capturadas pela extensão no frontend.
+- [ ] **Histórico de Evolução (Timeline)**
+    - Visualizar como um serviço melhorou (ou piorou) ao longo do tempo após as intervenções aplicadas.
+- [ ] **Central de Ajuda e Glossário F5**
+    - Tooltips e guias integrados para ajudar o pesquisador a classificar corretamente os tipos de sludge durante o diagnóstico.
+- [ ] **Histórico de Capturas da Extensão**
+    - Refinar a interface de visualização das sessões capturadas automaticamente para análise.
 
 ---
-*Este backlog deve ser revisado semanalmente durante os refinamentos.*
+
+## 🛠️ Débitos Técnicos (Arquitetura)
+*Nota: Itens internos necessários para a sustentabilidade do sistema.*
+- Trilha de Auditoria (Database Triggers).
+- Refatoração para DDD (Domain-Driven Design).
+- Testes de Integração para a Heurística de Cálculo.
