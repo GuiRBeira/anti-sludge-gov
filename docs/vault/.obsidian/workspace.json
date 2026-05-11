@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Arquitetura do Sistema.md",
+                "file": "Processos/Comparativo Metodológico - F5.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Arquitetura do Sistema"
+              "title": "Comparativo Metodológico - F5"
             }
           }
         ]
@@ -185,6 +185,8 @@
   },
   "active": "2b616239f7a18263",
   "lastOpenFiles": [
+    "Processos/Resumo para Supervisão - Status e Próximos Passos.md",
+    "Processos/Metodologia F5 no Código.md",
     "01 - Visão Geral do Projeto.md",
     "Templates/Template - Diário de Bordo.md",
     "Templates/Template - ADR.md",

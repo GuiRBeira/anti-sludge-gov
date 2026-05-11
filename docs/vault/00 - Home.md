@@ -20,6 +20,7 @@ Bem-vindo ao vault de documentação do projeto. Este espaço serve como reposit
 
 - [[Processos/Metodologia F5 no Código|Metodologia F5 no Código]]
 - [[Processos/Mapa de Navegação Frontend|Mapa de Navegação Frontend]]
+- [[Processos/Comparativo Metodológico - F5|Comparativo Metodológico (Planilha vs. Sistema)]]
 
 ## 📝 Notas e Refinamentos
 
