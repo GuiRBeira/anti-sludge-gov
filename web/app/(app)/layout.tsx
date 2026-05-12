@@ -4,6 +4,7 @@ import { getSessionOrNull } from "@/lib/auth/session";
 import { LogoutButton } from "@/components/logout-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { AppNav } from "@/components/app-nav";
+import { ProductTour } from "@/components/onboarding/product-tour";
 
 export default async function AppLayout({
   children,
@@ -14,6 +15,8 @@ export default async function AppLayout({
   if (!session) redirect("/auth/login");
 
   const isAdmin = session.profile.papel_global === "admin";
+  const canManageTeam =
+    isAdmin || session.profile.papel_global === "gestor";
 
   return (
     <div className="paper-grain flex min-h-screen bg-background">
@@ -34,7 +37,7 @@ export default async function AppLayout({
             </div>
           </div>
         </div>
-        <AppNav isAdmin={isAdmin} />
+        <AppNav role={session.profile.papel_global} canManageTeam={canManageTeam} />
         <div className="p-3 border-t flex flex-col gap-2 text-xs">
           <div className="flex items-center gap-2 rounded-md bg-muted/60 px-2 py-2">
             <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent font-mono text-xs font-semibold text-accent-foreground">
@@ -70,6 +73,11 @@ export default async function AppLayout({
           <Link href="/catalogo" className="text-sm text-muted-foreground">
             Catálogo
           </Link>
+          {canManageTeam && (
+            <Link href="/admin/usuarios" className="text-sm text-muted-foreground">
+              Equipe
+            </Link>
+          )}
           <div className="ml-auto flex items-center gap-2">
             <ThemeSwitcher />
             <LogoutButton />
@@ -77,6 +85,12 @@ export default async function AppLayout({
         </div>
         <div className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">{children}</div>
       </main>
+      <ProductTour
+        role={session.profile.papel_global}
+        userId={session.userId}
+        userName={session.profile.nome_completo ?? session.email}
+        canManageTeam={canManageTeam}
+      />
     </div>
   );
 }

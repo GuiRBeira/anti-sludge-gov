@@ -17,7 +17,8 @@ O MVP v1 cobre o fluxo essencial de operação:
 - dashboard inicial de processos;
 - processo, contexto, jornada planejada, jornadas individuais e jornada padrão;
 - questionários e resultados sem heurística silenciosa;
-- interface visual FCINCO com modo claro/escuro e animações.
+- interface visual FCINCO com modo claro/escuro, animações e onboarding por
+  papel conectado ao fluxo metodológico.
 
 ## Por que estamos recomeçando
 

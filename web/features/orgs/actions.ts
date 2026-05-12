@@ -140,7 +140,8 @@ export async function removerMembroOrgao(formData: FormData) {
 }
 
 export async function atribuirProcessoVisitante(formData: FormData) {
-  await getSessionOrRedirect();
+  const ctx = await getSessionOrRedirect();
+  requireRole(ctx, ["admin"]);
 
   const profileId = String(formData.get("profile_id") ?? "");
   const processoId = String(formData.get("processo_id") ?? "");
@@ -161,7 +162,8 @@ export async function atribuirProcessoVisitante(formData: FormData) {
 }
 
 export async function removerPermissaoProcesso(formData: FormData) {
-  await getSessionOrRedirect();
+  const ctx = await getSessionOrRedirect();
+  requireRole(ctx, ["admin"]);
 
   const permissaoId = String(formData.get("permissao_id") ?? "");
   if (!permissaoId) throw new Error("Permissão inválida");

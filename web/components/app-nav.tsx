@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { Building2, FileStack, LibraryBig, UsersRound } from "lucide-react";
+import type { PapelGlobal } from "@/types/database";
 
 const baseItems = [
   { href: "/processos", label: "Processos", icon: FileStack },
@@ -12,12 +13,24 @@ const baseItems = [
 
 const adminItems = [
   { href: "/admin/orgaos", label: "Órgãos", icon: Building2 },
-  { href: "/admin/usuarios", label: "Usuários", icon: UsersRound },
 ];
 
-export function AppNav({ isAdmin }: { isAdmin: boolean }) {
+const teamItem = { href: "/admin/usuarios", label: "Usuários", icon: UsersRound };
+
+export function AppNav({
+  role,
+  canManageTeam,
+}: {
+  role: PapelGlobal;
+  canManageTeam: boolean;
+}) {
   const pathname = usePathname();
-  const items = isAdmin ? [...baseItems, ...adminItems] : baseItems;
+  const isAdmin = role === "admin";
+  const items = [
+    ...baseItems,
+    ...(isAdmin ? adminItems : []),
+    ...(canManageTeam ? [teamItem] : []),
+  ];
 
   return (
     <nav className="flex flex-1 flex-col gap-1 p-3 text-sm">
@@ -25,13 +38,13 @@ export function AppNav({ isAdmin }: { isAdmin: boolean }) {
         const Icon = item.icon;
         const active =
           pathname === item.href || pathname.startsWith(`${item.href}/`);
-        const showAdminLabel = isAdmin && index === baseItems.length;
+        const showAdminLabel = index === baseItems.length && (isAdmin || canManageTeam);
 
         return (
           <div key={item.href}>
             {showAdminLabel && (
               <div className="mb-1 mt-4 px-3 font-mono text-[11px] uppercase text-muted-foreground">
-                Administração
+                {isAdmin ? "Administração" : "Gestão do órgão"}
               </div>
             )}
             <Link

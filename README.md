@@ -17,7 +17,8 @@ Esta versão entrega o fluxo operacional base:
 - cadastro de processos, contexto, participantes e jornadas;
 - jornada planejada, individual e padrão com visual FCINCO;
 - questionários por jornada e resultados rastreáveis;
-- dashboard inicial animado e modo claro/escuro.
+- dashboard inicial animado, modo claro/escuro e product tour por papel
+  (`admin`, `gestor`, `analista`, `visitante`).
 
 ## Stack
 
@@ -72,6 +73,7 @@ Depois do deploy, no Supabase, configure:
 - **Authentication → URL Configuration → Site URL:** URL da Vercel;
 - **Redirect URLs:** URL da Vercel com `/**`;
 - aplicar todas as migrations, incluindo `0009_rbac_visitante_readonly.sql`.
+  A sequência atual vai até `0010_onboarding_gestor_team_rbac.sql`.
 
 Não existe endpoint Supabase "da Vercel": o app em produção deve apontar para
 o mesmo projeto Supabase Cloud desejado por meio das variáveis acima.

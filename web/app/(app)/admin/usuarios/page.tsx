@@ -50,7 +50,9 @@ const papelOrgaoLabels: Record<PapelNoOrgao, string> = {
 
 export default async function UsuariosAdminPage() {
   const session = await getSessionOrRedirect();
-  if (session.profile.papel_global !== "admin") redirect("/processos");
+  const isAdmin = session.profile.papel_global === "admin";
+  const isGestor = session.profile.papel_global === "gestor";
+  if (!isAdmin && !isGestor) redirect("/processos");
 
   const supabase = await createClient();
   const [
@@ -82,9 +84,28 @@ export default async function UsuariosAdminPage() {
   const membros = (membrosRaw ?? []) as unknown as MembroComOrgao[];
   const processos = (processosRaw ?? []) as unknown as ProcessoComOrgao[];
   const permissoes = (permissoesRaw ?? []) as unknown as PermissaoComProcesso[];
+  const orgaosGeridos = new Set(
+    membros
+      .filter((m) => m.profile_id === session.userId && m.papel_no_orgao === "gestor")
+      .map((m) => m.orgao_id),
+  );
+  const orgaosDisponiveis = isAdmin
+    ? orgaos
+    : orgaos.filter((orgao) => orgaosGeridos.has(orgao.id));
+  const processosDisponiveis = isAdmin
+    ? processos
+    : processos.filter((processo) => orgaosGeridos.has(processo.orgao_id));
+  const membrosVisiveis = isAdmin
+    ? membros
+    : membros.filter((membro) => orgaosGeridos.has(membro.orgao_id));
+  const permissoesVisiveis = isAdmin
+    ? permissoes
+    : permissoes.filter((permissao) =>
+        permissao.processo ? orgaosGeridos.has(permissao.processo.orgao_id) : false,
+      );
 
-  const membrosPorProfile = groupBy(membros, (m) => m.profile_id);
-  const permissoesPorProfile = groupBy(permissoes, (p) => p.profile_id);
+  const membrosPorProfile = groupBy(membrosVisiveis, (m) => m.profile_id);
+  const permissoesPorProfile = groupBy(permissoesVisiveis, (p) => p.profile_id);
   const counts = {
     admin: profiles.filter((p) => p.papel_global === "admin").length,
     gestor: profiles.filter((p) => p.papel_global === "gestor").length,
@@ -104,62 +125,108 @@ export default async function UsuariosAdminPage() {
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-3 font-mono text-xs uppercase text-muted-foreground">
-              Administração · funções e escopos
+              {isAdmin
+                ? "Administração · funções e escopos"
+                : "Gestão do órgão · analistas"}
             </div>
             <SketchFrame seed={16} padX={24} padY={12}>
               <span className="font-hand text-4xl leading-tight">
-                Usuários e acessos
+                {isAdmin ? "Usuários e acessos" : "Equipe do órgão"}
               </span>
             </SketchFrame>
             <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground">
-              Defina o papel global, os vínculos por órgão e quais processos
-              visitantes podem visualizar. Visitantes sempre entram em modo
-              leitura para processos atribuídos.
+              {isAdmin
+                ? "Defina o papel global, os vínculos por órgão e quais processos visitantes podem visualizar. Visitantes sempre entram em modo leitura para processos atribuídos."
+                : "Vincule analistas aos órgãos em que você é gestor. Atribuição de visitantes e promoção de papéis globais continuam restritas ao admin."}
             </p>
           </div>
-          <div className="grid grid-cols-4 gap-3 text-right">
-            {(["admin", "gestor", "analista", "visitante"] as PapelGlobal[]).map(
-              (papel) => (
-                <div key={papel}>
-                  <div className="font-display text-3xl leading-none">
-                    {counts[papel]}
+          {isAdmin ? (
+            <div className="grid grid-cols-4 gap-3 text-right">
+              {(["admin", "gestor", "analista", "visitante"] as PapelGlobal[]).map(
+                (papel) => (
+                  <div key={papel}>
+                    <div className="font-display text-3xl leading-none">
+                      {counts[papel]}
+                    </div>
+                    <div className="font-mono text-[10px] uppercase text-muted-foreground">
+                      {papel}
+                    </div>
                   </div>
-                  <div className="font-mono text-[10px] uppercase text-muted-foreground">
-                    {papel}
-                  </div>
+                ),
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 text-right">
+              <div>
+                <div className="font-display text-3xl leading-none">
+                  {orgaosDisponiveis.length}
                 </div>
-              ),
-            )}
-          </div>
+                <div className="font-mono text-[10px] uppercase text-muted-foreground">
+                  órgãos geridos
+                </div>
+              </div>
+              <div>
+                <div className="font-display text-3xl leading-none">
+                  {membrosVisiveis.filter((m) => m.papel_no_orgao === "analista").length}
+                </div>
+                <div className="font-mono text-[10px] uppercase text-muted-foreground">
+                  analistas
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
-      <section className="grid gap-3 lg:grid-cols-4">
-        <RoleRule
-          number={1}
-          title="Admin"
-          text="Acesso total, todos os processos, usuários, órgãos e dashboards."
-          tone="validada"
-        />
-        <RoleRule
-          number={2}
-          title="Gestor"
-          text="Gerencia processos do órgão e pode definir analistas no escopo."
-          tone="em_progresso"
-        />
-        <RoleRule
-          number={3}
-          title="Analista"
-          text="Preenche informações e jornadas, sem criar ou apagar processos."
-          tone="print"
-        />
-        <RoleRule
-          number={4}
-          title="Visitante"
-          text="Visualiza somente processos atribuídos pelo admin ou gestor."
-          tone="pendente"
-        />
-      </section>
+      {isAdmin ? (
+        <section className="grid gap-3 lg:grid-cols-4">
+          <RoleRule
+            number={1}
+            title="Admin"
+            text="Acesso total, todos os processos, usuários, órgãos e dashboards."
+            tone="validada"
+          />
+          <RoleRule
+            number={2}
+            title="Gestor"
+            text="Gerencia processos do órgão e pode definir analistas no escopo."
+            tone="em_progresso"
+          />
+          <RoleRule
+            number={3}
+            title="Analista"
+            text="Preenche informações e jornadas, sem criar ou apagar processos."
+            tone="print"
+          />
+          <RoleRule
+            number={4}
+            title="Visitante"
+            text="Visualiza somente processos atribuídos pelo admin."
+            tone="pendente"
+          />
+        </section>
+      ) : (
+        <section className="grid gap-3 lg:grid-cols-3">
+          <RoleRule
+            number={1}
+            title="Gestor"
+            text="Cria, edita e arquiva processos dos órgãos que gerencia."
+            tone="em_progresso"
+          />
+          <RoleRule
+            number={2}
+            title="Analista"
+            text="Recebe vínculo no órgão e preenche contexto, jornadas e questionários."
+            tone="print"
+          />
+          <RoleRule
+            number={3}
+            title="Visitante"
+            text="Atribuição de leitura por processo fica com o admin."
+            tone="pendente"
+          />
+        </section>
+      )}
 
       <section className="grid gap-4">
         {profiles.map((profile) => (
@@ -185,25 +252,32 @@ export default async function UsuariosAdminPage() {
                   </div>
                 </div>
 
-                <form action={atualizarPapelGlobal} className="mt-4 flex gap-2">
-                  <input type="hidden" name="profile_id" value={profile.id} />
-                  <select
-                    name="papel_global"
-                    defaultValue={profile.papel_global}
-                    className="h-9 min-w-0 flex-1 rounded-md border bg-background px-2 text-sm"
-                  >
-                    {(["admin", "gestor", "analista", "visitante"] as PapelGlobal[]).map(
-                      (papel) => (
-                        <option key={papel} value={papel}>
-                          {papelGlobalLabels[papel]}
-                        </option>
-                      ),
-                    )}
-                  </select>
-                  <Button type="submit" size="sm">
-                    Salvar
-                  </Button>
-                </form>
+                {isAdmin ? (
+                  <form action={atualizarPapelGlobal} className="mt-4 flex gap-2">
+                    <input type="hidden" name="profile_id" value={profile.id} />
+                    <select
+                      name="papel_global"
+                      defaultValue={profile.papel_global}
+                      className="h-9 min-w-0 flex-1 rounded-md border bg-background px-2 text-sm"
+                    >
+                      {(["admin", "gestor", "analista", "visitante"] as PapelGlobal[]).map(
+                        (papel) => (
+                          <option key={papel} value={papel}>
+                            {papelGlobalLabels[papel]}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                    <Button type="submit" size="sm">
+                      Salvar
+                    </Button>
+                  </form>
+                ) : (
+                  <p className="mt-4 rounded-md border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+                    Gestores vinculam analistas ao órgão. Mudança de papel
+                    global é feita pelo admin.
+                  </p>
+                )}
               </div>
 
               <div className="grid gap-4 lg:grid-cols-2">
@@ -238,7 +312,7 @@ export default async function UsuariosAdminPage() {
                         required
                       >
                         <option value="">Selecionar órgão</option>
-                        {orgaos.map((orgao) => (
+                        {orgaosDisponiveis.map((orgao) => (
                           <option key={orgao.id} value={orgao.id}>
                             {orgao.sigla} · {orgao.nome}
                           </option>
@@ -250,7 +324,7 @@ export default async function UsuariosAdminPage() {
                         defaultValue="analista"
                       >
                         <option value="analista">Analista</option>
-                        <option value="gestor">Gestor</option>
+                        {isAdmin && <option value="gestor">Gestor</option>}
                       </select>
                       <Button type="submit" size="sm">
                         Vincular
@@ -259,53 +333,63 @@ export default async function UsuariosAdminPage() {
                   </div>
                 </AccessPanel>
 
-                <AccessPanel title="Processos visíveis ao visitante">
-                  <div className="flex flex-col gap-2">
-                    {(permissoesPorProfile.get(profile.id) ?? []).map((permissao) => (
-                      <div
-                        key={permissao.id}
-                        className="flex items-center justify-between gap-2 rounded-md border bg-background p-2"
-                      >
-                        <div className="min-w-0">
-                          <div className="truncate text-sm font-medium">
-                            {permissao.processo?.nome ?? "Processo"}
+                {isAdmin ? (
+                  <AccessPanel title="Processos visíveis ao visitante">
+                    <div className="flex flex-col gap-2">
+                      {(permissoesPorProfile.get(profile.id) ?? []).map((permissao) => (
+                        <div
+                          key={permissao.id}
+                          className="flex items-center justify-between gap-2 rounded-md border bg-background p-2"
+                        >
+                          <div className="min-w-0">
+                            <div className="truncate text-sm font-medium">
+                              {permissao.processo?.nome ?? "Processo"}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {permissao.processo?.orgao?.sigla ?? "órgão"} · leitura
+                            </div>
                           </div>
-                          <div className="text-xs text-muted-foreground">
-                            {permissao.processo?.orgao?.sigla ?? "órgão"} · leitura
-                          </div>
+                          <form action={removerPermissaoProcesso}>
+                            <input
+                              type="hidden"
+                              name="permissao_id"
+                              value={permissao.id}
+                            />
+                            <Button type="submit" variant="outline" size="sm">
+                              Remover
+                            </Button>
+                          </form>
                         </div>
-                        <form action={removerPermissaoProcesso}>
-                          <input
-                            type="hidden"
-                            name="permissao_id"
-                            value={permissao.id}
-                          />
-                          <Button type="submit" variant="outline" size="sm">
-                            Remover
-                          </Button>
-                        </form>
-                      </div>
-                    ))}
-                    <form action={atribuirProcessoVisitante} className="grid gap-2 sm:grid-cols-[1fr_auto]">
-                      <input type="hidden" name="profile_id" value={profile.id} />
-                      <select
-                        name="processo_id"
-                        className="h-9 rounded-md border bg-background px-2 text-sm"
-                        required
-                      >
-                        <option value="">Selecionar processo</option>
-                        {processos.map((processo) => (
-                          <option key={processo.id} value={processo.id}>
-                            {processo.orgao?.sigla ?? "Órgão"} · {processo.nome}
-                          </option>
-                        ))}
-                      </select>
-                      <Button type="submit" size="sm">
-                        Atribuir
-                      </Button>
-                    </form>
-                  </div>
-                </AccessPanel>
+                      ))}
+                      <form action={atribuirProcessoVisitante} className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                        <input type="hidden" name="profile_id" value={profile.id} />
+                        <select
+                          name="processo_id"
+                          className="h-9 rounded-md border bg-background px-2 text-sm"
+                          required
+                        >
+                          <option value="">Selecionar processo</option>
+                          {processosDisponiveis.map((processo) => (
+                            <option key={processo.id} value={processo.id}>
+                              {processo.orgao?.sigla ?? "Órgão"} · {processo.nome}
+                            </option>
+                          ))}
+                        </select>
+                        <Button type="submit" size="sm">
+                          Atribuir
+                        </Button>
+                      </form>
+                    </div>
+                  </AccessPanel>
+                ) : (
+                  <AccessPanel title="Escopo do gestor">
+                    <p className="text-sm leading-6 text-muted-foreground">
+                      Você pode vincular e remover analistas dos órgãos em que é
+                      gestor. Visitantes e papéis globais permanecem sob
+                      responsabilidade do admin.
+                    </p>
+                  </AccessPanel>
+                )}
               </div>
             </div>
           </article>

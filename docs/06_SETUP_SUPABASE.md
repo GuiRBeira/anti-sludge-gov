@@ -122,7 +122,8 @@ on conflict (id) do update set papel_global = 'admin';
 ```
 
 Depois disso, acesse `/admin/usuarios` para gerenciar papéis globais, vínculos
-com órgãos e processos visíveis para visitantes.
+com órgãos e processos visíveis para visitantes. Gestores também acessam essa
+tela em modo limitado para vincular/remover analistas dos próprios órgãos.
 
 ## Observação sobre emails fictícios
 

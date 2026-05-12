@@ -48,6 +48,7 @@ export default async function ProcessosPage() {
     <ProcessosDashboard
       processos={items}
       canCreateProcess={canCreateProcess}
+      role={session.profile.papel_global}
     />
   );
 }

@@ -19,6 +19,10 @@ Notas:
   `0009_rbac_visitante_readonly.sql` força `false` e remove edição por essa via.
 - A tela `/admin/usuarios` permite ao admin definir papel global, vínculo em
   órgão e atribuição de processos para visitantes.
+- A mesma tela fica disponível para gestores como "Equipe do órgão", limitada
+  a vincular/remover analistas dos órgãos em que são gestores. A migration
+  `0010_onboarding_gestor_team_rbac.sql` permite essa leitura operacional de
+  perfis não-admin e restringe atribuição de visitante a admin.
 
 ## Matriz de permissões
 
@@ -32,6 +36,7 @@ Notas:
 | Editar contexto | ✓ | ✓ | ✓ | – |
 | Editar jornadas/questionários | ✓ | ✓ | ✓ | – |
 | Gerenciar usuários do órgão | ✓ | ✓ (analistas) | – | – |
+| Atribuir processos a visitante | ✓ | – | – | – |
 | Promover admin | ✓ | – | – | – |
 | Exportar dados | ✓ | ✓ (do órgão) | (config.) | – |
 | Ver dashboards completos | ✓ | ✓ (do órgão) | ✓ (do órgão) | ✓ (atribuídos) |

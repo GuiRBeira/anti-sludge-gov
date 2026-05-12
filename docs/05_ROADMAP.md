@@ -7,8 +7,8 @@ Cinco fases. Cada fase tem critério de saída claro. Não pular fase.
 **Status:** entregue para deploy inicial na Vercel.  
 **Desenvolvido por:** plreis.
 
-Inclui fluxo operacional, RBAC inicial, dashboard de processos, UI FCINCO,
-jornadas, questionários e resultados. Próximas iterações devem focar em
+Inclui fluxo operacional, RBAC inicial, dashboard de processos, onboarding por
+papel, UI FCINCO, jornadas, questionários e resultados. Próximas iterações devem focar em
 extração/exportação, testes de RLS por papel e hardening para piloto.
 
 ## Fase 0 — Setup e fonte da verdade
@@ -68,6 +68,7 @@ Telas mínimas:
 - [x] Questionário de impactos por jornada (incluindo Necessidade).
 - [x] Validação de jornada.
 - [x] Painel de status/completude por processo.
+- [x] Product tour por perfil (`admin`, `gestor`, `analista`, `visitante`).
 
 **Critério de saída:** Janaina ou Wendel conseguem cadastrar um processo
 real, três participantes, e responder os seis questionários sem precisar
