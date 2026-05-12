@@ -1,0 +1,45 @@
+# Node
+node_modules/
+.pnpm-store/
+.npm/
+
+# Next.js
+web/.next/
+web/out/
+web/build/
+web/.vercel/
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+!.env.local.example
+
+# Supabase
+supabase/.branches
+supabase/.temp
+supabase/.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
