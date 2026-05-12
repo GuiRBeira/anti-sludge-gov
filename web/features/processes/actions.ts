@@ -45,8 +45,26 @@ export async function salvarContexto(
 }
 
 export async function arquivarProcesso(processoId: string) {
-  await getSessionOrRedirect();
+  const ctx = await getSessionOrRedirect();
   const supabase = await createClient();
+
+  if (ctx.profile.papel_global !== "admin") {
+    const { data: processo } = await supabase
+      .from("processo")
+      .select("orgao_id")
+      .eq("id", processoId)
+      .maybeSingle();
+    if (!processo) throw new Error("Processo não encontrado");
+    const { data: gestor } = await supabase
+      .from("membro_orgao")
+      .select("id")
+      .eq("profile_id", ctx.userId)
+      .eq("orgao_id", processo.orgao_id)
+      .eq("papel_no_orgao", "gestor")
+      .maybeSingle();
+    if (!gestor) throw new Error("Apenas admin ou gestor pode apagar processo");
+  }
+
   const { error } = await supabase
     .from("processo")
     .update({ arquivado: true })

@@ -15,6 +15,9 @@ import { listQuestionariosAplicaveis } from "@/features/questionnaires/queries";
 import { Button } from "@/components/ui/button";
 import JornadaIndividualEditor from "../jornadas-individuais/[jornadaId]/editor";
 import { createClient } from "@/lib/supabase/server";
+import { SketchUnderline } from "@/components/fcinco/sketch-underline";
+import { StatusPill } from "@/components/fcinco/status-pill";
+import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
 
 export default async function JornadaPadraoPage({
   params,
@@ -32,24 +35,36 @@ export default async function JornadaPadraoPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <header>
-        <Link
-          href={`/processos/${id}`}
-          className="text-sm text-muted-foreground hover:underline"
-        >
-          ← {processo.nome}
-        </Link>
-        <h1 className="text-2xl font-semibold mt-1">Jornada padrão</h1>
-        <p className="text-sm text-muted-foreground">
-          Síntese normalizada que serve de referência para análise. Equivalente
-          às abas <strong>2.2 Mapeamento JorPadrão</strong> e <strong># Tabela JorPadrão</strong>.
-          Comece copiando da planejada e ajuste com base nos padrões observados
-          nas jornadas individuais.
-        </p>
+      <header className="relative overflow-hidden rounded-lg border bg-card p-6">
+        <WatercolorSplatter
+          className="absolute -right-20 -top-24"
+          size={260}
+          opacity={0.3}
+          seed={36}
+        />
+        <div className="relative">
+          <Link
+            href={`/processos/${id}`}
+            className="text-sm text-muted-foreground hover:underline"
+          >
+            ← {processo.nome}
+          </Link>
+          <div className="mt-3 font-mono text-xs uppercase text-muted-foreground">
+            etapa 05 de 07 · sintese
+          </div>
+          <h1 className="font-hand text-4xl leading-tight">Jornada padrão</h1>
+          <SketchUnderline width={210} variant="long" color="hsl(var(--accent))" />
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
+            Síntese normalizada que serve de referência para análise. Equivalente
+            às abas <strong>2.2 Mapeamento JorPadrão</strong> e <strong># Tabela JorPadrão</strong>.
+            Comece copiando da planejada e ajuste com base nos padrões observados
+            nas jornadas individuais.
+          </p>
+        </div>
       </header>
 
       {!padrao ? (
-        <div className="border rounded-lg p-6 flex flex-col gap-3">
+        <div className="flex flex-col gap-3 rounded-lg border bg-card p-6">
           <p className="text-sm text-muted-foreground">
             Ainda não há jornada padrão para este processo.
           </p>
@@ -98,7 +113,7 @@ async function PadraoEditor({
   return (
     <>
       {passos.length === 0 && passosPlanejados.length > 0 && (
-        <div className="border rounded-lg p-5 bg-muted/30 flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/30 p-5">
           <p className="text-sm">
             Copie os {passosPlanejados.length} passos da jornada planejada como
             ponto de partida e ajuste com base nas individuais.
@@ -139,14 +154,19 @@ async function QuestionariosLinks({
 }) {
   const questionarios = await listQuestionariosAplicaveis("padrao");
   return (
-    <section className="border rounded-lg p-5">
-      <h2 className="font-medium mb-3">Questionários desta jornada</h2>
+    <section className="rounded-lg border bg-card p-5">
+      <div className="mb-3 flex items-center gap-2">
+        <h2 className="font-medium">Questionários desta jornada</h2>
+        <StatusPill tone={questionarios.length > 0 ? "em_progresso" : "pendente"}>
+          {questionarios.length}
+        </StatusPill>
+      </div>
       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {questionarios.map((q) => (
           <li key={q.id}>
             <Link
               href={`/processos/${processoId}/jornadas/${jornadaId}/questionario/${q.codigo}`}
-              className="block border rounded-md p-3 hover:bg-muted/40 transition-colors"
+              className="block rounded-md border bg-background p-3 transition-colors hover:bg-muted/40"
             >
               <div className="text-sm font-medium">{q.nome}</div>
               <div className="text-xs text-muted-foreground capitalize">{q.dimensao}</div>

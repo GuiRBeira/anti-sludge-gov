@@ -2,7 +2,16 @@
 
 Cinco fases. Cada fase tem critério de saída claro. Não pular fase.
 
-## Fase 0 — Setup e fonte da verdade (esta sessão)
+## Marco atual — MVP v1
+
+**Status:** entregue para deploy inicial na Vercel.  
+**Desenvolvido por:** plreis.
+
+Inclui fluxo operacional, RBAC inicial, dashboard de processos, UI FCINCO,
+jornadas, questionários e resultados. Próximas iterações devem focar em
+extração/exportação, testes de RLS por papel e hardening para piloto.
+
+## Fase 0 — Setup e fonte da verdade
 
 **Objetivo:** ter o repositório navegável, banco vazio mas pronto, docs
 estabelecidos, equipe alinhada com a planilha.
@@ -10,10 +19,10 @@ estabelecidos, equipe alinhada com a planilha.
 - [x] Scaffold Next.js + Supabase (template oficial).
 - [x] Estrutura de pastas (`features/`, `lib/`, `supabase/`).
 - [x] Documentação core (00–06).
-- [ ] Projeto Supabase Cloud criado.
-- [ ] `.env.local` configurado.
-- [ ] Primeira migration aplicada (extensions, types).
-- [ ] App roda localmente com login do Supabase.
+- [x] Projeto Supabase Cloud criado.
+- [x] `.env.local` configurado.
+- [x] Migrations base aplicadas/validadas no fluxo de desenvolvimento.
+- [x] App roda localmente com login do Supabase.
 
 **Critério de saída:** desenvolvedor clona, segue `06_SETUP_SUPABASE.md`,
 roda `pnpm dev`, faz login.
@@ -23,20 +32,20 @@ roda `pnpm dev`, faz login.
 **Objetivo:** schema F5 completo no banco, seed do catálogo derivado da
 planilha.
 
-- [ ] Migration `auth_orgs_profiles` + RLS.
-- [ ] Migration `catalog_f5` (categoria, tipo_comportamento, criterio_template,
+- [x] Migration `auth_orgs_profiles` + RLS.
+- [x] Migration `catalog_f5` (categoria, tipo_comportamento, criterio_template,
   tipo_criterio, escala_avaliacao, glossario).
-- [ ] Migration `processes_journeys` (processo, jornada, passo_jornada,
+- [x] Migration `processes_journeys` (processo, jornada, passo_jornada,
   participante, protocolo_observacao, entrevista_pos_observacao).
-- [ ] Migration `questionnaires` (questionario_template, pergunta_template,
+- [x] Migration `questionnaires` (questionario_template, pergunta_template,
   questionario_resposta, resposta_item).
-- [ ] Migration `analysis_results` (resultado_analise + views auxiliares
+- [x] Migration `analysis_results` (resultado_analise + views auxiliares
   avaliacao_barreira, avaliacao_impacto, avaliacao_necessidade).
-- [ ] Migration `audit_log`.
-- [ ] Seed `seed_catalog.sql` com dados extraídos da planilha:
+- [x] Migration `audit_log`.
+- [x] Seed `seed_catalog.sql` com dados extraídos da planilha:
   categorias, tipos, critérios, perguntas, textos das notas, glossário,
   associações tipo↔critério.
-- [ ] `supabase gen types typescript` rodando, types em `web/types/database.ts`.
+- [x] Types manuais em `web/types/database.ts` espelhando as migrations.
 
 **Critério de saída:** rodar `psql` e ver todas as tabelas, todos os
 critérios da planilha, todas as perguntas, todas as policies. Nenhum dado
@@ -47,18 +56,18 @@ inventado — toda linha rastreável a uma célula da planilha.
 **Objetivo:** equipe pesquisadora consegue executar a metodologia ponta-a-ponta.
 
 Telas mínimas:
-- [ ] Login + perfil + escolha de órgão.
-- [ ] Lista de processos com escopo correto.
-- [ ] Cadastro de processo + contexto.
-- [ ] Cadastro de jornada planejada estruturada.
-- [ ] Cadastro de participante + protocolo.
-- [ ] Lançamento manual de jornada individual (ordem real, desvios,
+- [x] Login + perfil.
+- [x] Lista/dashboard de processos com escopo correto.
+- [x] Cadastro de processo + contexto.
+- [x] Cadastro de jornada planejada estruturada.
+- [x] Cadastro de participante.
+- [x] Lançamento manual de jornada individual (ordem real, desvios,
   repetições, tempo).
-- [ ] Construção da jornada padrão a partir das individuais.
-- [ ] Questionário de barreiras por jornada.
-- [ ] Questionário de impactos por jornada (incluindo Necessidade).
-- [ ] Validação de jornada.
-- [ ] Painel de status/completude por processo.
+- [x] Construção da jornada padrão a partir da planejada/individuais.
+- [x] Questionário de barreiras por jornada.
+- [x] Questionário de impactos por jornada (incluindo Necessidade).
+- [x] Validação de jornada.
+- [x] Painel de status/completude por processo.
 
 **Critério de saída:** Janaina ou Wendel conseguem cadastrar um processo
 real, três participantes, e responder os seis questionários sem precisar
@@ -69,10 +78,10 @@ de ajuda técnica.
 **Objetivo:** substituir heurística por cálculos reproduzíveis.
 
 - [ ] Server Action `recalcularResultado(processo_id)`.
-- [ ] Views/queries para os 8 gráficos da planilha.
-- [ ] Página `/processos/[id]/graficos` com filtros.
-- [ ] Marcação visual de "sem dado" quando faltam respostas.
-- [ ] Comparação tempo planejada × individual × padrão.
+- [x] Queries iniciais para médias por critério e tempo total.
+- [x] Página `/processos/[id]/resultados`.
+- [x] Marcação visual de "sem dado" quando faltam respostas.
+- [x] Comparação tempo planejada × individual × padrão.
 - [ ] Ranking de sludge por etapa.
 
 **Critério de saída:** todos os gráficos da planilha têm equivalente no

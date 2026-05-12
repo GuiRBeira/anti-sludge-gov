@@ -1,8 +1,23 @@
-# Anti-Sludge Gov - New Stack
+# Anti-Sludge Gov — MVP v1
 
-Reescrita do Anti-Sludge Gov com foco em fidelidade total à metodologia F5 da CINCO/MGI.
+Versão 1 do MVP do Anti-Sludge Gov, desenvolvida por **plreis**, com foco em
+fidelidade à metodologia F5 da FCINCO/MGI.
 
-A decisão de recomeçar e a stack escolhida estão justificadas na auditoria original em `../AUDITORIA_PRODUTO_TECNICA_2026-05-09.md` (raiz de `PROJ-EXT-GOV/`).
+A decisão de recomeçar e a stack escolhida estão justificadas na auditoria em
+`AUDITORIA_PRODUTO_TECNICA_2026-05-09.md`.
+
+## Estado do MVP v1
+
+Esta versão entrega o fluxo operacional base:
+
+- autenticação por Supabase Auth;
+- RBAC com `admin`, `gestor`, `analista` e `visitante`;
+- administração de órgãos e usuários;
+- atribuição de visitantes a processos específicos;
+- cadastro de processos, contexto, participantes e jornadas;
+- jornada planejada, individual e padrão com visual FCINCO;
+- questionários por jornada e resultados rastreáveis;
+- dashboard inicial animado e modo claro/escuro.
 
 ## Stack
 
@@ -35,6 +50,31 @@ ANTISLUDGE-GOV-NEWSTACK/
 2. Ler `docs/01_ARQUITETURA.md` para entender as fronteiras técnicas.
 3. Ler `docs/06_SETUP_SUPABASE.md` para criar o projeto no Supabase Cloud e configurar `.env.local`.
 4. Rodar `cd web && pnpm install && pnpm dev`.
+
+## Deploy Vercel
+
+No Vercel, importe/clonar este repositório e configure o projeto com:
+
+- **Root Directory:** `web`
+- **Build Command:** `pnpm build`
+- **Install Command:** `pnpm install`
+- **Output:** padrão do Next.js
+
+Variáveis obrigatórias:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://<seu-projeto>.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<publishable-ou-anon-key>
+```
+
+Depois do deploy, no Supabase, configure:
+
+- **Authentication → URL Configuration → Site URL:** URL da Vercel;
+- **Redirect URLs:** URL da Vercel com `/**`;
+- aplicar todas as migrations, incluindo `0009_rbac_visitante_readonly.sql`.
+
+Não existe endpoint Supabase "da Vercel": o app em produção deve apontar para
+o mesmo projeto Supabase Cloud desejado por meio das variáveis acima.
 
 ## Critério de aceite do MVP
 

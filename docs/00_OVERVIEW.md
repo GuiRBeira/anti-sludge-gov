@@ -2,10 +2,22 @@
 
 ## O que é o Anti-Sludge Gov
 
-Ferramenta web para a equipe FCINCO/MGI aplicar a metodologia **F5 Anti-Sludge**
+**MVP v1 desenvolvido por plreis.** Ferramenta web para a equipe FCINCO/MGI aplicar a metodologia **F5 Anti-Sludge**
 em serviços públicos digitais: mapear jornadas, observar usuários, responder
 questionários estruturados de barreiras e impactos, e gerar gráficos rastreáveis
 para priorização de melhorias.
+
+## Estado da versão 1
+
+O MVP v1 cobre o fluxo essencial de operação:
+
+- login/cadastro com Supabase Auth;
+- papéis e escopos (`admin`, `gestor`, `analista`, `visitante`);
+- tela admin de usuários, órgãos e permissões por processo;
+- dashboard inicial de processos;
+- processo, contexto, jornada planejada, jornadas individuais e jornada padrão;
+- questionários e resultados sem heurística silenciosa;
+- interface visual FCINCO com modo claro/escuro e animações.
 
 ## Por que estamos recomeçando
 
@@ -13,7 +25,8 @@ A versão anterior (`../anti-sludge-gov/`) tinha boa stack mas modelo de domíni
 incompleto: faltavam questionários, participantes, jornada individual real,
 avaliação de Necessidade, jornada padrão, e os gráficos eram heurísticos em vez
 de derivar das respostas. Auditoria completa em
-`../AUDITORIA_PRODUTO_TECNICA_2026-05-09.md`.
+`../AUDITORIA_PRODUTO_TECNICA_2026-05-09.md` e cópia versionada na raiz deste
+repositório.
 
 ## Atores
 

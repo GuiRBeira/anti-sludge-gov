@@ -14,6 +14,9 @@ import {
 import { ensureRespostaQuestionario } from "@/features/questionnaires/actions";
 import { Button } from "@/components/ui/button";
 import QuestionarioForm from "./form";
+import { SketchFrame } from "@/components/fcinco/sketch-frame";
+import { StatusPill } from "@/components/fcinco/status-pill";
+import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
 
 export default async function QuestionarioPage({
   params,
@@ -65,28 +68,44 @@ export default async function QuestionarioPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-start justify-between gap-4">
-        <div>
+      <header className="relative overflow-hidden rounded-lg border bg-card p-6">
+        <WatercolorSplatter
+          className="absolute -right-20 -top-24"
+          size={270}
+          opacity={0.32}
+          seed={42}
+        />
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
           <Link
             href={voltarHref}
             className="text-sm text-muted-foreground hover:underline"
           >
             ← {processo.nome}
           </Link>
-          <h1 className="text-2xl font-semibold mt-1">{template.nome}</h1>
-          <p className="text-sm text-muted-foreground">
-            {template.descricao}
-            {resposta?.concluido && (
-              <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-900 dark:bg-green-950/40 dark:text-green-200">
-                concluído
+          <div className="mt-4">
+            <SketchFrame seed={9} padX={22} padY={10}>
+              <span className="font-hand text-3xl leading-tight sm:text-4xl">
+                {template.nome}
               </span>
-            )}
+            </SketchFrame>
+          </div>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
+            {template.descricao}
           </p>
+        </div>
+          <div className="flex flex-wrap gap-2 lg:justify-end">
+            {resposta?.concluido && <StatusPill tone="concluido">concluido</StatusPill>}
+            <StatusPill tone="em_progresso">{perguntas.length} criterios</StatusPill>
+            <StatusPill tone="print">
+              {ehNecessidade ? "jornada" : `${passos.length} passos`}
+            </StatusPill>
+          </div>
         </div>
       </header>
 
       {!ehNecessidade && passos.length === 0 ? (
-        <div className="border rounded-lg p-6">
+        <div className="rounded-lg border bg-card p-6">
           <p className="text-sm text-muted-foreground">
             Esta jornada ainda não tem passos cadastrados — não dá para
             responder o questionário sem etapas. Adicione passos primeiro.

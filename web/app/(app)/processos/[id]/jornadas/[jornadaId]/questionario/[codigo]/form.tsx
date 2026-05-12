@@ -12,6 +12,9 @@ import {
 import type { PerguntaComCriterio } from "@/features/questionnaires/queries";
 import type { PassoComTipo } from "@/features/journeys/queries";
 import type { RespostaItem } from "@/types/database";
+import { BarreiraIcon } from "@/components/fcinco/barreira-icon";
+import { NumeroEtapa } from "@/components/fcinco/numero-etapa";
+import { StatusPill } from "@/components/fcinco/status-pill";
 
 type ItemKey = string; // `${perguntaId}::${passoId|null}`
 
@@ -138,10 +141,32 @@ export default function QuestionarioForm({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-xs text-muted-foreground border rounded-md p-3 bg-muted/30">
-        Escala 1-5: <strong>{textoNotaMin}</strong> ↔ <strong>{textoNotaMax}</strong>.
-        Marque <strong>N/A</strong> quando o critério não se aplica àquele passo.
-        Salvar acontece automaticamente ao perder o foco.
+      <div className="rounded-lg border bg-muted/40 p-3">
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <StatusPill tone="barreira">escala 1-5</StatusPill>
+          <span className="text-muted-foreground">
+            <strong>{textoNotaMin}</strong> ate <strong>{textoNotaMax}</strong>
+          </span>
+          <span className="ml-auto text-xs text-muted-foreground">
+            N/A preserva o resultado como sem dado.
+          </span>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <span
+              key={n}
+              className={`grid h-8 w-8 place-items-center rounded-md border font-mono text-sm font-semibold ${
+                n >= 4
+                  ? "border-destructive/40 bg-destructive/10 text-destructive"
+                  : n === 3
+                    ? "border-accent/50 bg-accent/20 text-foreground"
+                    : "bg-card text-muted-foreground"
+              }`}
+            >
+              {n}
+            </span>
+          ))}
+        </div>
       </div>
 
       {modo === "necessidade"
@@ -160,22 +185,28 @@ export default function QuestionarioForm({
               />
             );
           })
-        : perguntas.map((p) => (
-            <details key={p.id} className="border rounded-lg" open>
-              <summary className="px-4 py-3 font-medium cursor-pointer flex items-center justify-between">
-                <span>
-                  {p.criterio?.nome ? `${p.criterio.nome}: ` : ""}
-                  {p.texto}
+        : perguntas.map((p, perguntaIndex) => (
+            <details key={p.id} className="overflow-hidden rounded-lg border bg-card" open>
+              <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3">
+                <NumeroEtapa value={perguntaIndex + 1} size={30} tilt={-2} />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-medium">
+                    {p.criterio?.nome ? `${p.criterio.nome}: ` : ""}
+                    {p.texto}
+                  </span>
+                  {p.criterio?.dimensao === "impacto" && (
+                    <span className="text-xs capitalize text-muted-foreground">
+                      {p.criterio?.subdimensao_impacto?.replace("_", " ")}
+                    </span>
+                  )}
                 </span>
-                <span className="text-xs text-muted-foreground">
-                  {p.criterio?.dimensao === "impacto" ? p.criterio?.subdimensao_impacto : ""}
-                </span>
+                {p.criterio?.dimensao === "barreira" && <BarreiraIcon size={22} />}
               </summary>
-              <div className="border-t divide-y">
+              <div className="divide-y border-t bg-background/60">
                 {passos.map((passo) => {
                   const it = getItem(p.id, passo.id);
                   return (
-                    <div key={passo.id} className="px-4 py-3 flex flex-col gap-2">
+                    <div key={passo.id} className="grid gap-3 px-4 py-3 lg:grid-cols-[220px_1fr]">
                       <div className="text-sm">
                         <span className="font-mono text-xs text-muted-foreground">
                           #{passo.ordem}
@@ -197,7 +228,7 @@ export default function QuestionarioForm({
             </details>
           ))}
 
-      <div className="flex gap-2 sticky bottom-2 bg-background border rounded-md p-3">
+      <div className="sticky bottom-2 flex gap-2 rounded-md border bg-background/95 p-3 shadow-sm backdrop-blur">
         {readOnly ? (
           <Button onClick={handleReabrir} variant="outline" disabled={isPending}>
             Reabrir para edição
@@ -230,7 +261,7 @@ function PerguntaBox({
   onBlur: () => void;
 }) {
   return (
-    <div className="border rounded-lg p-4 flex flex-col gap-3">
+    <div className="flex flex-col gap-3 rounded-lg border bg-card p-4">
       <div>
         <div className="font-medium">
           {pergunta.criterio?.nome ? `${pergunta.criterio.nome}: ` : ""}
@@ -276,9 +307,11 @@ function CompactRow({
               onChangeNota(n);
               onBlur();
             }}
-            className={`h-8 w-8 rounded-md border text-sm font-medium transition-colors ${
+            className={`h-8 w-8 rounded-md border font-mono text-sm font-semibold transition-colors ${
               item.nota === n && !item.nao_se_aplica
-                ? "bg-primary text-primary-foreground border-primary"
+                ? n >= 4
+                  ? "border-destructive bg-destructive text-destructive-foreground"
+                  : "border-primary bg-primary text-primary-foreground"
                 : "bg-background hover:bg-muted"
             } ${(disabled || item.nao_se_aplica) ? "opacity-50 cursor-not-allowed" : ""}`}
           >
@@ -315,6 +348,6 @@ function CompactRow({
 function SaveStatus({ item }: { item: LocalItem }) {
   if (item.saving) return <span className="text-xs text-muted-foreground ml-auto">salvando…</span>;
   if (item.dirty) return <span className="text-xs text-amber-600 ml-auto">não salvo</span>;
-  if (item.saved) return <span className="text-xs text-green-600 ml-auto">✓</span>;
+  if (item.saved) return <span className="text-xs text-green-600 ml-auto">salvo</span>;
   return null;
 }

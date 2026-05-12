@@ -10,6 +10,14 @@ A pasta foi montada com dois propósitos:
 2. **Briefing externo**: ser anexada inteira a uma sessão no Claude Design
    (claude.ai/design) para gerar mockups e protótipos consistentes.
 
+> **Direção estética (2026-05)**: alinhada à **identidade visual real da
+> FCINCO** descoberta em [`../IMAGENS/`](../IMAGENS/) — watercolor + ink
+> linework + handlettering + paleta verde teal #1FB597 / amarelo mostarda
+> #F4B400 / vermelho watercolor #C8252A. A metáfora central da
+> JornadaTimeline vem da peça **"TRILHA COMUM"** da FCINCO (mapa com
+> trilha pontilhada). Versão anterior (Linear/Notion/GOV.UK editorial)
+> foi substituída — ver `01-persona.md`.
+
 ## Como ler
 
 Ordem sugerida:
@@ -37,3 +45,7 @@ preenchendo coisas aqui.
 
 Detalhes de produto e arquitetura em [`../docs/`](../docs/) (auditoria,
 domínio F5, mapa de cobertura).
+
+Assets visuais da FCINCO em [`../IMAGENS/`](../IMAGENS/) — incluindo a
+página HTML oficial salva, banners institucionais, ilustrações watercolor
+e tipografia handlettered. **Esses são a fonte da verdade visual.**

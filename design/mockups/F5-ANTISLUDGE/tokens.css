@@ -1,0 +1,172 @@
+/* ============================================================
+   F5 Anti-Sludge · FCINCO-aligned design tokens
+   handcrafted research-notebook aesthetic
+   ============================================================ */
+
+:root {
+  /* Palette (HSL channels, used as `hsl(var(--xxx))`) */
+  --background: 48 30% 97%;
+  --foreground: 0 0% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 10%;
+  --popover: 0 0% 100%;
+
+  --primary: 167 71% 41%;          /* #1FB597 verde teal */
+  --primary-foreground: 0 0% 100%;
+  --accent: 45 96% 48%;            /* #F4B400 amarelo mostarda */
+  --accent-foreground: 0 0% 10%;
+
+  --secondary: 48 20% 92%;
+  --muted: 48 15% 90%;
+  --muted-foreground: 0 0% 35%;
+
+  --destructive: 358 67% 47%;      /* #C8252A vermelho watercolor */
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 48 10% 85%;
+  --input: 48 10% 85%;
+  --ring: 167 71% 41%;
+
+  --trilha: 358 67% 47%;
+  --trilha-muted: 358 30% 75%;
+  --numero: 45 96% 48%;
+  --papel: 48 30% 97%;
+  --ink: 0 0% 10%;
+
+  /* F5 semantic */
+  --barreira: 358 67% 47%;
+  --impacto: 217 91% 60%;
+  --tempo: 167 71% 41%;
+  --necessidade: 45 96% 48%;
+  --desvio: 22 89% 52%;
+  --repeticao: 268 50% 52%;
+
+  --radius: 0.5rem;
+}
+
+.theme-dark {
+  --background: 40 8% 9%;
+  --foreground: 48 30% 95%;
+  --card: 40 6% 12%;
+  --card-foreground: 48 30% 95%;
+  --popover: 40 6% 12%;
+
+  --primary: 167 71% 50%;
+  --primary-foreground: 40 8% 9%;
+  --accent: 45 96% 55%;
+  --accent-foreground: 40 8% 9%;
+
+  --secondary: 40 5% 16%;
+  --muted: 40 5% 16%;
+  --muted-foreground: 48 10% 65%;
+
+  --destructive: 358 67% 55%;
+  --border: 40 5% 20%;
+  --input: 40 5% 20%;
+  --ring: 167 71% 50%;
+
+  --trilha: 358 67% 55%;
+  --trilha-muted: 358 20% 35%;
+  --numero: 45 96% 55%;
+  --papel: 40 8% 9%;
+  --ink: 48 30% 95%;
+}
+
+/* Type stack */
+.font-hand    { font-family: 'Patrick Hand', 'Caveat', 'Comic Sans MS', cursive; font-weight: 400; letter-spacing: 0.02em; }
+.font-script  { font-family: 'Caveat', 'Patrick Hand', cursive; font-weight: 600; }
+.font-display { font-family: 'Bebas Neue', 'Archivo Black', 'Impact', sans-serif; font-weight: 400; letter-spacing: 0.01em; }
+.font-sans    { font-family: 'Geist', 'Inter', system-ui, -apple-system, sans-serif; }
+.font-mono    { font-family: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+/* Surface helpers */
+.surface-papel  { background: hsl(var(--papel)); color: hsl(var(--ink)); }
+.surface-card   { background: hsl(var(--card)); color: hsl(var(--card-foreground)); }
+
+/* paper grain — extremely subtle */
+.paper-grain { position: relative; }
+.paper-grain::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity:0.6; mix-blend-mode:multiply;
+}
+.theme-dark .paper-grain::before { mix-blend-mode: screen; opacity:0.35; }
+
+/* table-like utilities used in the prototype */
+.divide-ink > * + * { border-top: 1px solid hsl(var(--border)); }
+
+/* sketch border (a wobble stroke wrapper) */
+.sketch-frame {
+  position: relative;
+  display: inline-block;
+  padding: 0.55em 1.1em;
+}
+.sketch-frame svg.sketch-stroke {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* keyboard-y kbd */
+kbd.k {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width: 1.4em; padding: 0 .35em; height: 1.4em;
+  border:1px solid hsl(var(--border)); border-bottom-width:2px;
+  border-radius: 4px; font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  background: hsl(var(--card));
+}
+
+/* trilha keyframes */
+@keyframes ringPulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0.6); }
+  50%      { box-shadow: 0 0 0 10px hsl(var(--accent) / 0); }
+}
+.ring-pulse-amarelo { animation: ringPulse 1.6s ease-in-out infinite; }
+
+@keyframes traceDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes splatterIn {
+  from { opacity: 0; transform: scale(0.7) rotate(-12deg); }
+  to   { opacity: 0.55; transform: scale(1) rotate(0); }
+}
+.splatter-in { animation: splatterIn 700ms cubic-bezier(.22,1,.36,1) both; }
+
+@keyframes wiggle {
+  0%,100% { transform: rotate(-0.3deg); }
+  50%     { transform: rotate(0.3deg); }
+}
+
+/* scroll containers inside artboards stay clipped */
+.artboard-frame { overflow: hidden; border-radius: 4px; }
+
+/* form controls */
+.input-paper {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px; padding: 8px 10px; font-size: 14px;
+  width: 100%; color: hsl(var(--foreground));
+}
+.input-paper:focus { outline: 2px solid hsl(var(--ring) / 0.4); border-color: hsl(var(--ring)); }
+
+.btn { display:inline-flex; align-items:center; gap:8px; padding: 8px 14px; border-radius:6px; font-size:14px; font-weight:500; border:1px solid transparent; transition: background .15s, color .15s, border-color .15s; }
+.btn-primary { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+.btn-primary:hover { background: hsl(var(--primary) / 0.9); }
+.btn-outline { background: transparent; color: hsl(var(--foreground)); border-color: hsl(var(--border)); }
+.btn-outline:hover { background: hsl(var(--muted)); }
+.btn-ghost { background: transparent; color: hsl(var(--foreground)); }
+.btn-ghost:hover { background: hsl(var(--muted)); }
+.btn-destructive { background: hsl(var(--destructive)); color: hsl(var(--destructive-foreground)); }
+
+/* highlighter marker — yellow brush behind text */
+.marker {
+  position: relative;
+  display: inline;
+  background-image: linear-gradient(180deg, transparent 50%, hsl(var(--accent) / 0.55) 50%, hsl(var(--accent) / 0.4) 90%, transparent 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 80%;
+  background-position: 0 95%;
+  padding: 0 0.05em;
+}

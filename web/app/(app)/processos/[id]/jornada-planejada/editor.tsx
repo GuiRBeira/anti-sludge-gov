@@ -30,6 +30,14 @@ import {
 import type { PassoComTipo, TipoComCategoria } from "@/features/journeys/queries";
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import PassoScreenshot from "@/components/passo-screenshot";
+import { StatusPill } from "@/components/fcinco/status-pill";
+import { TrilhaJornada } from "@/components/fcinco/trilha-jornada";
+import {
+  formatTempo,
+  passoToTrilhaPasso,
+  totalTempoSegundos,
+} from "@/components/fcinco/trilha-utils";
+import { ViewToggle, type ViewMode } from "@/components/fcinco/view-toggle";
 
 const SEM_TIPO = "__sem_tipo__";
 
@@ -52,6 +60,10 @@ export default function JornadaPlanejadaEditor({
   const [obrigatorio, setObrigatorio] = useState(true);
   const [tempo, setTempo] = useState<string>("");
   const [notas, setNotas] = useState("");
+  const [view, setView] = useState<ViewMode>("trilha");
+
+  const trilhaPassos = passos.map(passoToTrilhaPasso);
+  const totalTempo = totalTempoSegundos(passos);
 
   function resetForm() {
     setDescricao("");
@@ -118,8 +130,29 @@ export default function JornadaPlanejadaEditor({
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="border rounded-lg">
-        <Table>
+      <section className="rounded-lg border bg-card p-4">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div>
+            <h2 className="font-medium">Mapa da jornada</h2>
+            <div className="mt-1 flex flex-wrap gap-2">
+              <StatusPill tone={passos.length > 0 ? "em_progresso" : "pendente"}>
+                {passos.length} passos
+              </StatusPill>
+              <StatusPill tone="print">
+                {formatTempo(totalTempo)}
+              </StatusPill>
+            </div>
+          </div>
+          <div className="ml-auto">
+            <ViewToggle value={view} onChange={setView} />
+          </div>
+        </div>
+
+        {view === "trilha" ? (
+          <TrilhaJornada passos={trilhaPassos} mode="planejada" compact={passos.length > 7} />
+        ) : (
+          <div className="overflow-x-auto rounded-md border">
+            <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12">#</TableHead>
@@ -219,10 +252,12 @@ export default function JornadaPlanejadaEditor({
               ))
             )}
           </TableBody>
-        </Table>
+            </Table>
+          </div>
+        )}
       </section>
 
-      <form onSubmit={handleAdd} className="border rounded-lg p-5 flex flex-col gap-4">
+      <form onSubmit={handleAdd} className="flex flex-col gap-4 rounded-lg border bg-card p-5">
         <h2 className="font-medium">Adicionar passo</h2>
 
         <div className="flex flex-col gap-1.5">

@@ -47,7 +47,7 @@ export default function GraficoTempoJornadas({ data }: { data: Item[] }) {
             }}
             contentStyle={{ fontSize: 12 }}
           />
-          <Bar dataKey="minutos" fill="#10b981" radius={[0, 4, 4, 0]} />
+          <Bar dataKey="minutos" fill="hsl(var(--tempo))" radius={[0, 4, 4, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

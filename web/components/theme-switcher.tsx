@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Laptop, Moon, Sun } from "lucide-react";
@@ -32,11 +34,18 @@ const ThemeSwitcher = () => {
   }
 
   const ICON_SIZE = 16;
+  const label =
+    theme === "light" ? "Claro" : theme === "dark" ? "Escuro" : "Sistema";
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size={"sm"}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-9 justify-start gap-2 rounded-md border border-transparent px-2 hover:border-border"
+          title={`Tema atual: ${label}`}
+        >
           {theme === "light" ? (
             <Sun
               key="light"
@@ -56,9 +65,12 @@ const ThemeSwitcher = () => {
               className={"text-muted-foreground"}
             />
           )}
+          <span className="hidden text-xs sm:inline">Tema: {label}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-content" align="start">
+      <DropdownMenuContent className="w-44" align="start">
+        <DropdownMenuLabel>Aparência</DropdownMenuLabel>
+        <DropdownMenuSeparator />
         <DropdownMenuRadioGroup
           value={theme}
           onValueChange={(value) => {
@@ -67,15 +79,15 @@ const ThemeSwitcher = () => {
         >
           <DropdownMenuRadioItem className="flex gap-2" value="light">
             <Sun size={ICON_SIZE} className="text-muted-foreground" />{" "}
-            <span>Light</span>
+            <span>Claro</span>
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem className="flex gap-2" value="dark">
             <Moon size={ICON_SIZE} className="text-muted-foreground" />{" "}
-            <span>Dark</span>
+            <span>Escuro</span>
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem className="flex gap-2" value="system">
             <Laptop size={ICON_SIZE} className="text-muted-foreground" />{" "}
-            <span>System</span>
+            <span>Sistema</span>
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>

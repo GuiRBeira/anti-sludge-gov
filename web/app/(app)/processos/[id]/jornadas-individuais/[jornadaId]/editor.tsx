@@ -31,6 +31,14 @@ import {
 import type { PassoComTipo, TipoComCategoria } from "@/features/journeys/queries";
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import PassoScreenshot from "@/components/passo-screenshot";
+import { StatusPill } from "@/components/fcinco/status-pill";
+import { TrilhaJornada } from "@/components/fcinco/trilha-jornada";
+import {
+  formatTempo,
+  passoToTrilhaPasso,
+  totalTempoSegundos,
+} from "@/components/fcinco/trilha-utils";
+import { ViewToggle, type ViewMode } from "@/components/fcinco/view-toggle";
 
 const SEM_TIPO = "__sem_tipo__";
 const SEM_VINCULO = "__sem_vinculo__";
@@ -58,6 +66,12 @@ export default function JornadaIndividualEditor({
   const [obrigatorio, setObrigatorio] = useState(true);
   const [tempo, setTempo] = useState<string>("");
   const [notas, setNotas] = useState("");
+  const [view, setView] = useState<ViewMode>("trilha");
+
+  const trilhaPassos = passos.map(passoToTrilhaPasso);
+  const totalTempo = totalTempoSegundos(passos);
+  const qtdDesvios = passos.filter((p) => p.eh_desvio).length;
+  const qtdRepeticoes = passos.filter((p) => p.eh_repeticao).length;
 
   function reset() {
     setDescricao("");
@@ -101,8 +115,38 @@ export default function JornadaIndividualEditor({
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="border rounded-lg overflow-x-auto">
-        <Table>
+      <section className="rounded-lg border bg-card p-4">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div>
+            <h2 className="font-medium">Caminho observado</h2>
+            <div className="mt-1 flex flex-wrap gap-2">
+              <StatusPill tone={passos.length > 0 ? "em_progresso" : "pendente"}>
+                {passos.length} passos
+              </StatusPill>
+              <StatusPill tone="desvio">{qtdDesvios} desvios</StatusPill>
+              <StatusPill tone="repeticao">{qtdRepeticoes} repeticoes</StatusPill>
+              <StatusPill tone="print">{formatTempo(totalTempo)}</StatusPill>
+            </div>
+          </div>
+          <div className="ml-auto">
+            <ViewToggle value={view} onChange={setView} />
+          </div>
+        </div>
+
+        {view === "trilha" ? (
+          <TrilhaJornada
+            passos={trilhaPassos}
+            mode="individual"
+            replayState={
+              passos.length > 0
+                ? { activeIndex: passos.length - 1, progressPct: 100 }
+                : null
+            }
+            compact={passos.length > 7}
+          />
+        ) : (
+          <div className="overflow-x-auto rounded-md border">
+            <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12">#</TableHead>
@@ -257,11 +301,13 @@ export default function JornadaIndividualEditor({
               ))
             )}
           </TableBody>
-        </Table>
+            </Table>
+          </div>
+        )}
       </section>
 
       {!readOnly && (
-        <form onSubmit={handleAdd} className="border rounded-lg p-5 flex flex-col gap-4">
+        <form onSubmit={handleAdd} className="flex flex-col gap-4 rounded-lg border bg-card p-5">
           <h2 className="font-medium">Adicionar passo observado</h2>
 
           <div className="flex flex-col gap-1.5">

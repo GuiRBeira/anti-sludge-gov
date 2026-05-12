@@ -14,6 +14,11 @@ Notas:
   simultaneamente (linhas separadas em `membro_orgao`).
 - `admin` é global; gestores não podem promover ninguém a admin.
 - Gestor só gerencia analistas dentro do próprio órgão.
+- A partir do MVP v1, visitante é **somente leitura**. A coluna histórica
+  `processo_permissao.pode_editar` permanece no schema, mas a migration
+  `0009_rbac_visitante_readonly.sql` força `false` e remove edição por essa via.
+- A tela `/admin/usuarios` permite ao admin definir papel global, vínculo em
+  órgão e atribuição de processos para visitantes.
 
 ## Matriz de permissões
 
@@ -45,6 +50,7 @@ explícita. Policies de SELECT chamam essa function.
 
 Para INSERT/UPDATE/DELETE existem helpers separados:
 - `auth.app_user_can_edit_processo(uuid)` — admin, gestor ou analista do órgão.
+  Permissão explícita de visitante **não** concede edição.
 - `auth.app_user_can_admin_processo(uuid)` — admin ou gestor do órgão.
 
 Esquema das policies (exemplo `processo`):

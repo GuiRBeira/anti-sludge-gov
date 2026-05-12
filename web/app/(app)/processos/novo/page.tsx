@@ -1,8 +1,16 @@
+import { getSessionOrRedirect } from "@/lib/auth/session";
 import { listOrgaos } from "@/lib/db/orgs";
+import { listMyOrgaos } from "@/lib/db/orgs";
 import NovoProcessoForm from "./form";
 
 export default async function NovoProcessoPage() {
-  const orgaos = await listOrgaos();
+  const session = await getSessionOrRedirect();
+  const orgaos =
+    session.profile.papel_global === "admin"
+      ? await listOrgaos()
+      : (await listMyOrgaos())
+          .filter((m) => m.papel_no_orgao === "gestor")
+          .map((m) => m.orgao);
 
   return (
     <div className="max-w-xl flex flex-col gap-6">
@@ -16,8 +24,8 @@ export default async function NovoProcessoPage() {
 
       {orgaos.length === 0 ? (
         <div className="border rounded-lg p-6 text-sm text-muted-foreground">
-          Nenhum órgão disponível. Peça ao admin para cadastrar um órgão e
-          adicionar você como gestor.
+          Nenhum órgão disponível para criação de processo. Peça ao admin para
+          adicionar você como gestor de um órgão.
         </div>
       ) : (
         <NovoProcessoForm orgaos={orgaos} />

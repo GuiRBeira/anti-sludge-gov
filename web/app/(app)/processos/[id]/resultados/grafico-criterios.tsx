@@ -41,7 +41,8 @@ export default function GraficoMediaCriterios({
     qtd: d.qtd_respostas,
   }));
 
-  const cor = dimensao === "barreira" ? "#ef4444" : "#3b82f6";
+  const cor =
+    dimensao === "barreira" ? "hsl(var(--barreira))" : "hsl(var(--impacto))";
 
   return (
     <div className="flex flex-col gap-3">

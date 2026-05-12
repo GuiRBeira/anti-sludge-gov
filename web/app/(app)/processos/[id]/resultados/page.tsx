@@ -7,6 +7,11 @@ import {
 } from "@/features/analysis/queries";
 import GraficoMediaCriterios from "./grafico-criterios";
 import GraficoTempoJornadas from "./grafico-tempos";
+import { BarreiraIcon } from "@/components/fcinco/barreira-icon";
+import { SketchFrame } from "@/components/fcinco/sketch-frame";
+import { SketchUnderline } from "@/components/fcinco/sketch-underline";
+import { StatusPill } from "@/components/fcinco/status-pill";
+import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
 
 export default async function ResultadosPage({
   params,
@@ -32,21 +37,47 @@ export default async function ResultadosPage({
 
   const totalRespondidasBarreira = barreiras.reduce((s, m) => s + m.qtd_respostas, 0);
   const totalRespondidasImpacto = impactosNaoNec.reduce((s, m) => s + m.qtd_respostas, 0);
+  const barreirasCriticas = barreiras.filter((m) => (m.media ?? 0) >= 4);
+  const totalRespostas =
+    totalRespondidasBarreira +
+    totalRespondidasImpacto +
+    necessidade.reduce((s, m) => s + m.qtd_respostas, 0);
 
   return (
     <div className="flex flex-col gap-8">
-      <header>
-        <Link
-          href={`/processos/${id}`}
-          className="text-sm text-muted-foreground hover:underline"
-        >
-          ← {processo.nome}
-        </Link>
-        <h1 className="text-2xl font-semibold mt-1">Resultados e gráficos</h1>
-        <p className="text-sm text-muted-foreground">
-          Médias derivadas das respostas reais dos questionários. Onde não há
-          dado, mostramos &quot;sem dado&quot; — nada é estimado.
-        </p>
+      <header className="relative overflow-hidden rounded-lg border bg-card p-6">
+        <WatercolorSplatter
+          className="absolute -right-20 -top-24"
+          size={300}
+          opacity={0.34}
+          seed={55}
+        />
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <Link
+              href={`/processos/${id}`}
+              className="text-sm text-muted-foreground hover:underline"
+            >
+              ← {processo.nome}
+            </Link>
+            <div className="mt-4">
+              <SketchFrame seed={5} padX={24} padY={12}>
+                <span className="font-hand text-4xl leading-tight">Resultados</span>
+              </SketchFrame>
+            </div>
+            <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground">
+              Médias derivadas das respostas reais dos questionários. Onde não há
+              dado, mostramos &quot;sem dado&quot;: nada é estimado.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 lg:justify-end">
+            <StatusPill tone="em_progresso">{totalRespostas} respostas</StatusPill>
+            <StatusPill tone="barreira">
+              {barreirasCriticas.length} barreiras criticas
+            </StatusPill>
+            <StatusPill tone="print">{tempos.length} jornadas</StatusPill>
+          </div>
+        </div>
       </header>
 
       <Secao
@@ -76,6 +107,37 @@ export default async function ResultadosPage({
       >
         <GraficoTempoJornadas data={tempos} />
       </Secao>
+
+      <Secao
+        titulo="Barreiras críticas"
+        descricao="Critérios com média maior ou igual a 4,0, calculados apenas quando há resposta."
+      >
+        {barreirasCriticas.length === 0 ? (
+          <p className="text-sm italic text-muted-foreground">
+            Sem barreira crítica com os dados atuais.
+          </p>
+        ) : (
+          <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {barreirasCriticas.map((b) => (
+              <li
+                key={b.criterio_nome}
+                className="relative rounded-md border bg-background p-4"
+              >
+                <div className="absolute right-3 top-3">
+                  <BarreiraIcon size={28} />
+                </div>
+                <div className="pr-10 text-sm font-semibold">{b.criterio_nome}</div>
+                <div className="mt-3 font-display text-4xl leading-none text-destructive">
+                  {b.media?.toFixed(1)}
+                </div>
+                <div className="mt-1 font-mono text-xs text-muted-foreground">
+                  {b.qtd_respostas} resposta{b.qtd_respostas === 1 ? "" : "s"}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Secao>
     </div>
   );
 }
@@ -90,9 +152,12 @@ function Secao({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border rounded-lg p-5">
-      <h2 className="font-medium">{titulo}</h2>
-      <p className="text-xs text-muted-foreground mb-4">{descricao}</p>
+    <section className="rounded-lg border bg-card p-5">
+      <div className="mb-1 flex items-center gap-3">
+        <h2 className="font-medium">{titulo}</h2>
+        <SketchUnderline width={95} variant="short" color="hsl(var(--accent))" />
+      </div>
+      <p className="mb-4 text-xs text-muted-foreground">{descricao}</p>
       {children}
     </section>
   );
@@ -109,7 +174,7 @@ function NecessidadeBlock({
   return (
     <ul className="text-sm flex flex-col gap-2">
       {data.map((d) => (
-        <li key={d.criterio_nome} className="flex items-center justify-between border rounded-md p-3">
+        <li key={d.criterio_nome} className="flex items-center justify-between rounded-md border bg-background p-3">
           <span>{d.criterio_nome}</span>
           {d.media != null ? (
             <span>

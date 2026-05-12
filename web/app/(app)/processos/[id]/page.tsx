@@ -3,7 +3,11 @@ import { notFound } from "next/navigation";
 import { getProcesso } from "@/lib/db/processes";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
-import { CheckCircle2, Circle, ArrowRight } from "lucide-react";
+import { ArrowRight, FileText, Route } from "lucide-react";
+import { NumeroEtapa } from "@/components/fcinco/numero-etapa";
+import { SketchUnderline } from "@/components/fcinco/sketch-underline";
+import { StatusPill, type StatusTone } from "@/components/fcinco/status-pill";
+import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
 
 export default async function ProcessoPage({
   params,
@@ -104,14 +108,16 @@ export default async function ProcessoPage({
   }
 
   const etapas: Array<{
-    nome: string;
+    ordem: number;
+    titulo: string;
     descricao: string;
     href: string;
     status: "concluido" | "em_progresso" | "pendente";
     detalhe: string;
   }> = [
     {
-      nome: "1. Compreensão do contexto",
+      ordem: 1,
+      titulo: "Compreensão do contexto",
       descricao: "Objetivo, público, indicadores e hipóteses do serviço.",
       href: `/processos/${id}/contexto`,
       status:
@@ -123,7 +129,8 @@ export default async function ProcessoPage({
       detalhe: `${contextoPreenchidos}/${camposContexto.length} campos preenchidos`,
     },
     {
-      nome: "2. Jornada planejada",
+      ordem: 2,
+      titulo: "Jornada planejada",
       descricao: "Sequência ideal de passos do serviço.",
       href: `/processos/${id}/jornada-planejada`,
       status: qtdPassosPlanejada > 0 ? "em_progresso" : "pendente",
@@ -133,7 +140,8 @@ export default async function ProcessoPage({
           : `${qtdPassosPlanejada} passo${qtdPassosPlanejada === 1 ? "" : "s"}`,
     },
     {
-      nome: "3. Participantes",
+      ordem: 3,
+      titulo: "Participantes",
       descricao: "Pessoas observadas anonimizadas.",
       href: `/processos/${id}/participantes`,
       status: (qtdParticipantes ?? 0) > 0 ? "em_progresso" : "pendente",
@@ -143,7 +151,8 @@ export default async function ProcessoPage({
           : `${qtdParticipantes} participante${qtdParticipantes === 1 ? "" : "s"}`,
     },
     {
-      nome: "4. Jornadas individuais",
+      ordem: 4,
+      titulo: "Jornadas individuais",
       descricao: "Sequência real de passos por participante.",
       href: `/processos/${id}/jornadas-individuais`,
       status: qtdIndividuais > 0 ? "em_progresso" : "pendente",
@@ -153,7 +162,8 @@ export default async function ProcessoPage({
           : `${qtdIndividuais} jornada${qtdIndividuais === 1 ? "" : "s"} (${qtdValidadas} validada${qtdValidadas === 1 ? "" : "s"})`,
     },
     {
-      nome: "5. Jornada padrão",
+      ordem: 5,
+      titulo: "Jornada padrão",
       descricao: "Síntese normalizada das jornadas individuais.",
       href: `/processos/${id}/jornada-padrao`,
       status: qtdPassosPadrao > 0 ? "em_progresso" : "pendente",
@@ -163,7 +173,8 @@ export default async function ProcessoPage({
           : `${qtdPassosPadrao} passo${qtdPassosPadrao === 1 ? "" : "s"}`,
     },
     {
-      nome: "6. Questionários (barreiras, impactos, necessidade)",
+      ordem: 6,
+      titulo: "Questionários",
       descricao: "Avaliação 1-5 por critério em cada jornada.",
       href: `/processos/${id}/jornadas-individuais`,
       status: (qtdQuestionariosConcluidos ?? 0) > 0
@@ -177,51 +188,93 @@ export default async function ProcessoPage({
           : `${qtdItens} item${qtdItens === 1 ? "" : "ns"} respondido${qtdItens === 1 ? "" : "s"} · ${qtdQuestionariosConcluidos ?? 0} concluído${(qtdQuestionariosConcluidos ?? 0) === 1 ? "" : "s"}`,
     },
     {
-      nome: "7. Resultados e gráficos",
+      ordem: 7,
+      titulo: "Resultados e gráficos",
       descricao: "Médias por critério, tempo, ranking de sludge.",
       href: `/processos/${id}/resultados`,
       status: qtdItens > 0 ? "em_progresso" : "pendente",
       detalhe: qtdItens > 0 ? "Gráficos disponíveis" : "Aguardando respostas",
     },
   ];
+  const concluidas = etapas.filter((e) => e.status === "concluido").length;
+  const emProgresso = etapas.filter((e) => e.status === "em_progresso").length;
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex items-start justify-between gap-4">
-        <div>
+    <div className="flex flex-col gap-8">
+      <header className="relative overflow-hidden rounded-lg border bg-card p-5 sm:p-7">
+        <WatercolorSplatter
+          className="absolute -right-16 -top-20"
+          size={260}
+          rotation={-12}
+          opacity={0.32}
+          seed={19}
+        />
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0">
           <Link
             href="/processos"
             className="text-sm text-muted-foreground hover:underline"
           >
             ← Processos
           </Link>
-          <h1 className="text-2xl font-semibold mt-1">{processo.nome}</h1>
-          <p className="text-sm text-muted-foreground">
+          <div className="mt-2 font-mono text-xs uppercase text-muted-foreground">
             {processo.orgao?.sigla} · {processo.orgao?.esfera}
+          </div>
+          <h1 className="font-hand text-4xl leading-tight text-foreground sm:text-5xl">
+            {processo.nome}
+          </h1>
+          <div className="mt-1 text-accent">
+            <SketchUnderline width={220} variant="long" />
+          </div>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+            Acompanhe o processo pela sequência metodológica F5: contexto,
+            jornadas, questionários e resultados derivados apenas de dados
+            respondidos.
           </p>
+        </div>
+
+          <div className="grid grid-cols-3 gap-4 text-right">
+            <HubStat label="etapas concluídas" value={`${concluidas}/7`} />
+            <HubStat label="em andamento" value={emProgresso} />
+            <HubStat label="participantes" value={qtdParticipantes ?? 0} />
+          </div>
         </div>
       </header>
 
-      <section className="border rounded-lg overflow-hidden">
-        <div className="bg-muted/40 px-5 py-3 text-sm font-medium border-b">
-          Status metodológico (planilha F5)
+      <section>
+        <div className="mb-4 flex flex-wrap items-end gap-3">
+          <div>
+            <h2 className="text-xl font-semibold">Status metodológico</h2>
+            <p className="text-sm text-muted-foreground">
+              Cobertura operacional da planilha F5 neste processo.
+            </p>
+          </div>
+          <div className="ml-auto flex flex-wrap gap-2">
+            <Link href={`/processos/${id}/jornada-planejada`}>
+              <Button variant="outline" size="sm">
+                <Route className="h-4 w-4" />
+                Jornada planejada
+              </Button>
+            </Link>
+            <Link href={`/processos/${id}/resultados`}>
+              <Button variant="outline" size="sm">
+                <FileText className="h-4 w-4" />
+                Resultados
+              </Button>
+            </Link>
+          </div>
         </div>
-        <ul className="divide-y">
-          {etapas.map((e) => (
-            <li key={e.nome}>
-              <Link
-                href={e.href}
-                className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
-              >
-                <EtapaResumo etapa={e} />
-                <ArrowRight className="h-4 w-4 text-muted-foreground" />
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="relative">
+          <div className="absolute left-[38px] top-14 h-[calc(100%-7rem)] border-l-2 border-dashed border-trilha/70" />
+          <div className="flex flex-col gap-3">
+            {etapas.map((e, idx) => (
+              <EtapaResumo key={e.ordem} etapa={e} index={idx} />
+            ))}
+          </div>
+        </div>
       </section>
 
-      <section className="flex flex-wrap gap-2">
+      <section className="flex flex-wrap gap-2 border-t pt-5">
         <Link href={`/processos/${id}/contexto`}>
           <Button variant="outline" size="sm">Editar contexto</Button>
         </Link>
@@ -245,36 +298,80 @@ export default async function ProcessoPage({
   );
 }
 
-function EtapaResumo({
-  etapa,
-}: {
-  etapa: {
-    nome: string;
-    descricao: string;
-    status: "concluido" | "em_progresso" | "pendente";
-    detalhe: string;
-  };
-}) {
+function HubStat({ label, value }: { label: string; value: string | number }) {
   return (
-    <>
-      <StatusIcon status={etapa.status} />
-      <div className="min-w-0 flex-1">
-        <div className="font-medium">{etapa.nome}</div>
-        <div className="text-xs text-muted-foreground">{etapa.descricao}</div>
+    <div>
+      <div className="font-display text-4xl leading-none text-foreground">{value}</div>
+      <div className="mt-1 font-mono text-[10px] uppercase text-muted-foreground">
+        {label}
       </div>
-      <div className="hidden text-xs text-muted-foreground sm:block">
-        {etapa.detalhe}
-      </div>
-    </>
+    </div>
   );
 }
 
-function StatusIcon({ status }: { status: "concluido" | "em_progresso" | "pendente" }) {
-  if (status === "concluido") {
-    return <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />;
-  }
-  if (status === "em_progresso") {
-    return <Circle className="h-5 w-5 text-blue-500 shrink-0 fill-blue-500/20" />;
-  }
-  return <Circle className="h-5 w-5 text-muted-foreground/50 shrink-0" />;
+function EtapaResumo({
+  etapa,
+  index,
+}: {
+  etapa: {
+    ordem: number;
+    titulo: string;
+    descricao: string;
+    status: "concluido" | "em_progresso" | "pendente";
+    detalhe: string;
+    href: string;
+  };
+  index: number;
+}) {
+  const pendente = etapa.status === "pendente";
+  const active = etapa.status === "em_progresso";
+  return (
+    <Link
+      href={etapa.href}
+      className={`group relative grid grid-cols-[76px_1fr] gap-3 rounded-lg border bg-card p-4 transition-colors hover:bg-muted/30 sm:grid-cols-[92px_1fr] ${
+        pendente ? "opacity-70" : ""
+      }`}
+    >
+      <div className="relative min-h-20">
+        <NumeroEtapa
+          value={etapa.ordem}
+          size={60}
+          tilt={index % 2 === 0 ? -4 : 4}
+          className={pendente ? "opacity-45" : ""}
+        />
+        <span
+          className={`absolute left-[31px] top-12 h-5 w-5 rounded-full border-2 shadow-[0_0_0_5px_hsl(var(--background))] sm:left-[37px] ${
+            pendente
+              ? "border-dashed border-trilha bg-card"
+              : "border-trilha bg-trilha"
+          }`}
+        />
+      </div>
+      <div className="min-w-0 py-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="text-base font-semibold">{etapa.titulo}</h3>
+          <StatusPill tone={etapa.status as StatusTone}>
+            {statusLabel(etapa.status)}
+          </StatusPill>
+          {active && (
+            <span className="font-hand text-base text-accent">voce esta aqui</span>
+          )}
+        </div>
+        <p className="mt-1 text-sm leading-5 text-muted-foreground">
+          {etapa.descricao}
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <span className="font-mono text-xs text-muted-foreground">
+            {etapa.detalhe}
+          </span>
+          <ArrowRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function statusLabel(status: "concluido" | "em_progresso" | "pendente") {
+  if (status === "em_progresso") return "em progresso";
+  return status;
 }

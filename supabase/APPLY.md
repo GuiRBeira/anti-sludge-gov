@@ -16,7 +16,8 @@ abaixo terminam a Fase 1. Rodar **na ordem** pelo SQL Editor do Supabase
 | 6 | `migrations/0006_analysis_audit.sql` | Resultado_analise + log_auditoria |
 | 7 | `migrations/0007_rls_policies.sql` | Helpers de autorização + RLS em todas as tabelas |
 | 7.5 | `migrations/0008_passo_screenshot.sql` | Coluna `screenshot_path` em `passo_jornada` |
-| 7.6 | `storage/setup_passo_screenshots.sql` | Bucket privado e policies para prints dos passos |
+| 7.6 | `migrations/0009_rbac_visitante_readonly.sql` | Visitante fica somente leitura nos processos atribuídos |
+| 7.7 | `storage/setup_passo_screenshots.sql` | Bucket privado e policies para prints dos passos |
 
 ## Seeds (depois das migrations)
 
@@ -28,7 +29,8 @@ abaixo terminam a Fase 1. Rodar **na ordem** pelo SQL Editor do Supabase
 ## Promover seu usuário a admin
 
 Depois das migrations + seeds, faça login uma vez no app web (`pnpm dev`),
-e rode no SQL Editor para promover você:
+e rode no SQL Editor para promover você. No MVP v1, depois desse passo, a UI
+`/admin/usuarios` gerencia os demais papéis:
 
 ```sql
 update public.profile

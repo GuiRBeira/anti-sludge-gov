@@ -11,6 +11,12 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        hand: ["var(--font-hand)", "cursive"],
+        display: ["var(--font-display)", "Impact", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -45,6 +51,18 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // FCINCO semantic tokens
+        trilha: "hsl(var(--trilha))",
+        "trilha-muted": "hsl(var(--trilha-muted))",
+        numero: "hsl(var(--numero))",
+        papel: "hsl(var(--papel))",
+        ink: "hsl(var(--ink))",
+        barreira: "hsl(var(--barreira))",
+        impacto: "hsl(var(--impacto))",
+        tempo: "hsl(var(--tempo))",
+        necessidade: "hsl(var(--necessidade))",
+        desvio: "hsl(var(--desvio))",
+        repeticao: "hsl(var(--repeticao))",
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
