@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { getProcesso } from "@/lib/db/processes";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
-import { ArrowRight, FileText, Route } from "lucide-react";
+import { getSessionOrRedirect } from "@/lib/auth/session";
+import { listMyOrgaos } from "@/lib/db/orgs";
+import { getProcessoPermissions } from "@/lib/auth/processo-permissions";
+import { ArrowRight, FileText, Route, Pencil } from "lucide-react";
 import { NumeroEtapa } from "@/components/fcinco/numero-etapa";
 import { SketchUnderline } from "@/components/fcinco/sketch-underline";
 import { StatusPill, type StatusTone } from "@/components/fcinco/status-pill";
@@ -15,10 +18,22 @@ export default async function ProcessoPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const session = await getSessionOrRedirect();
   const processo = await getProcesso(id);
   if (!processo) notFound();
+  const { canEdit } = await getProcessoPermissions(id);
 
   const supabase = await createClient();
+
+  // Pode editar a metadata (nome + órgão): admin global OU gestor do órgão atual.
+  const isAdmin = session.profile.papel_global === "admin";
+  let podeEditarMeta = isAdmin;
+  if (!podeEditarMeta) {
+    const meus = await listMyOrgaos();
+    podeEditarMeta = meus.some(
+      (m) => m.orgao_id === processo.orgao_id && m.papel_no_orgao === "gestor",
+    );
+  }
 
   const camposContexto = [
     { label: "Objetivo", v: processo.objetivo },
@@ -213,16 +228,28 @@ export default async function ProcessoPage({
           <div className="min-w-0">
           <Link
             href="/processos"
-            className="text-sm text-muted-foreground hover:underline"
+            className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
           >
             ← Processos
           </Link>
           <div className="mt-2 font-mono text-xs uppercase text-muted-foreground">
             {processo.orgao?.sigla} · {processo.orgao?.esfera}
           </div>
-          <h1 className="font-hand text-4xl leading-tight text-foreground sm:text-5xl">
-            {processo.nome}
-          </h1>
+          <div className="flex items-start gap-3">
+            <h1 className="font-hand text-4xl leading-tight text-foreground sm:text-5xl">
+              {processo.nome}
+            </h1>
+            {podeEditarMeta && (
+              <Link
+                href={`/processos/${id}/editar`}
+                className="mt-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                aria-label="Editar nome e órgão do processo"
+                title="Editar nome e órgão"
+              >
+                <Pencil className="h-4 w-4" />
+              </Link>
+            )}
+          </div>
           <div className="mt-1 text-accent">
             <SketchUnderline width={220} variant="long" />
           </div>
@@ -237,6 +264,11 @@ export default async function ProcessoPage({
             <HubStat label="etapas concluídas" value={`${concluidas}/7`} />
             <HubStat label="em andamento" value={emProgresso} />
             <HubStat label="participantes" value={qtdParticipantes ?? 0} />
+            {!canEdit && (
+              <div className="col-span-3 flex justify-end">
+                <StatusPill tone="pendente">somente leitura</StatusPill>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -275,8 +307,18 @@ export default async function ProcessoPage({
       </section>
 
       <section className="flex flex-wrap gap-2 border-t pt-5">
+        {podeEditarMeta && (
+          <Link href={`/processos/${id}/editar`}>
+            <Button variant="outline" size="sm">
+              <Pencil className="h-4 w-4" />
+              Nome e órgão
+            </Button>
+          </Link>
+        )}
         <Link href={`/processos/${id}/contexto`}>
-          <Button variant="outline" size="sm">Editar contexto</Button>
+          <Button variant="outline" size="sm">
+            {canEdit ? "Editar contexto" : "Ver contexto"}
+          </Button>
         </Link>
         <Link href={`/processos/${id}/jornada-planejada`}>
           <Button variant="outline" size="sm">Jornada planejada</Button>

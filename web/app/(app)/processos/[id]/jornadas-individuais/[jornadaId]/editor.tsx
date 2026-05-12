@@ -31,8 +31,13 @@ import {
 import type { PassoComTipo, TipoComCategoria } from "@/features/journeys/queries";
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import PassoScreenshot from "@/components/passo-screenshot";
+import { NumeroEtapa } from "@/components/fcinco/numero-etapa";
 import { StatusPill } from "@/components/fcinco/status-pill";
 import { TrilhaJornada } from "@/components/fcinco/trilha-jornada";
+import {
+  TipoComportamentoSelect,
+  SEM_TIPO,
+} from "@/components/fcinco/tipo-comportamento-select";
 import {
   formatTempo,
   passoToTrilhaPasso,
@@ -40,7 +45,6 @@ import {
 } from "@/components/fcinco/trilha-utils";
 import { ViewToggle, type ViewMode } from "@/components/fcinco/view-toggle";
 
-const SEM_TIPO = "__sem_tipo__";
 const SEM_VINCULO = "__sem_vinculo__";
 
 export default function JornadaIndividualEditor({
@@ -226,7 +230,7 @@ export default function JornadaIndividualEditor({
                     />
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1.5">
                       <button
                         type="button"
                         disabled={readOnly || isPending}
@@ -235,10 +239,12 @@ export default function JornadaIndividualEditor({
                             atualizarPasso(p.id, { eh_desvio: !p.eh_desvio }),
                           )
                         }
-                        className={`text-xs px-2 py-0.5 rounded-full ${
+                        aria-pressed={p.eh_desvio}
+                        title={p.eh_desvio ? "Remover marcação de desvio" : "Marcar como desvio do planejado"}
+                        className={`inline-flex w-fit items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 ${
                           p.eh_desvio
-                            ? "bg-orange-100 text-orange-900 dark:bg-orange-950/40 dark:text-orange-200"
-                            : "bg-muted text-muted-foreground"
+                            ? "border-[hsl(var(--desvio)/0.4)] bg-[hsl(var(--desvio)/0.15)] text-[hsl(var(--desvio))]"
+                            : "border-transparent bg-muted text-muted-foreground hover:border-border"
                         } ${readOnly ? "cursor-not-allowed" : ""}`}
                       >
                         {p.eh_desvio ? "✓ desvio" : "desvio"}
@@ -251,10 +257,12 @@ export default function JornadaIndividualEditor({
                             atualizarPasso(p.id, { eh_repeticao: !p.eh_repeticao }),
                           )
                         }
-                        className={`text-xs px-2 py-0.5 rounded-full ${
+                        aria-pressed={p.eh_repeticao}
+                        title={p.eh_repeticao ? "Remover marcação de repetição" : "Marcar como passo repetido"}
+                        className={`inline-flex w-fit items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 ${
                           p.eh_repeticao
-                            ? "bg-purple-100 text-purple-900 dark:bg-purple-950/40 dark:text-purple-200"
-                            : "bg-muted text-muted-foreground"
+                            ? "border-[hsl(var(--repeticao)/0.4)] bg-[hsl(var(--repeticao)/0.15)] text-[hsl(var(--repeticao))]"
+                            : "border-transparent bg-muted text-muted-foreground hover:border-border"
                         } ${readOnly ? "cursor-not-allowed" : ""}`}
                       >
                         {p.eh_repeticao ? "✓ repetição" : "repetição"}
@@ -308,7 +316,15 @@ export default function JornadaIndividualEditor({
 
       {!readOnly && (
         <form onSubmit={handleAdd} className="flex flex-col gap-4 rounded-lg border bg-card p-5">
-          <h2 className="font-medium">Adicionar passo observado</h2>
+          <div className="flex items-center gap-3">
+            <NumeroEtapa value={passos.length + 1} size={42} tilt={-3} />
+            <div>
+              <h2 className="font-medium">Adicionar passo observado</h2>
+              <p className="text-xs text-muted-foreground">
+                Próxima evidência da jornada real deste participante.
+              </p>
+            </div>
+          </div>
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="descricao">Descrição do que aconteceu</Label>
@@ -318,25 +334,19 @@ export default function JornadaIndividualEditor({
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               placeholder="Ex: tentou clicar no menu mas não encontrou"
+              className="input-paper"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="md:col-span-2 flex flex-col gap-1.5">
               <Label htmlFor="tipo">Categoria · Tipo de comportamento</Label>
-              <Select value={tipoId} onValueChange={setTipoId}>
-                <SelectTrigger id="tipo">
-                  <SelectValue placeholder="Selecione (opcional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={SEM_TIPO}>— sem classificação —</SelectItem>
-                  {tipos.map((t) => (
-                    <SelectItem key={t.id} value={t.id}>
-                      {t.categoria?.nome} · {t.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <TipoComportamentoSelect
+                id="tipo"
+                value={tipoId}
+                onChange={setTipoId}
+                tipos={tipos}
+              />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="tempo">Tempo real (segundos)</Label>
@@ -346,6 +356,7 @@ export default function JornadaIndividualEditor({
                 min={0}
                 value={tempo}
                 onChange={(e) => setTempo(e.target.value)}
+                className="input-paper"
               />
             </div>
           </div>
@@ -370,6 +381,7 @@ export default function JornadaIndividualEditor({
               rows={2}
               value={notas}
               onChange={(e) => setNotas(e.target.value)}
+              className="input-paper"
             />
           </div>
 

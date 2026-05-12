@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getSessionOrRedirect } from "@/lib/auth/session";
+import { assertCanEditProcesso } from "@/lib/auth/processo-permissions";
 import {
   participanteCreateSchema,
   type ParticipanteCreateInput,
@@ -19,6 +20,7 @@ export async function criarParticipante(
 ): Promise<void> {
   await getSessionOrRedirect();
   const parsed = participanteCreateSchema.parse(input);
+  await assertCanEditProcesso(parsed.processo_id);
   const supabase = await createClient();
 
   const { data: existentes, error: selErr } = await supabase
@@ -62,6 +64,8 @@ export async function removerParticipante(participanteId: string): Promise<void>
     .select("processo_id")
     .eq("id", participanteId)
     .single();
+
+  if (p?.processo_id) await assertCanEditProcesso(p.processo_id);
 
   const { error } = await supabase
     .from("participante")

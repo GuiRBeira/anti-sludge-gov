@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SketchFrame } from "@/components/fcinco/sketch-frame";
+import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -38,7 +40,7 @@ export function ForgotPasswordForm({
       if (error) throw error;
       setSuccess(true);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : "Ocorreu um erro");
     } finally {
       setIsLoading(false);
     }
@@ -47,28 +49,43 @@ export function ForgotPasswordForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       {success ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>Password reset instructions sent</CardDescription>
+        <Card className="relative overflow-hidden rounded-lg">
+          <WatercolorSplatter
+            className="absolute -right-16 -top-24"
+            size={180}
+            opacity={0.3}
+            seed={93}
+          />
+          <CardHeader className="relative">
+            <CardTitle className="text-2xl">Verifique seu email</CardTitle>
+            <CardDescription>Instruções de redefinição enviadas</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="relative">
             <p className="text-sm text-muted-foreground">
-              If you registered using your email and password, you will receive
-              a password reset email.
+              Se este email estiver cadastrado, você receberá um link para
+              redefinir sua senha.
             </p>
           </CardContent>
         </Card>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
+        <Card className="relative overflow-hidden rounded-lg">
+          <WatercolorSplatter
+            className="absolute -right-16 -top-24"
+            size={180}
+            opacity={0.3}
+            seed={94}
+          />
+          <CardHeader className="relative">
+            <CardTitle>
+              <SketchFrame seed={94} padX={18} padY={8}>
+                <span className="font-hand text-4xl leading-tight">Recuperar</span>
+              </SketchFrame>
+            </CardTitle>
             <CardDescription>
-              Type in your email and we&apos;ll send you a link to reset your
-              password
+              Informe seu email para receber um link de redefinição de senha.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="relative">
             <form onSubmit={handleForgotPassword}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
@@ -82,18 +99,18 @@ export function ForgotPasswordForm({
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
+                {error && <p className="text-sm text-destructive">{error}</p>}
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send reset email"}
+                  {isLoading ? "Enviando..." : "Enviar link"}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">
-                Already have an account?{" "}
+                Lembrou sua senha?{" "}
                 <Link
                   href="/auth/login"
                   className="underline underline-offset-4"
                 >
-                  Login
+                  Entrar
                 </Link>
               </div>
             </form>

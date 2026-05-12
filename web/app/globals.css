@@ -1,40 +1,55 @@
+@import url("https://fonts.cdnfonts.com/css/rawline");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 48 30% 97%;
-    --foreground: 0 0% 10%;
+    /* ===== Camada A — Padrão Mínimo gov.br DS ===========================
+       Cor primária de ação = Blue Warm Vivid 70 (#1351B4)
+       Fonte sans = Rawline (DS oficial — "somente uma família é utilizada")
+       Escala de espaçamento alinha com 8/16/24/32/40 (Tailwind default OK)
+       ==================================================================== */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;            /* #333333 — leitura DS */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 0 0% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 0 0% 20%;
 
-    --primary: 167 71% 41%;
+    --primary: 217 81% 39%;            /* #1351B4 Blue Warm Vivid 70 */
     --primary-foreground: 0 0% 100%;
-    --accent: 45 96% 48%;
+    --primary-dark: 217 81% 14%;       /* #071D41 Blue Warm Vivid 90 */
+    --primary-hover: 217 81% 53%;      /* #2670E8 Blue Warm Vivid 50 */
+
+    --accent: 45 96% 48%;              /* #F4B400 amarelo mostarda — numeração FCINCO */
     --accent-foreground: 0 0% 10%;
 
-    --secondary: 48 20% 92%;
-    --secondary-foreground: 0 0% 10%;
-    --muted: 48 15% 90%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 20%;
+    --muted: 0 0% 94%;
     --muted-foreground: 0 0% 35%;
 
-    --destructive: 358 67% 47%;
+    --destructive: 358 67% 47%;        /* #C8252A vermelho FCINCO/feedback erro */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 48 10% 85%;
-    --input: 48 10% 85%;
-    --ring: 167 71% 41%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 217 81% 39%;               /* foco no azul gov.br */
 
     --radius: 0.5rem;
 
+    /* ===== Camada B — Marca FCINCO ====================================== */
+    --fcinco-teal: 167 71% 41%;        /* #1FB597 — banner FCINCO, pill "validada" */
+    --fcinco-teal-foreground: 0 0% 100%;
+
+    /* ===== Camada C — Tokens semânticos do produto F5 ==================== */
     --trilha: 358 67% 47%;
     --trilha-muted: 358 30% 75%;
     --numero: 45 96% 48%;
-    --papel: 48 30% 97%;
-    --ink: 0 0% 10%;
+    --papel: 0 0% 100%;
+    --ink: 0 0% 20%;
 
     --barreira: 358 67% 47%;
     --impacto: 217 91% 60%;
@@ -48,6 +63,10 @@
     --chart-3: 167 71% 41%;
     --chart-4: 45 96% 48%;
     --chart-5: 268 50% 52%;
+
+    --font-sans:
+      "rawline", "Rawline", system-ui, -apple-system, "Segoe UI",
+      sans-serif;
   }
 
   .dark {
@@ -58,8 +77,11 @@
     --popover: 40 6% 12%;
     --popover-foreground: 48 30% 95%;
 
-    --primary: 167 71% 50%;
+    --primary: 217 81% 53%;            /* mais claro pra contraste no escuro */
     --primary-foreground: 40 8% 9%;
+    --primary-dark: 217 81% 39%;
+    --primary-hover: 217 80% 64%;
+
     --accent: 45 96% 55%;
     --accent-foreground: 40 8% 9%;
 
@@ -73,7 +95,10 @@
 
     --border: 40 5% 20%;
     --input: 40 5% 20%;
-    --ring: 167 71% 50%;
+    --ring: 217 81% 53%;
+
+    --fcinco-teal: 167 71% 50%;
+    --fcinco-teal-foreground: 40 8% 9%;
 
     --trilha: 358 67% 55%;
     --trilha-muted: 358 20% 35%;
@@ -100,12 +125,25 @@
   * {
     @apply border-border;
   }
+  html {
+    /* Fonte base 14px conforme DS gov.br */
+    font-size: 14px;
+  }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    /* Rawline tem ótimo rendering quando antialiased */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* ===== FCINCO utilities ===================================== */
+/* ===== Utility — verde teal FCINCO (marca, não UI) ===================== */
+.bg-fcinco-teal { background-color: hsl(var(--fcinco-teal)); color: hsl(var(--fcinco-teal-foreground)); }
+.text-fcinco-teal { color: hsl(var(--fcinco-teal)); }
+.border-fcinco-teal { border-color: hsl(var(--fcinco-teal)); }
+
+/* ===== FCINCO utilities ================================================ */
 
 /* paper grain — extremely subtle background texture */
 .paper-grain { position: relative; }
@@ -114,7 +152,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   opacity: 0.6;
   mix-blend-mode: multiply;
   z-index: 0;

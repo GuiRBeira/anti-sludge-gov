@@ -7,13 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -30,8 +23,13 @@ import {
 import type { PassoComTipo, TipoComCategoria } from "@/features/journeys/queries";
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import PassoScreenshot from "@/components/passo-screenshot";
+import { NumeroEtapa } from "@/components/fcinco/numero-etapa";
 import { StatusPill } from "@/components/fcinco/status-pill";
 import { TrilhaJornada } from "@/components/fcinco/trilha-jornada";
+import {
+  TipoComportamentoSelect,
+  SEM_TIPO,
+} from "@/components/fcinco/tipo-comportamento-select";
 import {
   formatTempo,
   passoToTrilhaPasso,
@@ -39,16 +37,16 @@ import {
 } from "@/components/fcinco/trilha-utils";
 import { ViewToggle, type ViewMode } from "@/components/fcinco/view-toggle";
 
-const SEM_TIPO = "__sem_tipo__";
-
 export default function JornadaPlanejadaEditor({
   jornadaId,
   passos,
   tipos,
+  readOnly = false,
 }: {
   jornadaId: string;
   passos: PassoComTipo[];
   tipos: TipoComCategoria[];
+  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -161,13 +159,13 @@ export default function JornadaPlanejadaEditor({
               <TableHead className="w-24">Obrig.</TableHead>
               <TableHead className="w-24">Tempo (s)</TableHead>
               <TableHead className="w-16">Print</TableHead>
-              <TableHead className="w-32">Ações</TableHead>
+              {!readOnly && <TableHead className="w-32">Ações</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {passos.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableRow>
+                <TableCell colSpan={readOnly ? 6 : 7} className="text-center py-8 text-muted-foreground">
                   Nenhum passo. Use o formulário abaixo para começar.
                 </TableCell>
               </TableRow>
@@ -197,11 +195,13 @@ export default function JornadaPlanejadaEditor({
                     <button
                       type="button"
                       onClick={() => handleToggleObrigatorio(p.id, p.obrigatorio)}
-                      disabled={isPending}
-                      className={`px-2 py-0.5 rounded-full text-xs ${
+                      disabled={isPending || readOnly}
+                      aria-pressed={p.obrigatorio}
+                      title={p.obrigatorio ? "Marcar como opcional" : "Marcar como obrigatório"}
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                         p.obrigatorio
-                          ? "bg-blue-100 text-blue-900 dark:bg-blue-950/40 dark:text-blue-200"
-                          : "bg-muted text-muted-foreground"
+                          ? "bg-primary/15 text-primary border border-primary/30"
+                          : "bg-muted text-muted-foreground border border-transparent hover:border-border"
                       }`}
                     >
                       {p.obrigatorio ? "obrigatório" : "opcional"}
@@ -215,39 +215,42 @@ export default function JornadaPlanejadaEditor({
                       jornadaId={jornadaId}
                       passoId={p.id}
                       initialPath={p.screenshot_path}
+                      disabled={readOnly}
                     />
                   </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        disabled={isPending || i === 0}
-                        onClick={() => handleMove(p.id, -1)}
-                        title="Mover para cima"
-                      >
-                        <ArrowUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        disabled={isPending || i === passos.length - 1}
-                        onClick={() => handleMove(p.id, 1)}
-                        title="Mover para baixo"
-                      >
-                        <ArrowDown className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        disabled={isPending}
-                        onClick={() => handleRemove(p.id)}
-                        title="Remover"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+                  {!readOnly && (
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          disabled={isPending || i === 0}
+                          onClick={() => handleMove(p.id, -1)}
+                          title="Mover para cima"
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          disabled={isPending || i === passos.length - 1}
+                          onClick={() => handleMove(p.id, 1)}
+                          title="Mover para baixo"
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          disabled={isPending}
+                          onClick={() => handleRemove(p.id)}
+                          title="Remover"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             )}
@@ -257,8 +260,17 @@ export default function JornadaPlanejadaEditor({
         )}
       </section>
 
+      {!readOnly && (
       <form onSubmit={handleAdd} className="flex flex-col gap-4 rounded-lg border bg-card p-5">
-        <h2 className="font-medium">Adicionar passo</h2>
+        <div className="flex items-center gap-3">
+          <NumeroEtapa value={passos.length + 1} size={42} tilt={-3} />
+          <div>
+            <h2 className="font-medium">Adicionar passo</h2>
+            <p className="text-xs text-muted-foreground">
+              Próxima linha da jornada planejada na sequência metodológica.
+            </p>
+          </div>
+        </div>
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="descricao">Descrição do passo</Label>
@@ -268,25 +280,19 @@ export default function JornadaPlanejadaEditor({
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
             placeholder="Ex: Acessar o portal e fazer login com gov.br"
+            className="input-paper"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="md:col-span-2 flex flex-col gap-1.5">
             <Label htmlFor="tipo">Categoria · Tipo de comportamento</Label>
-            <Select value={tipoId} onValueChange={setTipoId}>
-              <SelectTrigger id="tipo">
-                <SelectValue placeholder="Selecione (opcional)" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={SEM_TIPO}>— sem classificação —</SelectItem>
-                {tipos.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.categoria?.nome} · {t.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <TipoComportamentoSelect
+              id="tipo"
+              value={tipoId}
+              onChange={setTipoId}
+              tipos={tipos}
+            />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="tempo">Tempo estimado (segundos)</Label>
@@ -297,6 +303,7 @@ export default function JornadaPlanejadaEditor({
               value={tempo}
               onChange={(e) => setTempo(e.target.value)}
               placeholder="Ex: 30"
+              className="input-paper"
             />
           </div>
         </div>
@@ -321,6 +328,7 @@ export default function JornadaPlanejadaEditor({
             rows={2}
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
+            className="input-paper"
           />
         </div>
 
@@ -336,6 +344,7 @@ export default function JornadaPlanejadaEditor({
           </Button>
         </div>
       </form>
+      )}
     </div>
   );
 }

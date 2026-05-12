@@ -5,6 +5,10 @@ import { listParticipantes } from "@/features/observations/queries";
 import { listJornadasIndividuais } from "@/features/journeys/queries";
 import { iniciarJornadaIndividual } from "@/features/journeys/actions";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/fcinco/empty-state";
+import { SketchUnderline } from "@/components/fcinco/sketch-underline";
+import { StatusPill } from "@/components/fcinco/status-pill";
+import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
 import {
   Table,
   TableBody,
@@ -34,29 +38,55 @@ export default async function JornadasIndividuaisPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <header>
+      <header className="relative overflow-hidden rounded-lg border bg-card p-6">
+        <WatercolorSplatter
+          className="absolute -right-20 -top-24"
+          size={240}
+          opacity={0.3}
+          seed={32}
+          color="hsl(var(--accent))"
+        />
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
         <Link
           href={`/processos/${id}`}
-          className="text-sm text-muted-foreground hover:underline"
+          className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
         >
           ← {processo.nome}
         </Link>
-        <h1 className="text-2xl font-semibold mt-1">Jornadas individuais</h1>
-        <p className="text-sm text-muted-foreground">
-          Cada participante tem sua jornada com os passos realmente observados.
-          Equivalente às abas <strong>JU.Individual 01..05</strong> da planilha.
-        </p>
+            <div className="mt-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
+              etapa 04 de 07
+            </div>
+            <h1 className="mt-1 font-hand text-4xl leading-tight">
+              Jornadas individuais
+            </h1>
+            <SketchUnderline width={220} variant="long" color="hsl(var(--accent))" />
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+              Equivalente às abas <strong>JU.Individual 01..05</strong> da
+              planilha F5. Cada participante tem sua jornada com os passos
+              realmente observados.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 lg:justify-end">
+            <StatusPill tone="em_progresso">
+              {participantes.length} participantes
+            </StatusPill>
+            <StatusPill tone={jornadas.length > 0 ? "concluido" : "pendente"}>
+              {jornadas.length} jornadas
+            </StatusPill>
+          </div>
+        </div>
       </header>
 
       {participantes.length === 0 ? (
-        <div className="border rounded-lg p-8 text-center">
-          <p className="text-sm text-muted-foreground mb-3">
-            Nenhum participante cadastrado ainda.
-          </p>
-          <Link href={`/processos/${id}/participantes`}>
-            <Button>Cadastrar participantes</Button>
-          </Link>
-        </div>
+        <EmptyState
+          title="Nenhum participante cadastrado"
+          description="Cadastre participantes anonimizados antes de iniciar jornadas individuais. O consentimento LGPD precisa estar marcado para iniciar a observação."
+          cta={{
+            href: `/processos/${id}/participantes`,
+            label: "Cadastrar participantes",
+          }}
+        />
       ) : (
         <div className="border rounded-lg">
           <Table>
@@ -81,25 +111,17 @@ export default async function JornadasIndividuaisPage({
                     </TableCell>
                     <TableCell>
                       {p.consentimento_lgpd ? (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-900 dark:bg-green-950/40 dark:text-green-200">
-                          consentido
-                        </span>
+                        <StatusPill tone="validada">consentido</StatusPill>
                       ) : (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                          pendente
-                        </span>
+                        <StatusPill tone="pendente">pendente</StatusPill>
                       )}
                     </TableCell>
                     <TableCell>
                       {jornada ? (
                         jornada.validada ? (
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-900 dark:bg-green-950/40 dark:text-green-200">
-                            validada
-                          </span>
+                          <StatusPill tone="validada">validada</StatusPill>
                         ) : (
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 dark:bg-blue-950/40 dark:text-blue-200">
-                            em coleta
-                          </span>
+                          <StatusPill tone="em_progresso">em coleta</StatusPill>
                         )
                       ) : (
                         <span className="text-xs text-muted-foreground">não iniciada</span>

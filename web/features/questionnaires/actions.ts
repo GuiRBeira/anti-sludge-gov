@@ -2,11 +2,36 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getSessionOrRedirect } from "@/lib/auth/session";
+import { assertCanEditProcesso } from "@/lib/auth/processo-permissions";
 import {
   itemRespostaSchema,
   type ItemRespostaInput,
 } from "@/lib/validators/questionnaires";
 import { revalidatePath } from "next/cache";
+
+async function processoDaJornada(jornadaId: string): Promise<string> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("jornada")
+    .select("processo_id")
+    .eq("id", jornadaId)
+    .single();
+  if (error) throw error;
+  return data.processo_id as string;
+}
+
+async function processoDaResposta(respostaId: string): Promise<string> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("questionario_resposta")
+    .select("jornada:jornada_id (processo_id)")
+    .eq("id", respostaId)
+    .single();
+  if (error) throw error;
+  const j = data.jornada as { processo_id?: string } | null;
+  if (!j?.processo_id) throw new Error("Resposta sem jornada vinculada.");
+  return j.processo_id;
+}
 
 /**
  * Garante uma instância de resposta do questionário para a jornada e retorna
@@ -17,6 +42,7 @@ export async function ensureRespostaQuestionario(
   jornadaId: string,
 ): Promise<string> {
   const ctx = await getSessionOrRedirect();
+  await assertCanEditProcesso(await processoDaJornada(jornadaId));
   const supabase = await createClient();
 
   const { data: existing } = await supabase
@@ -50,6 +76,9 @@ export async function upsertItemResposta(
 ): Promise<void> {
   await getSessionOrRedirect();
   const parsed = itemRespostaSchema.parse(input);
+  await assertCanEditProcesso(
+    await processoDaResposta(parsed.questionario_resposta_id),
+  );
   const supabase = await createClient();
 
   // Para upsert manual quando passo_jornada_id pode ser NULL (que não casa
@@ -105,6 +134,7 @@ export async function upsertItemResposta(
 
 export async function concluirQuestionario(respostaId: string): Promise<void> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(await processoDaResposta(respostaId));
   const supabase = await createClient();
   const { error } = await supabase
     .from("questionario_resposta")
@@ -126,6 +156,7 @@ export async function concluirQuestionario(respostaId: string): Promise<void> {
 
 export async function reabrirQuestionario(respostaId: string): Promise<void> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(await processoDaResposta(respostaId));
   const supabase = await createClient();
   const { error } = await supabase
     .from("questionario_resposta")

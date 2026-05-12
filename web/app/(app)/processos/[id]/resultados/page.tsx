@@ -42,6 +42,12 @@ export default async function ResultadosPage({
     totalRespondidasBarreira +
     totalRespondidasImpacto +
     necessidade.reduce((s, m) => s + m.qtd_respostas, 0);
+  const splatterColor =
+    totalRespostas === 0
+      ? "hsl(var(--accent))"
+      : barreirasCriticas.length > 0
+        ? "hsl(var(--destructive))"
+        : "hsl(var(--fcinco-teal))";
 
   return (
     <div className="flex flex-col gap-8">
@@ -51,15 +57,19 @@ export default async function ResultadosPage({
           size={300}
           opacity={0.34}
           seed={55}
+          color={splatterColor}
         />
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <Link
               href={`/processos/${id}`}
-              className="text-sm text-muted-foreground hover:underline"
+              className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
             >
               ← {processo.nome}
             </Link>
+            <div className="mt-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
+              etapa 07 de 07
+            </div>
             <div className="mt-4">
               <SketchFrame seed={5} padX={24} padY={12}>
                 <span className="font-hand text-4xl leading-tight">Resultados</span>

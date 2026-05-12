@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getSessionOrRedirect } from "@/lib/auth/session";
+import { assertCanEditProcesso } from "@/lib/auth/processo-permissions";
 import {
   passoCreateSchema,
   passoUpdateSchema,
@@ -11,8 +12,40 @@ import {
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+/**
+ * Resolve processo_id a partir de uma jornada — usado pelos asserts
+ * que protegem as Server Actions que recebem um jornada_id derivado.
+ */
+async function processoDaJornada(jornadaId: string): Promise<string> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("jornada")
+    .select("processo_id")
+    .eq("id", jornadaId)
+    .single();
+  if (error) throw error;
+  return data.processo_id as string;
+}
+
+/**
+ * Resolve processo_id a partir de um passo (via jornada).
+ */
+async function processoDoPasso(passoId: string): Promise<string> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("passo_jornada")
+    .select("jornada:jornada_id (processo_id)")
+    .eq("id", passoId)
+    .single();
+  if (error) throw error;
+  const j = data.jornada as { processo_id?: string } | null;
+  if (!j?.processo_id) throw new Error("Passo sem jornada vinculada.");
+  return j.processo_id;
+}
+
 export async function ensureJornadaPlanejada(processoId: string): Promise<string> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(processoId);
   const supabase = await createClient();
 
   const { data: existing, error: selErr } = await supabase
@@ -38,6 +71,7 @@ export async function ensureJornadaPlanejada(processoId: string): Promise<string
 
 export async function ensureJornadaPadrao(processoId: string): Promise<string> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(processoId);
   const supabase = await createClient();
 
   const { data: existing } = await supabase
@@ -65,6 +99,7 @@ export async function iniciarJornadaIndividual(
   participanteId: string,
 ): Promise<string> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(processoId);
   const supabase = await createClient();
 
   const { data: existing } = await supabase
@@ -106,6 +141,7 @@ export async function clonarPassosDaPlanejada(
   jornadaDestinoId: string,
 ): Promise<void> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(await processoDaJornada(jornadaDestinoId));
   const supabase = await createClient();
 
   const { data: destino, error: destinoErr } = await supabase
@@ -166,6 +202,7 @@ export async function clonarPassosDaPlanejada(
 export async function adicionarPasso(input: PassoCreateInput): Promise<void> {
   await getSessionOrRedirect();
   const parsed = passoCreateSchema.parse(input);
+  await assertCanEditProcesso(await processoDaJornada(parsed.jornada_id));
   const supabase = await createClient();
 
   const { data: ult } = await supabase
@@ -198,6 +235,7 @@ export async function atualizarPasso(
 ): Promise<void> {
   await getSessionOrRedirect();
   const parsed = passoUpdateSchema.parse(input);
+  await assertCanEditProcesso(await processoDoPasso(passoId));
   const supabase = await createClient();
 
   const { data: passo } = await supabase
@@ -220,6 +258,7 @@ export async function setPassoScreenshot(
   screenshotPath: string | null,
 ): Promise<void> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(await processoDoPasso(passoId));
   const supabase = await createClient();
 
   const { data: passo } = await supabase
@@ -242,6 +281,7 @@ export async function vincularPassoPlanejado(
   passoPlanejadoId: string | null,
 ): Promise<void> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(await processoDoPasso(passoId));
   const supabase = await createClient();
 
   const { data: passo } = await supabase
@@ -261,6 +301,7 @@ export async function vincularPassoPlanejado(
 
 export async function removerPasso(passoId: string): Promise<void> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(await processoDoPasso(passoId));
   const supabase = await createClient();
 
   const { data: passo } = await supabase
@@ -283,6 +324,7 @@ export async function moverPasso(
   delta: 1 | -1,
 ): Promise<void> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(await processoDoPasso(passoId));
   const supabase = await createClient();
 
   const { data: alvo, error } = await supabase
@@ -322,6 +364,7 @@ export async function moverPasso(
 
 export async function toggleValidacaoJornada(jornadaId: string): Promise<void> {
   await getSessionOrRedirect();
+  await assertCanEditProcesso(await processoDaJornada(jornadaId));
   const supabase = await createClient();
   const { data: jornada, error } = await supabase
     .from("jornada")

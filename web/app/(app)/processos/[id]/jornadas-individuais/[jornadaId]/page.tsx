@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProcesso } from "@/lib/db/processes";
+import { getProcessoPermissions } from "@/lib/auth/processo-permissions";
 import {
   getJornadaById,
   listPassosJornada,
@@ -28,6 +29,7 @@ export default async function JornadaIndividualPage({
   const { id, jornadaId } = await params;
   const processo = await getProcesso(id);
   if (!processo) notFound();
+  const { canEdit } = await getProcessoPermissions(id);
 
   const jornada = await getJornadaById(jornadaId);
   if (!jornada || jornada.processo_id !== id || jornada.tipo_jornada !== "individual") {
@@ -87,12 +89,12 @@ export default async function JornadaIndividualPage({
             <div className="min-w-0">
               <Link
                 href={`/processos/${id}/jornadas-individuais`}
-                className="text-sm text-muted-foreground hover:underline"
+                className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
               >
                 ← Jornadas individuais
               </Link>
-              <div className="mt-3 font-mono text-xs uppercase text-muted-foreground">
-                jornada individual · participante anonimizado
+              <div className="mt-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                etapa 04 de 07 · participante anonimizado
               </div>
               <h1 className="font-hand text-4xl leading-tight">
                 Caminho real de {participante?.codigo ?? "participante"}
@@ -105,6 +107,7 @@ export default async function JornadaIndividualPage({
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {jornada.validada && <StatusPill tone="validada">validada</StatusPill>}
+                {!canEdit && <StatusPill tone="pendente">somente leitura</StatusPill>}
                 <StatusPill tone={passos.length > 0 ? "em_progresso" : "pendente"}>
                   {passos.length} passos
                 </StatusPill>
@@ -114,22 +117,24 @@ export default async function JornadaIndividualPage({
               </div>
             </div>
           </div>
-          <div className="shrink-0">
-            <form
-              action={async () => {
-                "use server";
-                await toggleValidacaoJornada(jornadaId);
-              }}
-            >
-              <Button type="submit" variant={jornada.validada ? "outline" : "default"}>
-                {jornada.validada ? "Reabrir para edição" : "Marcar como validada"}
-              </Button>
-            </form>
-          </div>
+          {canEdit && (
+            <div className="shrink-0">
+              <form
+                action={async () => {
+                  "use server";
+                  await toggleValidacaoJornada(jornadaId);
+                }}
+              >
+                <Button type="submit" variant={jornada.validada ? "outline" : "default"}>
+                  {jornada.validada ? "Reabrir para edição" : "Marcar como validada"}
+                </Button>
+              </form>
+            </div>
+          )}
         </div>
       </header>
 
-      {passos.length === 0 && passosPlanejados.length > 0 && (
+      {canEdit && passos.length === 0 && passosPlanejados.length > 0 && (
         <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/30 p-5">
           <p className="text-sm">
             Pode começar copiando os {passosPlanejados.length} passos da jornada
@@ -155,7 +160,7 @@ export default async function JornadaIndividualPage({
         passos={passos}
         tipos={tipos}
         passosPlanejados={passosPlanejados}
-        readOnly={jornada.validada}
+        readOnly={jornada.validada || !canEdit}
       />
 
       <section className="rounded-lg border bg-card p-5">

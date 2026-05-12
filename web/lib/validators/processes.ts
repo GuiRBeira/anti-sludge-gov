@@ -19,3 +19,15 @@ export const contextoUpdateSchema = processoCreateSchema.omit({
 });
 
 export type ContextoUpdateInput = z.infer<typeof contextoUpdateSchema>;
+
+/**
+ * Edição da metadata do processo: nome + órgão. Disponível para admin
+ * global e para gestor do órgão atual (pode mover entre órgãos que ele
+ * próprio gerencia).
+ */
+export const processoMetaUpdateSchema = z.object({
+  orgao_id: z.string().uuid("Selecione um órgão"),
+  nome: z.string().min(2, "Nome muito curto").max(300),
+});
+
+export type ProcessoMetaUpdateInput = z.infer<typeof processoMetaUpdateSchema>;

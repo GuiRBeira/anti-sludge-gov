@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProcesso } from "@/lib/db/processes";
+import { getProcessoPermissions } from "@/lib/auth/processo-permissions";
 import {
   getJornadaPadrao,
   getJornadaPlanejada,
@@ -27,6 +28,7 @@ export default async function JornadaPadraoPage({
   const { id } = await params;
   const processo = await getProcesso(id);
   if (!processo) notFound();
+  const { canEdit } = await getProcessoPermissions(id);
 
   const [padrao, planejada] = await Promise.all([
     getJornadaPadrao(id),
@@ -45,11 +47,11 @@ export default async function JornadaPadraoPage({
         <div className="relative">
           <Link
             href={`/processos/${id}`}
-            className="text-sm text-muted-foreground hover:underline"
+            className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
           >
             ← {processo.nome}
           </Link>
-          <div className="mt-3 font-mono text-xs uppercase text-muted-foreground">
+          <div className="mt-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
             etapa 05 de 07 · sintese
           </div>
           <h1 className="font-hand text-4xl leading-tight">Jornada padrão</h1>
@@ -60,6 +62,11 @@ export default async function JornadaPadraoPage({
             Comece copiando da planejada e ajuste com base nos padrões observados
             nas jornadas individuais.
           </p>
+          {!canEdit && (
+            <div className="mt-3">
+              <StatusPill tone="pendente">somente leitura</StatusPill>
+            </div>
+          )}
         </div>
       </header>
 
@@ -68,17 +75,26 @@ export default async function JornadaPadraoPage({
           <p className="text-sm text-muted-foreground">
             Ainda não há jornada padrão para este processo.
           </p>
-          <form
-            action={async () => {
-              "use server";
-              await ensureJornadaPadrao(id);
-            }}
-          >
-            <Button type="submit">Iniciar jornada padrão</Button>
-          </form>
+          {canEdit ? (
+            <form
+              action={async () => {
+                "use server";
+                await ensureJornadaPadrao(id);
+              }}
+            >
+              <Button type="submit">Iniciar jornada padrão</Button>
+            </form>
+          ) : (
+            <StatusPill tone="pendente">somente leitura</StatusPill>
+          )}
         </div>
       ) : (
-        <PadraoEditor processoId={id} jornadaId={padrao.id} planejadaId={planejada?.id ?? null} />
+        <PadraoEditor
+          processoId={id}
+          jornadaId={padrao.id}
+          planejadaId={planejada?.id ?? null}
+          readOnly={!canEdit}
+        />
       )}
     </div>
   );
@@ -88,10 +104,12 @@ async function PadraoEditor({
   processoId,
   jornadaId,
   planejadaId,
+  readOnly,
 }: {
   processoId: string;
   jornadaId: string;
   planejadaId: string | null;
+  readOnly: boolean;
 }) {
   const supabase = await createClient();
 
@@ -112,7 +130,7 @@ async function PadraoEditor({
 
   return (
     <>
-      {passos.length === 0 && passosPlanejados.length > 0 && (
+      {!readOnly && passos.length === 0 && passosPlanejados.length > 0 && (
         <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/30 p-5">
           <p className="text-sm">
             Copie os {passosPlanejados.length} passos da jornada planejada como
@@ -137,7 +155,7 @@ async function PadraoEditor({
         passos={passos}
         tipos={tipos}
         passosPlanejados={passosPlanejados}
-        readOnly={false}
+        readOnly={readOnly}
       />
 
       <QuestionariosLinks processoId={processoId} jornadaId={jornadaId} />

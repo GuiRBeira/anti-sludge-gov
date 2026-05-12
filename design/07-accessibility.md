@@ -1,102 +1,71 @@
-# 07 — Acessibilidade
+# 07 — Acessibilidade (WCAG 2.1 AA · gov.br DS)
 
-Linha de base: **WCAG 2.1 AA**. Não é checkbox de conformidade — é
-condição para que o produto sirva equipe FCINCO inteira, incluindo quem
-usa leitor de tela, teclado, ou tem contraste reduzido.
+Conformidade alvo: **WCAG 2.1 nível AA**, conforme exigido pelo
+[Padrão Mínimo gov.br DS](./gov-br-ds/padrao-minimo.md).
 
-## Princípios não-negociáveis
+## Estado atual
 
-1. **Tudo navegável por teclado**, sem armadilhas de foco.
-2. **Foco visível** em todo interativo (ring de 1-2px em cor contrastante).
-3. **Contraste ≥ 4.5:1** para texto normal, ≥ 3:1 para texto grande
-   (≥ 18.66px regular ou ≥ 14px bold).
-4. **Form labels sempre presentes** e associadas ao input (`htmlFor` ↔ `id`).
-5. **Erros descritos em texto**, não só em cor.
-6. **Roles ARIA** apenas onde HTML semântico não basta.
-7. **`prefers-reduced-motion`**: respeitar (sem animação grande para quem
-   pede menos motion).
+Auditoria de código feita em 2026-05-12 após Fatias 1–5 do alinhamento
+gov.br. Resultados abaixo, com origem e ação tomada.
 
-## Checklist por componente
+### Implementado
 
-### Botões
-- [x] Texto OU `aria-label` (no caso de icon-only).
-- [x] Foco visível.
-- [ ] `aria-busy` quando em loading.
-
-### Inputs / Textarea / Select
-- [x] `<Label>` com `htmlFor`.
-- [x] Mensagem de erro associada via `aria-describedby` quando houver.
-- [ ] `required` ⇄ `aria-required`.
-
-### Tabelas
-- [x] `<th>` semântico para headers.
-- [ ] `scope="col"` em cabeçalhos (a fazer).
-- [ ] `caption` invisível com descrição da tabela (a fazer em tabelas
-  grandes).
-
-### Modal (PassoScreenshot)
-- [x] Fecha com Esc (`onClick` no overlay).
-- [ ] **Trap de foco** dentro do modal — a implementar (atualmente foco
-  pode "vazar" para trás).
-- [ ] `role="dialog"` + `aria-modal="true"`.
-- [ ] `aria-labelledby` apontando para o título do modal.
-- [ ] Restaurar foco no botão que abriu, ao fechar.
-
-### Toggles inline (obrigatório, desvio, repetição)
-- [ ] Substituir `<button>` com classe por componente acessível com
-  `role="switch"` e `aria-checked`. **A revisar.**
-
-### DropdownMenu (theme switcher)
-- [x] Radix já trata foco e teclado.
-
-### Foco
-- [x] `focus-visible:ring-1 focus-visible:ring-ring` no Button/Input.
-- [ ] Auditar links sem ring (alguns `<Link>` simples no app não
-  estilizam foco — adicionar `focus-visible:underline` ou ring).
-
-## Contraste — pontos a auditar
-
-| Combinação | Status | Notas |
+| Item | Onde | Origem WCAG |
 |---|---|---|
-| `text-foreground` em `--background` | ✅ | 17.4:1 (light), 16.8:1 (dark) |
-| `text-muted-foreground` em `--background` | ⚠️ | Light 4.6:1 ✓, Dark **3.9:1** — abaixo de AA para texto < 18px. **A revisar.** |
-| Botão primary | ✅ | quase preto/branco invertido |
-| Botão outline em hover muted | ✅ | |
-| Badge `bg-blue-100 text-blue-900` | ✅ | |
-| Badge dark `bg-blue-950/40 text-blue-200` | ✅ | |
-| Gráfico vermelho (`#ef4444`) em label preto | ✅ | (label fora da barra) |
-| Gráfico azul (`#3b82f6`) em label preto | ✅ | |
+| `lang="pt-BR"` no `<html>` | [layout.tsx](../web/app/layout.tsx) | 3.1.1 |
+| Skip-to-content visível ao foco | [(app)/layout.tsx](../web/app/(app)/layout.tsx) | 2.4.1 |
+| Heading hierarchy semântica (um h1 por página, h2/h3 dentro) | Páginas de processo/jornada/contexto | 1.3.1 · 2.4.6 |
+| `<header>` / `<main>` / `<footer>` landmarks | `GovBrHeader`, `(app)/layout.tsx`, `GovBrFooter` | 1.3.1 |
+| Focus ring de 2px com offset (contraste 3:1) | [button.tsx](../web/components/ui/button.tsx), [input.tsx](../web/components/ui/input.tsx), [textarea.tsx](../web/components/ui/textarea.tsx) | 2.4.7 · 1.4.11 |
+| Read-only distinto de disabled | Inputs com `aria-readonly`/`readOnly` ganham borda tracejada e fundo muted, sem opacidade reduzida | 4.1.2 |
+| `aria-label` em botões só com ícone | Trash2 em participantes, theme switcher | 4.1.2 |
+| `role="alert"` em mensagens de erro de form | participantes/client.tsx | 4.1.3 |
+| `prefers-reduced-motion` respeitado globalmente | [globals.css](../web/app/globals.css) | 2.3.3 |
+| Texto "sem dado" em itálico, sem heurística | contexto, participantes, resultados | regra de ouro F5 |
+| Contraste primário Blue Warm Vivid 70 / branco | Botões primários | 1.4.3 (AA 4.5:1) |
+| Textos `--foreground` (#333333) sobre `--background` (#FFFFFF) | Corpo padrão | 1.4.3 (12.6:1 → AAA) |
 
-Ação: revisar `--muted-foreground` no dark para atingir 4.5:1 (subir para
-`0 0% 70%` mantém harmonia).
+### Conhecido / vigiar
 
-## Movimento
+| Item | Status | Ação prevista |
+|---|---|---|
+| Contraste de bordas `--border` (#dadada) sobre fundo branco | Marginal | Aceitável para bordas (3:1 não é exigência hard); revisitar se cobrir-se de feedback |
+| ProductTour overlay sobre conteúdo | Não auditado para foco preso | Próxima execução: verificar trap de Tab dentro do tour |
+| Tabelas extensas (participantes, jornada) sem `<caption>` | Cabeçalhos semânticos via `<th>` cobrem, mas `<caption className="sr-only">` é melhoria fácil | Pendente |
+| Mensagens "Carregando…" sem `aria-live` | Botões com loading mostram texto, mas anúncio para leitor de tela poderia ser melhor | Pendente |
 
-`prefers-reduced-motion: reduce` — atualmente o app tem pouca animação,
-mas adicionar regra global em `globals.css`:
+### Pendente (próxima passada)
 
-```css
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-```
+- [ ] Auditoria automatizada com `axe-core` em CI
+- [ ] Revisar contraste das `StatusPill` em ambos os temas (cores `hsl(167 60% 90%)` sobre fundos podem cair abaixo de 4.5:1 dependendo do estado)
+- [ ] `lang` por bloco de citação se houver texto em inglês (WCAG 3.1.2)
+- [ ] Verificar `<details>`/`<summary>` no questionário ganham foco visível
+- [ ] Testar com leitor de tela (NVDA/VoiceOver) os fluxos principais
+- [ ] Adicionar `aria-label="Anti-Sludge Gov · página inicial"` quando o logo "F5" virar link
 
-## Leitores de tela
+## Padrão Mínimo gov.br — checklist (do `padrao-minimo.md`)
 
-- Headings (`h1`, `h2`) seguem hierarquia. Páginas têm exatamente um `h1`.
-- Links de "voltar" começam com seta visível (← Processos) e fazem
-  sentido fora de contexto.
-- "Sem dado" é texto, não apenas estado visual.
+- [x] Cabeçalho gov.br institucional ([GovBrHeader](../web/components/govbr/header.tsx))
+- [x] Logo gov.br
+- [x] Rodapé gov.br ([GovBrFooter](../web/components/govbr/footer.tsx))
+- [x] Tipografia Rawline ([globals.css](../web/app/globals.css))
+- [x] Paleta funcional baseada em função (Superfície/Leitura/Interativa/Feedback)
+- [x] Botões padronizados com hierarquia (button.tsx variants)
+- [x] Iconografia semântica (Lucide React já segue padrão gov.br)
+- [x] Boas práticas de formulário (label associada, hints, validação clara)
+- [ ] Sign-In gov.br oficial — pendente. Hoje usamos Supabase Auth nativo.
 
-## Conhecidos a fazer
+## Notas para revisões futuras
 
-- [ ] Trap de foco em modal de screenshot.
-- [ ] Roles ARIA em modal.
-- [ ] Subir `--muted-foreground` no dark para AA.
-- [ ] `prefers-reduced-motion` global em globals.css.
-- [ ] Auditar foco visível em todos os `<Link>`.
-- [ ] Substituir toggles pill por `role="switch"`.
-- [ ] Smoke test com NVDA / VoiceOver em telas principais.
+- Quando alguma cor da paleta semântica F5 (`--barreira`, `--desvio`, etc.)
+  for usada como **fundo de pill**, garantir que o texto sobre ela passe AA
+  com o `_foreground` derivado. Auditar `<StatusPill tone="desvio" dark>` em
+  particular.
+- Estados de Hover/Focus do DS gov.br exigem **mais de um sinal visual além
+  da cor** — borda + cor + opacidade. Hoje os Buttons cobrem (sombra + bg);
+  conferir em links inline e abas.
+- Toda nova rota deve ter:
+  1. Um (e apenas um) `<h1>`
+  2. `<main id="conteudo-principal" tabIndex={-1}>` herdado do layout
+  3. Mensagens de erro com `role="alert"`
+  4. Forms com `<label htmlFor=…>` para todo input

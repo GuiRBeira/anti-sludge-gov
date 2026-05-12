@@ -11,7 +11,7 @@ import {
 } from "@/features/orgs/actions";
 import { Button } from "@/components/ui/button";
 import { NumeroEtapa } from "@/components/fcinco/numero-etapa";
-import { SketchFrame } from "@/components/fcinco/sketch-frame";
+import { SketchUnderline } from "@/components/fcinco/sketch-underline";
 import { StatusPill } from "@/components/fcinco/status-pill";
 import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
 import type {
@@ -121,6 +121,7 @@ export default async function UsuariosAdminPage() {
           size={280}
           opacity={0.32}
           seed={72}
+          color="hsl(var(--primary))"
         />
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -129,12 +130,11 @@ export default async function UsuariosAdminPage() {
                 ? "Administração · funções e escopos"
                 : "Gestão do órgão · analistas"}
             </div>
-            <SketchFrame seed={16} padX={24} padY={12}>
-              <span className="font-hand text-4xl leading-tight">
-                {isAdmin ? "Usuários e acessos" : "Equipe do órgão"}
-              </span>
-            </SketchFrame>
-            <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground">
+            <h1 className="text-3xl font-semibold leading-tight">
+              {isAdmin ? "Usuários e acessos" : "Equipe do órgão"}
+            </h1>
+            <SketchUnderline width={150} variant="short" color="hsl(var(--primary))" />
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
               {isAdmin
                 ? "Defina o papel global, os vínculos por órgão e quais processos visitantes podem visualizar. Visitantes sempre entram em modo leitura para processos atribuídos."
                 : "Vincule analistas aos órgãos em que você é gestor. Atribuição de visitantes e promoção de papéis globais continuam restritas ao admin."}

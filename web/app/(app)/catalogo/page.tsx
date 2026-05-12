@@ -7,6 +7,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { SketchUnderline } from "@/components/fcinco/sketch-underline";
+import { StatusPill } from "@/components/fcinco/status-pill";
+import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
 import type { Categoria, CriterioTemplate, TipoComportamento } from "@/types/database";
 
 type TipoComCategoria = TipoComportamento & { categoria: Categoria };
@@ -32,12 +35,33 @@ export default async function CatalogoPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header>
-        <h1 className="text-2xl font-semibold">Catálogo F5</h1>
-        <p className="text-sm text-muted-foreground">
-          Categorias, tipos de comportamento e critérios derivados da planilha F5.
-          Somente leitura.
-        </p>
+      <header className="relative overflow-hidden rounded-lg border bg-card p-6">
+        <WatercolorSplatter
+          className="absolute -right-20 -top-24"
+          size={240}
+          opacity={0.28}
+          seed={64}
+          color="hsl(var(--fcinco-teal))"
+        />
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <div className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+              catálogo metodológico · F5
+            </div>
+            <h1 className="mt-1 font-hand text-4xl leading-tight">Catálogo F5</h1>
+            <SketchUnderline width={170} variant="long" color="hsl(var(--accent))" />
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+              Categorias, tipos de comportamento e critérios derivados da
+              planilha F5. Esta área é somente leitura.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 lg:justify-end">
+            <StatusPill tone="em_progresso">{categorias.length} categorias</StatusPill>
+            <StatusPill tone="print">{tiposComCat.length} tipos</StatusPill>
+            <StatusPill tone="barreira">{barreiras.length} barreiras</StatusPill>
+            <StatusPill tone="concluido">{impactos.length} impactos</StatusPill>
+          </div>
+        </div>
       </header>
 
       <section>

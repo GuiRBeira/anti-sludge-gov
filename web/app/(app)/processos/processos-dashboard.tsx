@@ -6,18 +6,17 @@ import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowRight,
   Building2,
-  FileStack,
   Plus,
   Search,
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { NumeroEtapa } from "@/components/fcinco/numero-etapa";
 import { SketchFrame } from "@/components/fcinco/sketch-frame";
 import { SketchUnderline } from "@/components/fcinco/sketch-underline";
 import { StatusPill } from "@/components/fcinco/status-pill";
 import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
+import { EmptyState, ProcessosEmptyIcon } from "@/components/fcinco/empty-state";
 import type { PapelGlobal } from "@/types/database";
 
 export type ProcessoDashboardItem = {
@@ -106,7 +105,6 @@ export default function ProcessosDashboard({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <ThemeSwitcher />
             {canCreateProcess && (
               <Button asChild>
                 <Link href="/processos/novo">
@@ -164,7 +162,7 @@ export default function ProcessosDashboard({
       </section>
 
       {processos.length === 0 ? (
-        <EmptyState canCreateProcess={canCreateProcess} role={role} />
+        <ProcessosEmptyState canCreateProcess={canCreateProcess} role={role} />
       ) : (
         <motion.section layout className="grid gap-4 xl:grid-cols-2">
           <AnimatePresence mode="popLayout">
@@ -382,7 +380,7 @@ function F5TrailPreview({ progress }: { progress: number }) {
   );
 }
 
-function EmptyState({
+function ProcessosEmptyState({
   canCreateProcess,
   role,
 }: {
@@ -392,33 +390,26 @@ function EmptyState({
   const isVisitor = role === "visitante";
 
   return (
-    <div className="rounded-lg border border-dashed bg-card p-8 text-center">
-      <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-md bg-muted">
-        <FileStack className="h-6 w-6 text-muted-foreground" />
-      </div>
-      <h2 className="font-semibold">Nenhum processo visível no seu escopo</h2>
-      <p className="mx-auto mt-2 max-w-lg text-sm text-muted-foreground">
-        {isVisitor
+    <EmptyState
+      icon={ProcessosEmptyIcon}
+      title="Nenhum processo visível no seu escopo"
+      description={
+        isVisitor
           ? "Peça ao admin ou gestor para atribuir um processo ao seu usuário. Visitantes acessam somente processos específicos em modo leitura."
           : canCreateProcess
             ? "Comece criando um processo de diagnóstico no seu escopo, ou cadastre o órgão antes quando necessário."
-            : "Peça ao gestor do órgão para vincular você a um processo ou equipe de análise."}
-      </p>
-      {canCreateProcess && (
-        <div className="mt-5 flex justify-center gap-2">
-          {role === "admin" && (
-            <Button asChild variant="outline">
-              <Link href="/admin/orgaos">Órgãos</Link>
-            </Button>
-          )}
-          <Button asChild>
-            <Link href="/processos/novo">
-              <Plus className="h-4 w-4" />
-              Novo processo
-            </Link>
-          </Button>
-        </div>
-      )}
-    </div>
+            : "Peça ao gestor do órgão para vincular você a um processo ou equipe de análise."
+      }
+      secondaryCta={
+        canCreateProcess && role === "admin"
+          ? { href: "/admin/orgaos", label: "Órgãos", variant: "outline" }
+          : undefined
+      }
+      cta={
+        canCreateProcess
+          ? { href: "/processos/novo", label: "Novo processo" }
+          : undefined
+      }
+    />
   );
 }

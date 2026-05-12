@@ -45,6 +45,7 @@ const ThemeSwitcher = () => {
           size="sm"
           className="h-9 justify-start gap-2 rounded-md border border-transparent px-2 hover:border-border"
           title={`Tema atual: ${label}`}
+          aria-label={`Trocar tema. Atual: ${label}`}
           data-tour-target="theme-switcher"
         >
           {theme === "light" ? (

@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert } from "@/components/fcinco/alert";
 import {
   upsertItemResposta,
   concluirQuestionario,
@@ -15,6 +17,35 @@ import type { RespostaItem } from "@/types/database";
 import { BarreiraIcon } from "@/components/fcinco/barreira-icon";
 import { NumeroEtapa } from "@/components/fcinco/numero-etapa";
 import { StatusPill } from "@/components/fcinco/status-pill";
+
+/**
+ * Um "bloco" do formulário — montado server-side em page.tsx conforme
+ * a dimensão do questionário.
+ *
+ * - `kind: 'necessidade'` — 1 só bloco com `passo: null`. As perguntas
+ *   da necessidade rodam contra a jornada inteira (passo_jornada_id null).
+ * - `kind: 'barreira'` — 1 bloco por passo. `perguntas` já vem filtrado
+ *   pela junção `tipo_criterio` (no Streamlit original, `df_conceitos`
+ *   filtrado por Categoria+Tipo). `classificado=false` quando o passo
+ *   ainda não tem `tipo_comportamento_id` — a UI mostra warning e não
+ *   oferece perguntas que não fariam sentido para aquele comportamento.
+ * - `kind: 'impacto'` — 1 bloco por passo, todas as 3 perguntas
+ *   universais (Carga Cognitiva, Emoção, Consequência) aparecem em
+ *   cada passo independente do tipo.
+ */
+export type Bloco =
+  | {
+      kind: "necessidade";
+      passo: null;
+      perguntas: PerguntaComCriterio[];
+      classificado: true;
+    }
+  | {
+      kind: "barreira" | "impacto";
+      passo: PassoComTipo;
+      perguntas: PerguntaComCriterio[];
+      classificado: boolean;
+    };
 
 type ItemKey = string; // `${perguntaId}::${passoId|null}`
 
@@ -42,22 +73,24 @@ const emptyItem = (): LocalItem => ({
 
 export default function QuestionarioForm({
   respostaId,
-  perguntas,
-  passos,
+  blocos,
   itensIniciais,
-  modo,
   concluido,
+  canEdit,
   textoNotaMin,
   textoNotaMax,
+  voltarHref,
+  passosSemClassificacao,
 }: {
   respostaId: string;
-  perguntas: PerguntaComCriterio[];
-  passos: PassoComTipo[];
+  blocos: Bloco[];
   itensIniciais: RespostaItem[];
-  modo: "matriz" | "necessidade";
   concluido: boolean;
+  canEdit: boolean;
   textoNotaMin: string;
   textoNotaMax: string;
+  voltarHref: string;
+  passosSemClassificacao: number;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -77,13 +110,17 @@ export default function QuestionarioForm({
     return init;
   });
 
-  const readOnly = concluido;
+  const readOnly = concluido || !canEdit;
 
   function getItem(perguntaId: string, passoId: string | null): LocalItem {
     return estado[keyOf(perguntaId, passoId)] ?? emptyItem();
   }
 
-  function setItem(perguntaId: string, passoId: string | null, partial: Partial<LocalItem>) {
+  function setItem(
+    perguntaId: string,
+    passoId: string | null,
+    partial: Partial<LocalItem>,
+  ) {
     setEstado((prev) => {
       const k = keyOf(perguntaId, passoId);
       const cur = prev[k] ?? emptyItem();
@@ -117,9 +154,13 @@ export default function QuestionarioForm({
   }
 
   function handleConcluir() {
-    if (!confirm("Concluir o questionário? Ele ficará em modo somente leitura (você pode reabrir depois).")) return;
+    if (
+      !confirm(
+        "Concluir o questionário? Ele ficará em modo somente leitura (você pode reabrir depois).",
+      )
+    )
+      return;
     startTransition(async () => {
-      // garantir que todos os dirty foram persistidos antes de concluir
       const dirtyKeys = Object.entries(estado)
         .filter(([, v]) => v.dirty)
         .map(([k]) => k);
@@ -141,6 +182,28 @@ export default function QuestionarioForm({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Banner: passos sem classificação (só aparece em modo barreira) */}
+      {passosSemClassificacao > 0 && (
+        <Alert
+          tone="warning"
+          title={`${passosSemClassificacao} passo${
+            passosSemClassificacao === 1 ? "" : "s"
+          } sem classificação metodológica`}
+          action={
+            <Link href={voltarHref}>
+              <Button variant="outline" size="sm">
+                ← Editar jornada
+              </Button>
+            </Link>
+          }
+        >
+            As perguntas de barreira dependem da categoria e do tipo de
+            comportamento do passo. Classifique cada passo no editor da
+            jornada para conseguir respondê-las.
+        </Alert>
+      )}
+
+      {/* Legenda da escala */}
       <div className="rounded-lg border bg-muted/40 p-3">
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <StatusPill tone="barreira">escala 1-5</StatusPill>
@@ -169,70 +232,32 @@ export default function QuestionarioForm({
         </div>
       </div>
 
-      {modo === "necessidade"
-        ? perguntas.map((p) => {
-            const it = getItem(p.id, null);
-            return (
-              <PerguntaBox
-                key={p.id}
-                pergunta={p}
-                item={it}
-                disabled={readOnly}
-                onChangeNota={(n) => setItem(p.id, null, { nota: n })}
-                onToggleNA={(v) => setItem(p.id, null, { nao_se_aplica: v })}
-                onChangeObs={(s) => setItem(p.id, null, { observacao: s })}
-                onBlur={() => persistItem(p.id, null)}
-              />
-            );
-          })
-        : perguntas.map((p, perguntaIndex) => (
-            <details key={p.id} className="overflow-hidden rounded-lg border bg-card" open>
-              <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3">
-                <NumeroEtapa value={perguntaIndex + 1} size={30} tilt={-2} />
-                <span className="min-w-0 flex-1">
-                  <span className="block font-medium">
-                    {p.criterio?.nome ? `${p.criterio.nome}: ` : ""}
-                    {p.texto}
-                  </span>
-                  {p.criterio?.dimensao === "impacto" && (
-                    <span className="text-xs capitalize text-muted-foreground">
-                      {p.criterio?.subdimensao_impacto?.replace("_", " ")}
-                    </span>
-                  )}
-                </span>
-                {p.criterio?.dimensao === "barreira" && <BarreiraIcon size={22} />}
-              </summary>
-              <div className="divide-y border-t bg-background/60">
-                {passos.map((passo) => {
-                  const it = getItem(p.id, passo.id);
-                  return (
-                    <div key={passo.id} className="grid gap-3 px-4 py-3 lg:grid-cols-[220px_1fr]">
-                      <div className="text-sm">
-                        <span className="font-mono text-xs text-muted-foreground">
-                          #{passo.ordem}
-                        </span>{" "}
-                        {passo.descricao ?? "—"}
-                      </div>
-                      <CompactRow
-                        item={it}
-                        disabled={readOnly}
-                        onChangeNota={(n) => setItem(p.id, passo.id, { nota: n })}
-                        onToggleNA={(v) => setItem(p.id, passo.id, { nao_se_aplica: v })}
-                        onChangeObs={(s) => setItem(p.id, passo.id, { observacao: s })}
-                        onBlur={() => persistItem(p.id, passo.id)}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </details>
-          ))}
+      {/* Blocos */}
+      {blocos.map((bloco, idx) => (
+        <BlocoSection
+          key={
+            bloco.kind === "necessidade"
+              ? "necessidade"
+              : `passo-${bloco.passo.id}`
+          }
+          bloco={bloco}
+          ordem={idx + 1}
+          readOnly={readOnly}
+          getItem={getItem}
+          setItem={setItem}
+          persistItem={persistItem}
+          voltarHref={voltarHref}
+        />
+      ))}
 
+      {/* Footer de ação */}
       <div className="sticky bottom-2 flex gap-2 rounded-md border bg-background/95 p-3 shadow-sm backdrop-blur">
-        {readOnly ? (
+        {readOnly && canEdit ? (
           <Button onClick={handleReabrir} variant="outline" disabled={isPending}>
             Reabrir para edição
           </Button>
+        ) : readOnly ? (
+          <StatusPill tone="pendente">somente leitura</StatusPill>
         ) : (
           <Button onClick={handleConcluir} disabled={isPending}>
             {isPending ? "Salvando..." : "Concluir questionário"}
@@ -240,6 +265,154 @@ export default function QuestionarioForm({
         )}
       </div>
     </div>
+  );
+}
+
+function BlocoSection({
+  bloco,
+  ordem,
+  readOnly,
+  getItem,
+  setItem,
+  persistItem,
+  voltarHref,
+}: {
+  bloco: Bloco;
+  ordem: number;
+  readOnly: boolean;
+  getItem: (pid: string, passoId: string | null) => LocalItem;
+  setItem: (pid: string, passoId: string | null, p: Partial<LocalItem>) => void;
+  persistItem: (pid: string, passoId: string | null) => Promise<void>;
+  voltarHref: string;
+}) {
+  // Necessidade: renderiza perguntas direto, sem header de passo nem expander.
+  if (bloco.kind === "necessidade") {
+    return (
+      <section className="flex flex-col gap-4">
+        {bloco.perguntas.map((p) => {
+          const it = getItem(p.id, null);
+          return (
+            <PerguntaBox
+              key={p.id}
+              pergunta={p}
+              item={it}
+              disabled={readOnly}
+              onChangeNota={(n) => setItem(p.id, null, { nota: n })}
+              onToggleNA={(v) => setItem(p.id, null, { nao_se_aplica: v })}
+              onChangeObs={(s) => setItem(p.id, null, { observacao: s })}
+              onBlur={() => persistItem(p.id, null)}
+            />
+          );
+        })}
+      </section>
+    );
+  }
+
+  // Barreira / impacto: bloco por passo
+  const { passo, perguntas, classificado } = bloco;
+  const tipoNome = passo.tipo_comportamento?.nome ?? null;
+  const categoriaNome = passo.tipo_comportamento?.categoria?.nome ?? null;
+  const respondidasNoBloco = perguntas.filter((p) => {
+    const it = getItem(p.id, passo.id);
+    return it.saved && (it.nota !== null || it.nao_se_aplica);
+  }).length;
+
+  return (
+    <details
+      className="overflow-hidden rounded-lg border bg-card"
+      open={ordem === 1}
+    >
+      <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+        <NumeroEtapa value={passo.ordem} size={32} tilt={-2} />
+        <span className="min-w-0 flex-1">
+          <span className="block font-medium">
+            {passo.descricao ?? "(passo sem descrição)"}
+          </span>
+          <span className="block text-xs text-muted-foreground">
+            {categoriaNome && tipoNome ? (
+              <>
+                {categoriaNome} <span className="opacity-50">·</span> {tipoNome}
+              </>
+            ) : (
+              <em>sem classificação metodológica</em>
+            )}
+          </span>
+        </span>
+        <span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">
+          {classificado
+            ? `${respondidasNoBloco}/${perguntas.length} respondidas`
+            : "—"}
+        </span>
+        {bloco.kind === "barreira" && classificado && (
+          <BarreiraIcon size={22} />
+        )}
+      </summary>
+
+      <div className="border-t bg-background/60">
+        {!classificado ? (
+          <div className="flex flex-col gap-3 p-5 text-sm text-muted-foreground">
+            <p>
+              Este passo ainda não tem <strong>categoria</strong> e{" "}
+              <strong>tipo de comportamento</strong> classificados. As
+              perguntas de barreira variam conforme o tipo do comportamento —
+              por isso esse passo não exibe perguntas até a classificação
+              acontecer.
+            </p>
+            <p className="font-hand italic">
+              isso espelha a planilha F5 original: cada par (Categoria, Tipo)
+              tem o seu próprio conjunto de critérios-B.
+            </p>
+            <div>
+              <Link href={voltarHref}>
+                <Button variant="outline" size="sm">
+                  ← Classificar passo na jornada
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : perguntas.length === 0 ? (
+          <div className="p-5 text-sm text-muted-foreground">
+            Nenhuma pergunta-B mapeada para este tipo de comportamento na
+            planilha F5. Você pode prosseguir mesmo assim — esse passo
+            entrará nos resultados apenas via as perguntas de impacto.
+          </div>
+        ) : (
+          <div className="divide-y">
+            {perguntas.map((p) => {
+              const it = getItem(p.id, passo.id);
+              return (
+                <div key={p.id} className="grid gap-3 px-4 py-3">
+                  <div className="text-sm">
+                    <span className="font-medium">
+                      {p.criterio?.nome ? `${p.criterio.nome}: ` : ""}
+                      {p.texto}
+                    </span>
+                    {p.criterio?.dimensao === "impacto" &&
+                      p.criterio.subdimensao_impacto && (
+                        <span className="ml-2 text-xs uppercase tracking-wider text-muted-foreground">
+                          ({p.criterio.subdimensao_impacto.replace("_", " ")})
+                        </span>
+                      )}
+                  </div>
+                  <CompactRow
+                    item={it}
+                    disabled={readOnly}
+                    onChangeNota={(n) => setItem(p.id, passo.id, { nota: n })}
+                    onToggleNA={(v) =>
+                      setItem(p.id, passo.id, { nao_se_aplica: v })
+                    }
+                    onChangeObs={(s) =>
+                      setItem(p.id, passo.id, { observacao: s })
+                    }
+                    onBlur={() => persistItem(p.id, passo.id)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </details>
   );
 }
 
@@ -346,7 +519,8 @@ function CompactRow({
 }
 
 function SaveStatus({ item }: { item: LocalItem }) {
-  if (item.saving) return <span className="text-xs text-muted-foreground ml-auto">salvando…</span>;
+  if (item.saving)
+    return <span className="text-xs text-muted-foreground ml-auto">salvando…</span>;
   if (item.dirty) return <span className="text-xs text-amber-600 ml-auto">não salvo</span>;
   if (item.saved) return <span className="text-xs text-green-600 ml-auto">salvo</span>;
   return null;

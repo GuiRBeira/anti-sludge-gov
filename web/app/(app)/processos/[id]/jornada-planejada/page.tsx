@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProcesso } from "@/lib/db/processes";
+import { getProcessoPermissions } from "@/lib/auth/processo-permissions";
 import {
   getJornadaPlanejada,
   listPassosJornada,
@@ -26,6 +27,7 @@ export default async function JornadaPlanejadaPage({
   const { id } = await params;
   const processo = await getProcesso(id);
   if (!processo) notFound();
+  const { canEdit } = await getProcessoPermissions(id);
 
   const jornada = await getJornadaPlanejada(id);
   const tipos = await listTiposComportamento();
@@ -43,7 +45,7 @@ export default async function JornadaPlanejadaPage({
           <div className="relative">
           <Link
             href={`/processos/${id}`}
-            className="text-sm text-muted-foreground hover:underline"
+            className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
           >
             ← {processo.nome}
           </Link>
@@ -64,14 +66,18 @@ export default async function JornadaPlanejadaPage({
           <p className="text-sm text-muted-foreground">
             Ainda não há jornada planejada para este processo.
           </p>
-          <form
-            action={async () => {
-              "use server";
-              await ensureJornadaPlanejada(id);
-            }}
-          >
-            <Button type="submit">Iniciar jornada planejada</Button>
-          </form>
+          {canEdit ? (
+            <form
+              action={async () => {
+                "use server";
+                await ensureJornadaPlanejada(id);
+              }}
+            >
+              <Button type="submit">Iniciar jornada planejada</Button>
+            </form>
+          ) : (
+            <StatusPill tone="pendente">somente leitura</StatusPill>
+          )}
         </div>
       </div>
     );
@@ -96,7 +102,7 @@ export default async function JornadaPlanejadaPage({
           <div>
             <Link
               href={`/processos/${id}`}
-              className="text-sm text-muted-foreground hover:underline"
+              className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
             >
               ← {processo.nome}
             </Link>
@@ -121,6 +127,7 @@ export default async function JornadaPlanejadaPage({
             <StatusPill tone="concluido">
               {questionarios.length} questionarios
             </StatusPill>
+            {!canEdit && <StatusPill tone="pendente">somente leitura</StatusPill>}
           </div>
         </div>
       </header>
@@ -129,6 +136,7 @@ export default async function JornadaPlanejadaPage({
         jornadaId={jornada.id}
         passos={passos}
         tipos={tipos}
+        readOnly={!canEdit}
       />
 
       <section className="rounded-lg border bg-card p-5">
