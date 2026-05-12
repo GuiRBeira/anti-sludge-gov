@@ -19,6 +19,8 @@ O MVP v1 cobre o fluxo essencial de operação:
 - questionários e resultados sem heurística silenciosa;
 - interface visual FCINCO com modo claro/escuro, animações e onboarding por
   papel conectado ao fluxo metodológico.
+- canal beta para testers reportarem bugs, inconsistências, sugestões e falta
+  de recurso, com triagem privada do admin do piloto.
 
 ## Por que estamos recomeçando
 

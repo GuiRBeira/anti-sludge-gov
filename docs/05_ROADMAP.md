@@ -8,8 +8,9 @@ Cinco fases. Cada fase tem critério de saída claro. Não pular fase.
 **Desenvolvido por:** plreis.
 
 Inclui fluxo operacional, RBAC inicial, dashboard de processos, onboarding por
-papel, UI FCINCO, jornadas, questionários e resultados. Próximas iterações devem focar em
-extração/exportação, testes de RLS por papel e hardening para piloto.
+papel, UI FCINCO, jornadas, questionários, resultados e canal beta de feedback.
+Próximas iterações devem focar em extração/exportação, testes de RLS por papel
+e hardening para piloto.
 
 ## Fase 0 — Setup e fonte da verdade
 
@@ -69,6 +70,7 @@ Telas mínimas:
 - [x] Validação de jornada.
 - [x] Painel de status/completude por processo.
 - [x] Product tour por perfil (`admin`, `gestor`, `analista`, `visitante`).
+- [x] Canal beta flutuante e painel privado de triagem para o admin do piloto.
 
 **Critério de saída:** Janaina ou Wendel conseguem cadastrar um processo
 real, três participantes, e responder os seis questionários sem precisar
@@ -98,6 +100,8 @@ preenchimento manual da planilha em pelo menos um processo de teste.
 - [ ] Relatório PDF/CSV exportável.
 - [ ] Documentação operacional (manual do analista).
 - [ ] Validação de RLS com smoke tests por papel.
+- [ ] Fechar ciclo dos relatos beta: converter bugs/sugestões em issues,
+  changelog ou decisões de backlog.
 - [ ] Setup de CI (lint + typecheck + build).
 - [ ] Deploy de produção (Vercel + Supabase Cloud).
 

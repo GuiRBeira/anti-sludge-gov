@@ -86,6 +86,8 @@ Opção B — Supabase CLI (recomendado quando equipe crescer):
    `supabase/migrations/`.
 
 A partir da Fase 1, este repositório usa a Opção B como fonte da verdade.
+No estado atual do MVP v1, a sequência de migrations vai até
+`supabase/migrations/0012_beta_feedback.sql`.
 
 ## 6. Gerar types TypeScript
 

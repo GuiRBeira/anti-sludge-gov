@@ -1,5 +1,5 @@
 // types/database.ts
-// Tipos do banco escritos à mão (espelho das migrations 0001..0007).
+// Tipos do banco escritos à mão (espelho das migrations 0001..0012).
 // Substituir por gerado quando rodarmos `supabase gen types typescript`.
 
 export type UUID = string;
@@ -28,6 +28,18 @@ export type DimensaoQuestionario =
   | "impacto"
   | "necessidade"
   | "contexto";
+export type BetaFeedbackKind =
+  | "bug"
+  | "inconsistencia"
+  | "sugestao"
+  | "falta_recurso"
+  | "outro";
+export type BetaFeedbackSeverity = "baixa" | "media" | "alta" | "bloqueante";
+export type BetaFeedbackStatus =
+  | "novo"
+  | "em_analise"
+  | "resolvido"
+  | "ignorado";
 
 export interface Profile {
   id: UUID;
@@ -265,6 +277,22 @@ export interface ResultadoAnalise {
   metadados: Record<string, unknown>;
   versao_metodologia: string | null;
   calculado_em: Timestamp;
+}
+
+export interface BetaFeedback {
+  id: UUID;
+  created_at: Timestamp;
+  created_by: UUID | null;
+  user_email: string | null;
+  user_name: string | null;
+  page_path: string | null;
+  user_agent: string | null;
+  kind: BetaFeedbackKind;
+  severity: BetaFeedbackSeverity;
+  title: string;
+  description: string;
+  status: BetaFeedbackStatus;
+  admin_notes: string | null;
 }
 
 // Helper para fluência: tipos por tabela.

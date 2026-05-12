@@ -23,6 +23,10 @@ Notas:
   a vincular/remover analistas dos órgãos em que são gestores. A migration
   `0010_onboarding_gestor_team_rbac.sql` permite essa leitura operacional de
   perfis não-admin e restringe atribuição de visitante a admin.
+- O painel `/admin/feedback-beta` é uma exceção operacional do piloto beta:
+  qualquer usuário autenticado pode enviar relato pelo botão flutuante, mas a
+  leitura/triagem no banco é restrita por RLS ao email
+  `pedrolucas@alunos.utfpr.edu.br`.
 
 ## Matriz de permissões
 
@@ -38,6 +42,7 @@ Notas:
 | Gerenciar usuários do órgão | ✓ | ✓ (analistas) | – | – |
 | Atribuir processos a visitante | ✓ | – | – | – |
 | Promover admin | ✓ | – | – | – |
+| Triar feedback beta do piloto | ✓ (admin do piloto) | – | – | – |
 | Exportar dados | ✓ | ✓ (do órgão) | (config.) | – |
 | Ver dashboards completos | ✓ | ✓ (do órgão) | ✓ (do órgão) | ✓ (atribuídos) |
 

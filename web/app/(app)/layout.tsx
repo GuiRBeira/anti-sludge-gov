@@ -5,8 +5,10 @@ import { LogoutButton } from "@/components/logout-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { AppNav } from "@/components/app-nav";
 import { ProductTour } from "@/components/onboarding/product-tour";
+import { BetaFeedbackWidget } from "@/components/beta-feedback-widget";
 import { GovBrHeader } from "@/components/govbr/header";
 import { GovBrFooter } from "@/components/govbr/footer";
+import { canViewBetaFeedback } from "@/features/feedback/constants";
 
 export default async function AppLayout({
   children,
@@ -19,6 +21,7 @@ export default async function AppLayout({
   const isAdmin = session.profile.papel_global === "admin";
   const canManageTeam =
     isAdmin || session.profile.papel_global === "gestor";
+  const canSeeBetaFeedback = canViewBetaFeedback(session.email);
   const displayName = session.profile.nome_completo ?? session.email;
   const initials = displayName.slice(0, 2).toUpperCase();
 
@@ -58,7 +61,11 @@ export default async function AppLayout({
 
       <div className="paper-grain flex flex-1">
         <aside className="relative z-10 hidden w-64 shrink-0 flex-col border-r bg-card/95 md:flex">
-          <AppNav role={session.profile.papel_global} canManageTeam={canManageTeam} />
+          <AppNav
+            role={session.profile.papel_global}
+            canManageTeam={canManageTeam}
+            canViewBetaFeedback={canSeeBetaFeedback}
+          />
         </aside>
 
         <main
@@ -79,6 +86,11 @@ export default async function AppLayout({
                 Equipe
               </Link>
             )}
+            {canSeeBetaFeedback && (
+              <Link href="/admin/feedback-beta" className="text-sm text-muted-foreground">
+                Feedback
+              </Link>
+            )}
           </div>
           <div className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
             {children}
@@ -94,6 +106,7 @@ export default async function AppLayout({
         userName={displayName}
         canManageTeam={canManageTeam}
       />
+      <BetaFeedbackWidget />
     </div>
   );
 }

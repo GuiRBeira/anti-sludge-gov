@@ -208,7 +208,7 @@ export default function QuestionarioForm({
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <StatusPill tone="barreira">escala 1-5</StatusPill>
           <span className="text-muted-foreground">
-            <strong>{textoNotaMin}</strong> ate <strong>{textoNotaMax}</strong>
+            <strong>{textoNotaMin}</strong> até <strong>{textoNotaMax}</strong>
           </span>
           <span className="ml-auto text-xs text-muted-foreground">
             N/A preserva o resultado como sem dado.

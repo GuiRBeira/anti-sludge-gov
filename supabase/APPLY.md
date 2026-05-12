@@ -18,7 +18,9 @@ abaixo terminam a Fase 1. Rodar **na ordem** pelo SQL Editor do Supabase
 | 7.5 | `migrations/0008_passo_screenshot.sql` | Coluna `screenshot_path` em `passo_jornada` |
 | 7.6 | `migrations/0009_rbac_visitante_readonly.sql` | Visitante fica somente leitura nos processos atribuídos |
 | 7.7 | `migrations/0010_onboarding_gestor_team_rbac.sql` | Gestor enxerga perfis não-admin para vincular analistas; visitante só admin atribui |
-| 7.8 | `storage/setup_passo_screenshots.sql` | Bucket privado e policies para prints dos passos |
+| 7.8 | `migrations/0011_view_security_invoker_and_grants.sql` | Views de avaliação respeitam RLS e grants dos helpers |
+| 7.9 | `migrations/0012_beta_feedback.sql` | Tabela operacional de feedback beta e RLS privada para o admin do piloto |
+| 7.10 | `storage/setup_passo_screenshots.sql` | Bucket privado e policies para prints dos passos |
 
 ## Seeds (depois das migrations)
 
@@ -71,6 +73,9 @@ select count(*) from public.glossario;
 -- 'Conteúdo' 3× seguidas). A tabela é um SET (PK composta), então sobram
 -- 68 pares únicos.
 select count(*) from public.tipo_criterio;
+
+-- Deve existir e aceitar insert autenticado pelo app.
+select to_regclass('public.beta_feedback');
 ```
 
 Se algum número estiver zero ou muito diferente, há erro no seed —

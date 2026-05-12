@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
-import { Building2, FileStack, LibraryBig, UsersRound } from "lucide-react";
+import { Building2, FileStack, LibraryBig, MessageSquareWarning, UsersRound } from "lucide-react";
 import type { PapelGlobal } from "@/types/database";
 
 const baseItems = [
@@ -16,13 +16,20 @@ const adminItems = [
 ];
 
 const teamItem = { href: "/admin/usuarios", label: "Usuários", icon: UsersRound };
+const betaFeedbackItem = {
+  href: "/admin/feedback-beta",
+  label: "Feedback beta",
+  icon: MessageSquareWarning,
+};
 
 export function AppNav({
   role,
   canManageTeam,
+  canViewBetaFeedback,
 }: {
   role: PapelGlobal;
   canManageTeam: boolean;
+  canViewBetaFeedback?: boolean;
 }) {
   const pathname = usePathname();
   const isAdmin = role === "admin";
@@ -30,6 +37,7 @@ export function AppNav({
     ...baseItems,
     ...(isAdmin ? adminItems : []),
     ...(canManageTeam ? [teamItem] : []),
+    ...(canViewBetaFeedback ? [betaFeedbackItem] : []),
   ];
 
   return (

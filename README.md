@@ -19,6 +19,8 @@ Esta versão entrega o fluxo operacional base:
 - questionários por jornada e resultados rastreáveis;
 - dashboard inicial animado, modo claro/escuro e product tour por papel
   (`admin`, `gestor`, `analista`, `visitante`).
+- canal beta flutuante para testers reportarem bugs/sugestões, com painel
+  privado de triagem do admin `pedrolucas@alunos.utfpr.edu.br`.
 
 ## Stack
 
@@ -72,8 +74,8 @@ Depois do deploy, no Supabase, configure:
 
 - **Authentication → URL Configuration → Site URL:** URL da Vercel;
 - **Redirect URLs:** URL da Vercel com `/**`;
-- aplicar todas as migrations, incluindo `0009_rbac_visitante_readonly.sql`.
-  A sequência atual vai até `0010_onboarding_gestor_team_rbac.sql`.
+- aplicar todas as migrations. A sequência atual vai até
+  `0012_beta_feedback.sql`.
 
 Não existe endpoint Supabase "da Vercel": o app em produção deve apontar para
 o mesmo projeto Supabase Cloud desejado por meio das variáveis acima.

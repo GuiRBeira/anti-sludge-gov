@@ -136,6 +136,14 @@ export default async function QuestionarioPage({
     (acc: number, b: Bloco) => acc + b.perguntas.length,
     0,
   );
+  const textoNotaMin =
+    template.dimensao === "barreira"
+      ? "1 - sem barreiras"
+      : "1 - sem prejuízo";
+  const textoNotaMax =
+    template.dimensao === "barreira"
+      ? "5 - barreiras impeditivas"
+      : "5 - com prejuízos";
 
   return (
     <div className="flex flex-col gap-6">
@@ -212,8 +220,8 @@ export default async function QuestionarioPage({
           itensIniciais={itens}
           concluido={resposta?.concluido ?? false}
           canEdit={canEdit}
-          textoNotaMin={template.dimensao === "barreira" ? "1 - Sem barreiras" : "1"}
-          textoNotaMax={template.dimensao === "barreira" ? "5 - Impeditivas" : "5"}
+          textoNotaMin={textoNotaMin}
+          textoNotaMax={textoNotaMax}
           voltarHref={voltarHref}
           passosSemClassificacao={passosSemClassificacao}
         />
