@@ -8,9 +8,9 @@ Cinco fases. Cada fase tem critério de saída claro. Não pular fase.
 **Desenvolvido por:** plreis.
 
 Inclui fluxo operacional, RBAC inicial, dashboard de processos, onboarding por
-papel, UI FCINCO, jornadas, questionários, resultados e canal beta de feedback.
-Próximas iterações devem focar em extração/exportação, testes de RLS por papel
-e hardening para piloto.
+papel, UI FCINCO, observações, jornadas, questionários, resultados, exportação
+CSV e canal beta de feedback. Próximas iterações devem focar em PDF,
+materialização de resultados, testes de RLS por papel e hardening para piloto.
 
 ## Fase 0 — Setup e fonte da verdade
 
@@ -62,9 +62,11 @@ Telas mínimas:
 - [x] Cadastro de processo + contexto.
 - [x] Cadastro de jornada planejada estruturada.
 - [x] Cadastro de participante.
+- [x] Planejamento/protocolo de observação por participante.
+- [x] Entrevista pós-observação.
 - [x] Lançamento manual de jornada individual (ordem real, desvios,
   repetições, tempo).
-- [x] Construção da jornada padrão a partir da planejada/individuais.
+- [x] Construção manual e consolidação automática da jornada padrão.
 - [x] Questionário de barreiras por jornada.
 - [x] Questionário de impactos por jornada (incluindo Necessidade).
 - [x] Validação de jornada.
@@ -80,12 +82,14 @@ de ajuda técnica.
 
 **Objetivo:** substituir heurística por cálculos reproduzíveis.
 
-- [ ] Server Action `recalcularResultado(processo_id)`.
+- [ ] Server Action `recalcularResultado(processo_id)` materializando em
+  `resultado_analise`.
 - [x] Queries iniciais para médias por critério e tempo total.
 - [x] Página `/processos/[id]/resultados`.
 - [x] Marcação visual de "sem dado" quando faltam respostas.
 - [x] Comparação tempo planejada × individual × padrão.
-- [ ] Ranking de sludge por etapa.
+- [x] Ranking operacional de sludge por etapa.
+- [x] Tabela dinâmica de dimensionamento + CSV.
 
 **Critério de saída:** todos os gráficos da planilha têm equivalente no
 sistema, derivam de respostas reais, e batem numericamente com o
@@ -97,7 +101,8 @@ preenchimento manual da planilha em pelo menos um processo de teste.
 
 - [ ] Cobertura de testes nas Server Actions críticas.
 - [ ] Logs de auditoria em todas as mutações.
-- [ ] Relatório PDF/CSV exportável.
+- [x] Relatório/CSV exportável.
+- [ ] Relatório PDF exportável.
 - [ ] Documentação operacional (manual do analista).
 - [ ] Validação de RLS com smoke tests por papel.
 - [ ] Fechar ciclo dos relatos beta: converter bugs/sugestões em issues,

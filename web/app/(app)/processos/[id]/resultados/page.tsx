@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getProcesso } from "@/lib/db/processes";
 import {
   mediasPorCriterio,
+  rankingSludgePorPasso,
+  tabelaDimensionamento,
   tempoTotalPorJornada,
 } from "@/features/analysis/queries";
 import GraficoMediaCriterios from "./grafico-criterios";
@@ -22,9 +24,11 @@ export default async function ResultadosPage({
   const processo = await getProcesso(id);
   if (!processo) notFound();
 
-  const [medias, tempos] = await Promise.all([
+  const [medias, tempos, ranking, tabelaDim] = await Promise.all([
     mediasPorCriterio(id),
     tempoTotalPorJornada(id),
+    rankingSludgePorPasso(id),
+    tabelaDimensionamento(id),
   ]);
 
   const barreiras = medias.filter((m) => m.dimensao === "barreira");
@@ -86,6 +90,12 @@ export default async function ResultadosPage({
               {barreirasCriticas.length} barreiras criticas
             </StatusPill>
             <StatusPill tone="print">{tempos.length} jornadas</StatusPill>
+            <Link
+              href={`/processos/${id}/resultados/export.csv`}
+              className="inline-flex h-7 items-center rounded-full border bg-background px-3 font-mono text-[10px] uppercase tracking-wider text-muted-foreground transition hover:text-foreground"
+            >
+              exportar CSV
+            </Link>
           </div>
         </div>
       </header>
@@ -119,6 +129,52 @@ export default async function ResultadosPage({
       </Secao>
 
       <Secao
+        titulo="Ranking de sludge por etapa"
+        descricao="Composição inicial entre média de barreiras e média de impactos por passo. Só usa respostas existentes; N/A é excluído."
+      >
+        {ranking.length === 0 ? (
+          <p className="text-sm italic text-muted-foreground">
+            Sem dados suficientes para ranquear etapas.
+          </p>
+        ) : (
+          <div className="overflow-x-auto rounded-md border">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2">Etapa</th>
+                  <th className="px-3 py-2">Jornada</th>
+                  <th className="px-3 py-2">Barreira</th>
+                  <th className="px-3 py-2">Impacto</th>
+                  <th className="px-3 py-2">Score</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {ranking.slice(0, 12).map((item) => (
+                  <tr key={item.passo_id}>
+                    <td className="px-3 py-2">
+                      <div className="font-medium">
+                        {item.passo_ordem ? `${item.passo_ordem}. ` : ""}
+                        {item.passo_descricao ?? "Passo sem descrição"}
+                      </div>
+                      <div className="font-mono text-[11px] text-muted-foreground">
+                        {item.qtd_respostas} resposta{item.qtd_respostas === 1 ? "" : "s"}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground">{item.jornada_label}</td>
+                    <td className="px-3 py-2">{item.media_barreira?.toFixed(2) ?? "sem dado"}</td>
+                    <td className="px-3 py-2">{item.media_impacto?.toFixed(2) ?? "sem dado"}</td>
+                    <td className="px-3 py-2 font-display text-2xl text-destructive">
+                      {item.sludge_score?.toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Secao>
+
+      <Secao
         titulo="Barreiras críticas"
         descricao="Critérios com média maior ou igual a 4,0, calculados apenas quando há resposta."
       >
@@ -146,6 +202,51 @@ export default async function ResultadosPage({
               </li>
             ))}
           </ul>
+        )}
+      </Secao>
+
+      <Secao
+        titulo="Tabela dinâmica de dimensionamento"
+        descricao="Base tabular das respostas por jornada, passo, critério e nota. Use o CSV para análise externa completa."
+      >
+        {tabelaDim.length === 0 ? (
+          <p className="text-sm italic text-muted-foreground">Sem respostas para tabular.</p>
+        ) : (
+          <div className="overflow-x-auto rounded-md border">
+            <table className="w-full min-w-[980px] text-sm">
+              <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2">Jornada</th>
+                  <th className="px-3 py-2">Passo</th>
+                  <th className="px-3 py-2">Categoria · Tipo</th>
+                  <th className="px-3 py-2">Critério</th>
+                  <th className="px-3 py-2">Nota</th>
+                  <th className="px-3 py-2">Obs.</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {tabelaDim.slice(0, 80).map((linha) => (
+                  <tr key={linha.resposta_id}>
+                    <td className="px-3 py-2">{linha.jornada_label}</td>
+                    <td className="px-3 py-2">
+                      {linha.passo_ordem ? `${linha.passo_ordem}. ` : ""}
+                      {linha.passo_descricao ?? "Jornada inteira"}
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {[linha.categoria, linha.tipo_comportamento].filter(Boolean).join(" · ") || "—"}
+                    </td>
+                    <td className="px-3 py-2">{linha.criterio ?? linha.questionario}</td>
+                    <td className="px-3 py-2 font-mono">
+                      {linha.nao_se_aplica ? "N/A" : (linha.nota ?? "sem dado")}
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {linha.observacao ?? "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </Secao>
     </div>

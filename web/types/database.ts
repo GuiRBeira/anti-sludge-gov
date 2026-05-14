@@ -188,6 +188,15 @@ export interface ProtocoloObservacao {
   updated_at: Timestamp;
 }
 
+export interface EntrevistaPosObservacao {
+  id: UUID;
+  protocolo_id: UUID;
+  observador_id: UUID | null;
+  respostas: Record<string, unknown>;
+  data: Timestamp | null;
+  created_at: Timestamp;
+}
+
 export interface Jornada {
   id: UUID;
   processo_id: UUID;

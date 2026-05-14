@@ -2,25 +2,39 @@
 
 Gráficos finais e exportação de relatório.
 
+## Estado atual
+
+Parcial. Os gráficos principais, a tabela dinâmica, o ranking e a exportação
+CSV já existem, mas ficam em rotas/componentes de `app/processos/[id]` e
+consomem queries de `features/analysis`. Esta pasta ainda não tem código
+próprio.
+
 ## Cobre da metodologia
-- `6 Resultados Graficos` — gráficos finais.
-- `#TabDinDim` — tabela dinâmica de dimensionamento.
-- Exportação do relatório metodológico (PDF/CSV).
 
-## Gráficos (lista mínima — ver `docs/03_MAPA_PLANILHA_SISTEMA.md`)
-- Média de barreiras por critério/categoria/comportamento.
-- Média de impactos por subdimensão.
-- Comparação barreiras × impactos.
-- Tempo absoluto / escalonado / diferença.
+- `6 Resultados Graficos` — parcialmente.
+- `#TabDinDim` — implementada na página de resultados e no CSV.
+- Exportação do relatório metodológico — CSV implementado; PDF pendente.
+
+## Gráficos implementados
+
+- Média de barreiras por critério.
+- Média de impactos por critério.
+- Necessidade por jornada.
+- Tempo total por jornada.
+- Lista de barreiras críticas (`media >= 4`).
 - Ranking de sludge por etapa.
+- Tabela dinâmica de dimensionamento.
 
-## Implementação
-- Recharts para todos os gráficos.
-- Cada gráfico recebe os dados já agregados via Server Component
-  (não fazer agregação no cliente).
-- Sempre marcar visualmente "sem dado" quando faltam respostas.
+## Implementação atual
 
-## Exportação (futuro)
+- Componentes:
+  - `web/app/(app)/processos/[id]/resultados/grafico-criterios.tsx`
+  - `web/app/(app)/processos/[id]/resultados/grafico-tempos.tsx`
+- Dados:
+  - `features/analysis/queries.ts`
+
+## Pendências
+
 - PDF com layout do relatório metodológico.
-- CSV com respostas brutas para reanálise externa.
-- Server Action `exportarRelatorio(processo_id, formato)`.
+- Exportação em outros formatos além de CSV.
+- Mover componentes de relatório para esta feature se a área crescer.

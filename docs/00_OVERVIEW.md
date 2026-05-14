@@ -15,10 +15,11 @@ O MVP v1 cobre o fluxo essencial de operação:
 - papéis e escopos (`admin`, `gestor`, `analista`, `visitante`);
 - tela admin de usuários, órgãos e permissões por processo;
 - dashboard inicial de processos;
-- processo, contexto, jornada planejada, jornadas individuais e jornada padrão;
-- questionários e resultados sem heurística silenciosa;
+- processo, contexto, participantes, protocolos e entrevistas;
+- jornada planejada, jornadas individuais e jornada padrão consolidável;
+- questionários, tabela dinâmica, ranking e exportação CSV;
 - interface visual FCINCO com modo claro/escuro, animações e onboarding por
-  papel conectado ao fluxo metodológico.
+  papel conectado ao fluxo metodológico;
 - canal beta para testers reportarem bugs, inconsistências, sugestões e falta
   de recurso, com triagem privada do admin do piloto.
 

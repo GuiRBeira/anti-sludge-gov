@@ -1,37 +1,41 @@
 # features/
 
-Cada subpasta é um **módulo de domínio**. A regra:
+Cada subpasta é um **módulo de domínio**. A pasta guarda Server Actions,
+queries e regras diretamente ligadas à metodologia F5 ou à operação do MVP.
+Componentes UI genéricos ficam em `../components/ui/`; componentes visuais
+reutilizáveis do método ficam em `../components/fcinco/`.
 
-- Tudo relacionado a um conceito da metodologia F5 vive aqui dentro:
-  server actions, queries, validators Zod, componentes específicos.
-- Componentes UI **genéricos** (botão, card, input, modal padrão) ficam em
-  `../components/ui/`. Componentes específicos de uma feature ficam em
-  `features/<modulo>/components/`.
-- Não importar de outra feature livremente. Se duas features precisam do
-  mesmo helper, ele sobe para `lib/`.
+## Módulos no MVP v1
 
-## Módulos
-
-| Pasta | Cobertura | Status |
+| Pasta | Cobertura | Estado atual |
 |---|---|---|
-| `auth/` | Sessão, perfil, papel global | esqueleto |
-| `orgs/` | Órgãos, membros, processo_permissao | esqueleto |
-| `catalog/` | Categorias, tipos, critérios, escalas, glossário | esqueleto |
-| `processes/` | Processo + contexto | esqueleto |
-| `journeys/` | Jornadas (planejada, individual, padrão) e passos | esqueleto |
-| `questionnaires/` | Templates, perguntas, respostas | esqueleto |
-| `observations/` | Participantes, protocolos, entrevistas | esqueleto |
-| `analysis/` | Avaliações, cálculo, resultados | esqueleto |
-| `reporting/` | Gráficos, exportação | esqueleto |
+| `auth/` | Sessão, perfil e papel global | implementado via `lib/auth` + telas `app/auth` |
+| `orgs/` | Órgãos, membros, papéis e permissões de visitante | implementado |
+| `catalog/` | Categorias, tipos, critérios e glossário F5 | implementado em `/catalogo` |
+| `processes/` | Processo, contexto e metadados | implementado |
+| `journeys/` | Jornadas planejada, individual, padrão e passos | implementado, incluindo consolidação automática da padrão |
+| `questionnaires/` | Templates, perguntas, respostas 1-5, N/A e conclusão | implementado |
+| `observations/` | Participantes, protocolos e entrevista pós-observação | implementado |
+| `analysis/` | Médias, tabela dinâmica, ranking de sludge e tempos | parcial; materialização em `resultado_analise` pendente |
+| `reporting/` | Gráficos, relatório e exportação | parcial; CSV implementado, PDF pendente |
+| `feedback/` | Canal beta de bugs/sugestões dos testers | implementado |
 
-## Estrutura interna sugerida
+## Convenções
+
+- Server Actions ficam em `actions.ts`.
+- Queries server-side ficam em `queries.ts`.
+- Validação Zod fica em `web/lib/validators/` quando é compartilhada por tela
+  e ação.
+- Regras de permissão ficam em `web/lib/auth/` e no RLS do Supabase.
+- Se duas features precisam do mesmo helper, ele sobe para `web/lib/`.
+
+## Estrutura sugerida
 
 ```
 features/<modulo>/
-├── README.md            # O que cobre da metodologia
-├── actions.ts           # Server Actions (mutações)
-├── queries.ts           # Funções de leitura
-├── schema.ts            # Schemas Zod
-├── components/          # Componentes específicos
-└── types.ts             # Types derivados
+├── README.md
+├── actions.ts
+├── queries.ts
+├── components/
+└── types.ts
 ```

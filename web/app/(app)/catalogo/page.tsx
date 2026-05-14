@@ -10,25 +10,27 @@ import {
 import { SketchUnderline } from "@/components/fcinco/sketch-underline";
 import { StatusPill } from "@/components/fcinco/status-pill";
 import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
-import type { Categoria, CriterioTemplate, TipoComportamento } from "@/types/database";
+import type { Categoria, CriterioTemplate, Glossario, TipoComportamento } from "@/types/database";
 
 type TipoComCategoria = TipoComportamento & { categoria: Categoria };
 
 export default async function CatalogoPage() {
   const supabase = await createClient();
 
-  const [{ data: cats }, { data: tipos }, { data: crits }] = await Promise.all([
+  const [{ data: cats }, { data: tipos }, { data: crits }, { data: termos }] = await Promise.all([
     supabase.from("categoria").select("*").order("ordem"),
     supabase
       .from("tipo_comportamento")
       .select("*, categoria:categoria_id (*)")
       .order("ordem"),
     supabase.from("criterio_template").select("*").order("dimensao").order("ordem"),
+    supabase.from("glossario").select("*").order("termo"),
   ]);
 
   const categorias = (cats ?? []) as Categoria[];
   const tiposComCat = (tipos ?? []) as unknown as TipoComCategoria[];
   const criterios = (crits ?? []) as CriterioTemplate[];
+  const glossario = (termos ?? []) as Glossario[];
 
   const barreiras = criterios.filter((c) => c.dimensao === "barreira");
   const impactos = criterios.filter((c) => c.dimensao === "impacto");
@@ -60,6 +62,7 @@ export default async function CatalogoPage() {
             <StatusPill tone="print">{tiposComCat.length} tipos</StatusPill>
             <StatusPill tone="barreira">{barreiras.length} barreiras</StatusPill>
             <StatusPill tone="concluido">{impactos.length} impactos</StatusPill>
+            <StatusPill tone="pendente">{glossario.length} termos</StatusPill>
           </div>
         </div>
       </header>
@@ -155,6 +158,34 @@ export default async function CatalogoPage() {
                   <TableCell className="capitalize">{c.subdimensao_impacto?.replace("_", " ")}</TableCell>
                   <TableCell className="font-medium">{c.nome}</TableCell>
                   <TableCell className="text-sm">{c.pergunta_padrao}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="font-medium mb-3">Glossário ({glossario.length})</h2>
+        <div className="border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Termo</TableHead>
+                <TableHead>Definição</TableHead>
+                <TableHead>Aba origem</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {glossario.map((termo) => (
+                <TableRow key={termo.id}>
+                  <TableCell className="font-medium">{termo.termo}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {termo.definicao}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {termo.aba_origem ?? "—"}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

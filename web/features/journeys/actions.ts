@@ -199,6 +199,233 @@ export async function clonarPassosDaPlanejada(
   revalidatePath(`/processos/${destino.processo_id}/jornada-padrao`);
 }
 
+type PassoAgregavel = {
+  id: string;
+  ordem: number;
+  passo_planejado_id: string | null;
+  tipo_comportamento_id: string | null;
+  descricao: string | null;
+  obrigatorio: boolean;
+  tempo_segundos: number | null;
+  eh_desvio: boolean;
+  eh_repeticao: boolean;
+  notas: string | null;
+};
+
+function mostFrequent<T extends string>(values: Array<T | null>): T | null {
+  const counts = new Map<T, number>();
+  for (const value of values) {
+    if (!value) continue;
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+  let winner: T | null = null;
+  let max = 0;
+  for (const [value, count] of counts) {
+    if (count > max) {
+      winner = value;
+      max = count;
+    }
+  }
+  return winner;
+}
+
+function averageInt(values: Array<number | null>): number | null {
+  const nums = values.filter((value): value is number => value != null);
+  if (nums.length === 0) return null;
+  return Math.round(nums.reduce((sum, value) => sum + value, 0) / nums.length);
+}
+
+function normalizeDescricao(value: string | null): string {
+  return (value ?? "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * Consolida uma jornada padrão a partir das jornadas individuais.
+ *
+ * A regra é conservadora:
+ * - passos vinculados a um passo planejado viram a sequência base;
+ * - tempo e tipo são agregados por média/moda;
+ * - passos extras sem vínculo são agrupados por descrição normalizada e
+ *   adicionados como opcionais/desvios;
+ * - se já houver respostas de questionário na jornada padrão, aborta para não
+ *   apagar evidência calculada/avaliada.
+ */
+export async function consolidarJornadaPadrao(processoId: string): Promise<void> {
+  await getSessionOrRedirect();
+  await assertCanEditProcesso(processoId);
+  const supabase = await createClient();
+
+  const padraoId = await ensureJornadaPadrao(processoId);
+
+  const { data: respostasPadrao } = await supabase
+    .from("questionario_resposta")
+    .select("id")
+    .eq("jornada_id", padraoId);
+  const respostaIds = (respostasPadrao ?? []).map((r) => r.id as string);
+  if (respostaIds.length > 0) {
+    const { count } = await supabase
+      .from("resposta_item")
+      .select("*", { count: "exact", head: true })
+      .in("questionario_resposta_id", respostaIds);
+    if ((count ?? 0) > 0) {
+      throw new Error(
+        "A jornada padrão já tem respostas. Remova/reabra a análise antes de consolidar novamente.",
+      );
+    }
+  }
+
+  const { data: planejada } = await supabase
+    .from("jornada")
+    .select("id")
+    .eq("processo_id", processoId)
+    .eq("tipo_jornada", "planejada")
+    .maybeSingle();
+
+  const { data: individuais } = await supabase
+    .from("jornada")
+    .select("id")
+    .eq("processo_id", processoId)
+    .eq("tipo_jornada", "individual");
+  const individualIds = (individuais ?? []).map((j) => j.id as string);
+  if (individualIds.length === 0) {
+    throw new Error("Cadastre jornadas individuais antes de consolidar a padrão.");
+  }
+
+  const [{ data: planejadosRaw }, { data: individuaisRaw }] = await Promise.all([
+    planejada
+      ? supabase
+          .from("passo_jornada")
+          .select("id, ordem, tipo_comportamento_id, descricao, obrigatorio, tempo_segundos, notas")
+          .eq("jornada_id", planejada.id)
+          .order("ordem")
+      : Promise.resolve({ data: [] }),
+    supabase
+      .from("passo_jornada")
+      .select("id, ordem, passo_planejado_id, tipo_comportamento_id, descricao, obrigatorio, tempo_segundos, eh_desvio, eh_repeticao, notas")
+      .in("jornada_id", individualIds)
+      .order("ordem"),
+  ]);
+
+  const planejados = (planejadosRaw ?? []) as Array<
+    Pick<
+      PassoAgregavel,
+      "id" | "ordem" | "tipo_comportamento_id" | "descricao" | "obrigatorio" | "tempo_segundos" | "notas"
+    >
+  >;
+  const observados = (individuaisRaw ?? []) as PassoAgregavel[];
+  if (observados.length === 0 && planejados.length === 0) {
+    throw new Error("Não há passos planejados ou observados para consolidar.");
+  }
+
+  const usados = new Set<string>();
+  const rows: Array<{
+    jornada_id: string;
+    ordem: number;
+    passo_planejado_id: string | null;
+    tipo_comportamento_id: string | null;
+    descricao: string | null;
+    obrigatorio: boolean;
+    tempo_segundos: number | null;
+    eh_desvio: boolean;
+    eh_repeticao: boolean;
+    notas: string | null;
+  }> = [];
+
+  for (const planejado of planejados) {
+    const relacionados = observados.filter(
+      (p) => p.passo_planejado_id === planejado.id,
+    );
+    for (const passo of relacionados) usados.add(passo.id);
+    rows.push({
+      jornada_id: padraoId,
+      ordem: rows.length + 1,
+      passo_planejado_id: planejado.id,
+      tipo_comportamento_id:
+        mostFrequent(relacionados.map((p) => p.tipo_comportamento_id)) ??
+        planejado.tipo_comportamento_id,
+      descricao: planejado.descricao,
+      obrigatorio: planejado.obrigatorio,
+      tempo_segundos:
+        averageInt(relacionados.map((p) => p.tempo_segundos)) ??
+        planejado.tempo_segundos,
+      eh_desvio: false,
+      eh_repeticao: relacionados.some((p) => p.eh_repeticao),
+      notas:
+        relacionados.length > 0
+          ? `Consolidado a partir de ${relacionados.length} observação(ões).`
+          : planejado.notas,
+    });
+  }
+
+  if (planejados.length === 0) {
+    const porOrdem = new Map<number, PassoAgregavel[]>();
+    for (const passo of observados) {
+      const lista = porOrdem.get(passo.ordem) ?? [];
+      lista.push(passo);
+      porOrdem.set(passo.ordem, lista);
+    }
+    for (const ordem of Array.from(porOrdem.keys()).sort((a, b) => a - b)) {
+      const grupo = porOrdem.get(ordem)!;
+      for (const passo of grupo) usados.add(passo.id);
+      rows.push({
+        jornada_id: padraoId,
+        ordem: rows.length + 1,
+        passo_planejado_id: null,
+        tipo_comportamento_id: mostFrequent(grupo.map((p) => p.tipo_comportamento_id)),
+        descricao: mostFrequent(grupo.map((p) => p.descricao)) ?? `Passo ${ordem}`,
+        obrigatorio: grupo.filter((p) => p.obrigatorio).length >= grupo.length / 2,
+        tempo_segundos: averageInt(grupo.map((p) => p.tempo_segundos)),
+        eh_desvio: grupo.some((p) => p.eh_desvio),
+        eh_repeticao: grupo.some((p) => p.eh_repeticao),
+        notas: `Consolidado por ordem a partir de ${grupo.length} observação(ões).`,
+      });
+    }
+  }
+
+  const extras = observados.filter((p) => !usados.has(p.id));
+  const extrasPorDescricao = new Map<string, PassoAgregavel[]>();
+  for (const passo of extras) {
+    const key = normalizeDescricao(passo.descricao) || `ordem:${passo.ordem}`;
+    const lista = extrasPorDescricao.get(key) ?? [];
+    lista.push(passo);
+    extrasPorDescricao.set(key, lista);
+  }
+
+  for (const grupo of extrasPorDescricao.values()) {
+    rows.push({
+      jornada_id: padraoId,
+      ordem: rows.length + 1,
+      passo_planejado_id: null,
+      tipo_comportamento_id: mostFrequent(grupo.map((p) => p.tipo_comportamento_id)),
+      descricao: mostFrequent(grupo.map((p) => p.descricao)) ?? "Passo extra observado",
+      obrigatorio: false,
+      tempo_segundos: averageInt(grupo.map((p) => p.tempo_segundos)),
+      eh_desvio: true,
+      eh_repeticao: grupo.some((p) => p.eh_repeticao),
+      notas: `Passo extra observado em ${grupo.length} ocorrência(s).`,
+    });
+  }
+
+  const { error: delErr } = await supabase
+    .from("passo_jornada")
+    .delete()
+    .eq("jornada_id", padraoId);
+  if (delErr) throw delErr;
+
+  if (rows.length > 0) {
+    const { error: insErr } = await supabase.from("passo_jornada").insert(rows);
+    if (insErr) throw insErr;
+  }
+
+  revalidatePath(`/processos/${processoId}`);
+  revalidatePath(`/processos/${processoId}/jornada-padrao`);
+}
+
 export async function adicionarPasso(input: PassoCreateInput): Promise<void> {
   await getSessionOrRedirect();
   const parsed = passoCreateSchema.parse(input);

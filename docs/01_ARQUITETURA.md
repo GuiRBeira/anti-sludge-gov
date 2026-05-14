@@ -60,14 +60,13 @@ HTML renderizado e enviado ao browser
 ```
 web/
 ├── app/                      # Rotas (App Router)
-│   ├── (auth)/               # Login, signup (públicas) — futuro
-│   ├── (app)/                # Rotas autenticadas — futuro
+│   ├── auth/                 # Login, signup, recuperação e confirmação Supabase
+│   ├── (app)/                # Rotas autenticadas do produto
 │   │   ├── processos/
-│   │   ├── orgaos/
 │   │   ├── catalogo/
 │   │   └── admin/
-│   ├── auth/                 # Endpoints de confirmação Supabase
-│   └── protected/            # Página de exemplo do template (será removida)
+│   ├── page.tsx              # Redirect/entrada inicial
+│   └── globals.css           # Tokens gov.br + FCINCO
 ├── components/
 │   ├── ui/                   # shadcn (button, card, …)
 │   └── …                     # Compartilhados (auth-button, theme-switcher)
@@ -79,8 +78,9 @@ web/
 │   ├── journeys/             # Planejada, individual, padrão, passos
 │   ├── questionnaires/       # Templates, perguntas, respostas
 │   ├── observations/         # Protocolos, participantes, observações
-│   ├── analysis/             # Avaliações, motor de cálculo, agregações
-│   └── reporting/            # Relatórios e exportações
+│   ├── analysis/             # Avaliações, rankings e agregações
+│   ├── reporting/            # Relatórios e exportações
+│   └── feedback/             # Canal beta de bugs/sugestões
 ├── lib/
 │   ├── supabase/             # client.ts, server.ts, proxy.ts (template)
 │   ├── auth/                 # Helpers de papel/escopo

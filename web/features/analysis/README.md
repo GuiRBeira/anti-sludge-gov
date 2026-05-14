@@ -1,31 +1,49 @@
 # features/analysis
 
-Avaliações materializadas (barreira, impacto, necessidade), cálculo do
-índice de sludge e resultados consolidados.
+Consultas analíticas para barreiras, impactos, necessidade e tempos.
+
+## Estado atual
+
+Parcial. A tela de resultados já usa queries reais sobre respostas e passos,
+incluindo tabela dinâmica e ranking operacional de sludge. O cálculo
+materializado em `resultado_analise` ainda não foi implementado.
 
 ## Cobre da metodologia
-- `5 Validação` — verificação de completude antes de calcular.
-- `6 Resultados Analise` — cálculo dos resultados.
-- `JP. Resultados` — resultados específicos da jornada padrão.
 
-## Tabelas principais
-- `avaliacao_barreira` (view ou mat-view sobre `resposta_item`)
-- `avaliacao_impacto`
-- `avaliacao_necessidade`
-- `resultado_analise` (resultados materializados)
+- `6 Resultados Analise` — parcialmente, via médias, tempos, tabela dinâmica e ranking.
+- `JP. Resultados` — parcialmente, via resultados por processo.
+- `5 Validação` — ainda depende das flags de jornada/questionário e de
+  sinalização visual; não há pipeline formal de validação.
 
-## Regras de cálculo (a confirmar com a planilha na Fase 3)
-- Médias por critério, categoria, comportamento, jornada.
-- Tempo absoluto, tempo escalonado, diferença de tempo.
-- Índice de sludge por etapa = composição de barreira + impacto.
-- Necessidade entra como peso de jornada inteira, não por passo.
+## Tabelas e views relacionadas
 
-## Anti-heurística
-**Não calcular nada se faltar resposta.** Resultado vazio é melhor que
-resultado estimado em silêncio. Se um passo não tem resposta de um
-critério aplicável, mostrar "sem dado" no gráfico — não preencher com
-média ou zero.
+- `resposta_item`
+- `questionario_resposta`
+- `criterio_template`
+- `jornada`
+- `passo_jornada`
+- `resultado_analise` (schema pronto, uso pendente)
+- `v_avaliacao_barreira`
+- `v_avaliacao_impacto`
+- `v_avaliacao_necessidade`
 
-## Server Actions (futuro)
-- `recalcularResultado(processo_id)` — explícita; idempotente.
-- `obterResultados(processo_id, filtros)` — leitura pura.
+## Queries implementadas
+
+- `mediasPorCriterio(processo_id, options?)`
+- `temposPorPasso(processo_id)`
+- `tempoTotalPorJornada(processo_id)`
+- `tabelaDimensionamento(processo_id)`
+- `rankingSludgePorPasso(processo_id)`
+
+## Regras atuais
+
+- Respostas com `nao_se_aplica = true` são ignoradas no cálculo de média.
+- Critérios sem resposta retornam `media = null` para a UI mostrar “sem dado”.
+- Nada é estimado silenciosamente.
+
+## Pendências
+
+- `recalcularResultado(processo_id)` idempotente.
+- Persistência em `resultado_analise`.
+- Persistir o ranking/índice em `resultado_analise`.
+- Incorporar Necessidade como peso formal depois de validação metodológica.

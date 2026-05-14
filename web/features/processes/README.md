@@ -1,21 +1,40 @@
 # features/processes
 
-Processo (serviço público sob análise) e seu contexto.
+Processo (serviço público sob análise), contexto e metadados.
+
+## Estado atual
+
+Implementado.
 
 ## Cobre da metodologia
+
 - `1 Compreensão do Contexto`: nome, objetivo, abrangência, público-alvo,
-  perfil foco, indicadores, hipóteses.
+  perfil foco, indicadores e hipóteses.
+- Dashboard/lista de processos filtrada por RLS e escopo do usuário.
+- Visão geral de completude metodológica do processo.
 
 ## Tabelas principais
+
 - `processo`
+- `orgao` (via `orgao_id`)
 
-## Server Actions (futuro)
-- `criarProcesso(input)` — gestor/admin.
-- `salvarContexto(processo_id, input)` — analista/gestor/admin do órgão.
-- `arquivarProcesso(processo_id)` — gestor/admin.
+## Server Actions
 
-## Telas (futuro)
-- `/processos` — lista filtrada por escopo do usuário.
-- `/processos/novo` — formulário de criação.
-- `/processos/[id]` — visão geral + status de completude metodológica.
-- `/processos/[id]/contexto` — formulário de contexto.
+- `criarProcesso(input)` — admin ou gestor no escopo permitido pelo RLS.
+- `salvarContexto(processo_id, input)` — admin/gestor/analista com edição.
+- `editarProcessoMeta(processo_id, input)` — admin ou gestor do órgão atual e
+  do órgão de destino.
+- `arquivarProcesso(processo_id)` — admin ou gestor do órgão.
+
+## Telas
+
+- `/processos`
+- `/processos/novo`
+- `/processos/[id]`
+- `/processos/[id]/editar`
+- `/processos/[id]/contexto`
+
+## Observações de permissão
+
+Visitante só lê processos atribuídos. Analista preenche contexto e demais
+informações do processo, mas não cria/apaga processos nem edita metadados.

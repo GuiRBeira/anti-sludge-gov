@@ -14,11 +14,12 @@ Esta versão entrega o fluxo operacional base:
 - RBAC com `admin`, `gestor`, `analista` e `visitante`;
 - administração de órgãos e usuários;
 - atribuição de visitantes a processos específicos;
-- cadastro de processos, contexto, participantes e jornadas;
-- jornada planejada, individual e padrão com visual FCINCO;
+- cadastro de processos, contexto, participantes, protocolos e entrevistas;
+- jornada planejada, individual e padrão com visual FCINCO e consolidação;
 - questionários por jornada e resultados rastreáveis;
+- tabela dinâmica, ranking de sludge e exportação CSV;
 - dashboard inicial animado, modo claro/escuro e product tour por papel
-  (`admin`, `gestor`, `analista`, `visitante`).
+  (`admin`, `gestor`, `analista`, `visitante`);
 - canal beta flutuante para testers reportarem bugs/sugestões, com painel
   privado de triagem do admin `pedrolucas@alunos.utfpr.edu.br`.
 

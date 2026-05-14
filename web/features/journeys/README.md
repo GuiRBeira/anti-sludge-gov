@@ -1,31 +1,58 @@
 # features/journeys
 
-Jornadas (planejada, individual, padrão) e os passos de cada uma.
+Jornadas planejada, individual, padrão e passos.
+
+## Estado atual
+
+Implementado para cadastro/edição manual e consolidação automática conservadora
+da jornada padrão a partir das individuais.
 
 ## Cobre da metodologia
+
 - `2.1 Mapeamento JorPlanejada` — jornada planejada estruturada.
 - `JU.Individual 01..05` — jornadas individuais por participante.
 - `2.2 Mapeamento JorPadrão` + `# Tabela JorPadrão` — jornada padrão.
-- `JP. Cpto.Ord.Dur.Clas` — comportamento, ordem, duração, classificação por passo.
+- `JP. Cpto.Ord.Dur.Clas` — comportamento, ordem, duração e classificação por
+  passo.
+- Evidências visuais por passo via `screenshot_path`.
 
 ## Tabelas principais
-- `jornada` (uma tabela com `tipo_jornada` discriminando)
-- `passo_jornada` (substitui o antigo `tempo_etapa`; permite ordem real,
-  desvios, repetições, passos extras)
 
-## Por que uma tabela só de jornada
-A planilha trata as três como conceitos distintos, mas o esquema
-relacional fica mais limpo com discriminador. Reduz duplicação de joins
-e mantém histórico unificado.
+- `jornada` com `tipo_jornada = planejada | individual | padrao`.
+- `passo_jornada`.
 
-## Server Actions (futuro)
-- `salvarJornadaPlanejada(processo_id, passos[])`
-- `salvarJornadaIndividual(processo_id, participante_id, passos[])`
-- `consolidarJornadaPadrao(processo_id)` — algoritmo de convergência das
-  individuais. Definir regra exata na Fase 3.
-- `validarJornada(jornada_id)` — marca como pronta para análise.
+## Server Actions
 
-## Telas (futuro)
+- `ensureJornadaPlanejada(processo_id)`
+- `ensureJornadaPadrao(processo_id)`
+- `iniciarJornadaIndividual(processo_id, participante_id)`
+- `clonarPassosDaPlanejada(jornada_destino_id)`
+- `adicionarPasso(input)`
+- `atualizarPasso(passo_id, input)`
+- `setPassoScreenshot(passo_id, screenshot_path)`
+- `vincularPassoPlanejado(passo_id, passo_planejado_id)`
+- `removerPasso(passo_id)`
+- `moverPasso(passo_id, delta)`
+- `toggleValidacaoJornada(jornada_id)`
+- `consolidarJornadaPadrao(processo_id)`
+
+## Queries
+
+- `getJornadaPlanejada(processo_id)`
+- `getJornadaPadrao(processo_id)`
+- `getJornadaById(jornada_id)`
+- `listJornadasIndividuais(processo_id)`
+- `listPassosJornada(jornada_id)`
+- `listTiposComportamento()`
+
+## Telas
+
 - `/processos/[id]/jornada-planejada`
-- `/processos/[id]/jornadas/[id]` (individual)
+- `/processos/[id]/jornadas-individuais`
+- `/processos/[id]/jornadas-individuais/[jornadaId]`
 - `/processos/[id]/jornada-padrao`
+
+## Pendências
+
+- Testes de reordenação, vínculo com passo planejado e consolidação automática.
+- Refinar a regra de consolidação com validação metodológica da equipe.

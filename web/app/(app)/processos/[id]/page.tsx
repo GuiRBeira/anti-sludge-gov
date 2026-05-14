@@ -66,6 +66,11 @@ export default async function ProcessoPage({
     .select("*", { count: "exact", head: true })
     .eq("processo_id", id);
 
+  const { count: qtdProtocolos } = await supabase
+    .from("protocolo_observacao")
+    .select("*", { count: "exact", head: true })
+    .eq("processo_id", id);
+
   const { data: jornadasIndividuais } = await supabase
     .from("jornada")
     .select("id, validada")
@@ -156,14 +161,19 @@ export default async function ProcessoPage({
     },
     {
       ordem: 3,
-      titulo: "Participantes",
-      descricao: "Pessoas observadas anonimizadas.",
-      href: `/processos/${id}/participantes`,
-      status: (qtdParticipantes ?? 0) > 0 ? "em_progresso" : "pendente",
+      titulo: "Participantes e observação",
+      descricao: "Pessoas anonimizadas, protocolo da sessão e entrevista pós-observação.",
+      href: `/processos/${id}/observacoes`,
+      status:
+        (qtdProtocolos ?? 0) > 0
+          ? "em_progresso"
+          : (qtdParticipantes ?? 0) > 0
+            ? "em_progresso"
+            : "pendente",
       detalhe:
         (qtdParticipantes ?? 0) === 0
           ? "Nenhum participante"
-          : `${qtdParticipantes} participante${qtdParticipantes === 1 ? "" : "s"}`,
+          : `${qtdParticipantes} participante${qtdParticipantes === 1 ? "" : "s"} · ${qtdProtocolos ?? 0} protocolo${(qtdProtocolos ?? 0) === 1 ? "" : "s"}`,
     },
     {
       ordem: 4,
@@ -326,6 +336,9 @@ export default async function ProcessoPage({
         <Link href={`/processos/${id}/participantes`}>
           <Button variant="outline" size="sm">Participantes</Button>
         </Link>
+        <Link href={`/processos/${id}/observacoes`}>
+          <Button variant="outline" size="sm">Observações</Button>
+        </Link>
         <Link href={`/processos/${id}/jornadas-individuais`}>
           <Button variant="outline" size="sm">Jornadas individuais</Button>
         </Link>
@@ -334,6 +347,9 @@ export default async function ProcessoPage({
         </Link>
         <Link href={`/processos/${id}/resultados`}>
           <Button variant="outline" size="sm">Resultados</Button>
+        </Link>
+        <Link href={`/processos/${id}/relatorio`}>
+          <Button variant="outline" size="sm">Relatório</Button>
         </Link>
       </section>
     </div>

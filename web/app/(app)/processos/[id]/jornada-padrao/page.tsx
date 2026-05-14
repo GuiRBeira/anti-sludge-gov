@@ -11,6 +11,7 @@ import {
 import {
   ensureJornadaPadrao,
   clonarPassosDaPlanejada,
+  consolidarJornadaPadrao,
 } from "@/features/journeys/actions";
 import { listQuestionariosAplicaveis } from "@/features/questionnaires/queries";
 import { Button } from "@/components/ui/button";
@@ -124,6 +125,14 @@ async function PadraoEditor({
           .order("ordem")
       : Promise.resolve({ data: [] as { id: string; ordem: number; descricao: string | null }[] }),
   ]);
+  const { count: passosIndividuais } = await supabase
+    .from("passo_jornada")
+    .select("id, jornada:jornada_id!inner (processo_id, tipo_jornada)", {
+      count: "exact",
+      head: true,
+    })
+    .eq("jornada.processo_id", processoId)
+    .eq("jornada.tipo_jornada", "individual");
 
   const passosPlanejados =
     (planejadosRaw as { data: { id: string; ordem: number; descricao: string | null }[] }).data ?? [];
@@ -144,6 +153,28 @@ async function PadraoEditor({
           >
             <Button type="submit" variant="outline" size="sm">
               Copiar da planejada
+            </Button>
+          </form>
+        </div>
+      )}
+
+      {!readOnly && (passosIndividuais ?? 0) > 0 && (
+        <div className="flex flex-col gap-3 rounded-lg border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-medium">Consolidação automática</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Gera a jornada padrão combinando passos vinculados à planejada,
+              tempos médios, tipos mais frequentes e passos extras observados.
+            </p>
+          </div>
+          <form
+            action={async () => {
+              "use server";
+              await consolidarJornadaPadrao(processoId);
+            }}
+          >
+            <Button type="submit" variant="outline">
+              Consolidar individuais
             </Button>
           </form>
         </div>

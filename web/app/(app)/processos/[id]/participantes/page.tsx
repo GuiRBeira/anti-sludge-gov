@@ -66,6 +66,12 @@ export default async function ParticipantesPage({
         </div>
       </header>
 
+      <div className="flex justify-end">
+        <Link href={`/processos/${id}/observacoes`}>
+          <StatusPill tone="print">planejar observações</StatusPill>
+        </Link>
+      </div>
+
       <ParticipantesClient
         processoId={id}
         participantes={participantes}
