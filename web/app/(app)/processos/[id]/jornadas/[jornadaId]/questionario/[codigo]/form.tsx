@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Alert } from "@/components/fcinco/alert";
 import { X } from "lucide-react";
 import {
@@ -12,7 +13,10 @@ import {
   concluirQuestionario,
   reabrirQuestionario,
 } from "@/features/questionnaires/actions";
-import { associarCriterioComPerguntaCustomizada } from "@/features/catalog/actions";
+import {
+  associarCriterioComPerguntaCustomizada,
+  criarPerguntaeCriterioNovo,
+} from "@/features/catalog/actions";
 import type { PerguntaComCriterio } from "@/features/questionnaires/queries";
 import type { PassoComTipo } from "@/features/journeys/queries";
 import type { RespostaItem, CriterioTemplate } from "@/types/database";
@@ -120,14 +124,18 @@ export default function QuestionarioForm({
 
   // State control for custom barrier inline modal
   const [selectedPasso, setSelectedPasso] = useState<PassoComTipo | null>(null);
+  const [modalMode, setModalMode] = useState<"existente" | "novo">("existente");
   const [selectedCriterioId, setSelectedCriterioId] = useState<string>("");
+  const [newCriterioNome, setNewCriterioNome] = useState<string>("");
   const [customQuestionText, setCustomQuestionText] = useState<string>("");
   const [modalError, setModalError] = useState<string | null>(null);
   const [isModalPending, startModalTransition] = useTransition();
 
   function onAddBarrierClick(passo: PassoComTipo) {
     setSelectedPasso(passo);
+    setModalMode("existente");
     setSelectedCriterioId(criteriosBarreira[0]?.id ?? "");
+    setNewCriterioNome("");
     setCustomQuestionText(criteriosBarreira[0]?.pergunta_padrao ?? "");
     setModalError(null);
   }
@@ -143,29 +151,56 @@ export default function QuestionarioForm({
   function handleAddBarrierSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedPasso || !selectedPasso.tipo_comportamento_id || !templateId) return;
-    if (!selectedCriterioId) {
-      setModalError("Selecione um critério de barreira.");
-      return;
-    }
-    if (!customQuestionText.trim()) {
-      setModalError("Digite o texto da pergunta.");
-      return;
-    }
 
-    startModalTransition(async () => {
-      try {
-        await associarCriterioComPerguntaCustomizada({
-          tipoComportamentoId: selectedPasso.tipo_comportamento_id!,
-          criterioTemplateId: selectedCriterioId,
-          questionarioTemplateId: templateId,
-          textoPergunta: customQuestionText,
-        });
-        router.refresh();
-        setSelectedPasso(null);
-      } catch (err) {
-        setModalError(err instanceof Error ? err.message : "Erro ao adicionar barreira");
+    if (modalMode === "existente") {
+      if (!selectedCriterioId) {
+        setModalError("Selecione um critério de barreira.");
+        return;
       }
-    });
+      if (!customQuestionText.trim()) {
+        setModalError("Digite o texto da pergunta.");
+        return;
+      }
+
+      startModalTransition(async () => {
+        try {
+          await associarCriterioComPerguntaCustomizada({
+            tipoComportamentoId: selectedPasso.tipo_comportamento_id!,
+            criterioTemplateId: selectedCriterioId,
+            questionarioTemplateId: templateId,
+            textoPergunta: customQuestionText,
+          });
+          router.refresh();
+          setSelectedPasso(null);
+        } catch (err) {
+          setModalError(err instanceof Error ? err.message : "Erro ao adicionar barreira");
+        }
+      });
+    } else {
+      if (!newCriterioNome.trim()) {
+        setModalError("Digite o nome do novo critério.");
+        return;
+      }
+      if (!customQuestionText.trim()) {
+        setModalError("Digite o texto da pergunta.");
+        return;
+      }
+
+      startModalTransition(async () => {
+        try {
+          await criarPerguntaeCriterioNovo({
+            tipoComportamentoId: selectedPasso.tipo_comportamento_id!,
+            questionarioTemplateId: templateId,
+            nomeCriterio: newCriterioNome,
+            textoPergunta: customQuestionText,
+          });
+          router.refresh();
+          setSelectedPasso(null);
+        } catch (err) {
+          setModalError(err instanceof Error ? err.message : "Erro ao criar nova barreira");
+        }
+      });
+    }
   }
 
   function getItem(perguntaId: string, passoId: string | null): LocalItem {
@@ -337,35 +372,90 @@ export default function QuestionarioForm({
                 Adicionar Nova Barreira ao Passo
               </h3>
               <p className="text-sm text-muted-foreground">
-                Vincule um critério do catálogo e personalize a pergunta para o comportamento <strong>{selectedPasso.tipo_comportamento?.nome}</strong>.
+                Associe um critério existente ou crie um novo critério para o comportamento <strong>{selectedPasso.tipo_comportamento?.nome}</strong>.
               </p>
             </div>
+
+            <div className="flex border-b mb-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setModalMode("existente");
+                  setModalError(null);
+                  if (criteriosBarreira[0]) {
+                    setSelectedCriterioId(criteriosBarreira[0].id);
+                    setCustomQuestionText(criteriosBarreira[0].pergunta_padrao ?? "");
+                  }
+                }}
+                className={`flex-1 pb-2 text-sm font-medium border-b-2 transition-colors ${
+                  modalMode === "existente"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Critério Existente
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setModalMode("novo");
+                  setModalError(null);
+                  setCustomQuestionText("");
+                }}
+                className={`flex-1 pb-2 text-sm font-medium border-b-2 transition-colors ${
+                  modalMode === "novo"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Criar Novo Critério
+              </button>
+            </div>
+
             <form onSubmit={handleAddBarrierSubmit} className="space-y-4">
               {modalError && (
                 <div className="p-3 text-xs bg-destructive/10 text-destructive rounded border border-destructive/20 font-medium">
                   {modalError}
                 </div>
               )}
+
+              {modalMode === "novo" ? (
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Nome do Novo Critério</label>
+                  <Input
+                    type="text"
+                    value={newCriterioNome}
+                    onChange={(e) => setNewCriterioNome(e.target.value)}
+                    placeholder="Ex: Confirmação Desnecessária"
+                    required
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Critério de Barreira</label>
+                  <select
+                    value={selectedCriterioId}
+                    onChange={(e) => handleCriterioChange(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  >
+                    {criteriosBarreira.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="space-y-1.5">
-                <label className="text-sm font-medium">Critério de Barreira</label>
-                <select
-                  value={selectedCriterioId}
-                  onChange={(e) => handleCriterioChange(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                >
-                  {criteriosBarreira.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.nome}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium">Pergunta Personalizada</label>
+                <label className="text-sm font-medium">
+                  {modalMode === "novo" ? "Texto da Pergunta" : "Pergunta Personalizada"}
+                </label>
                 <Textarea
                   value={customQuestionText}
                   onChange={(e) => setCustomQuestionText(e.target.value)}
-                  placeholder="Digite a pergunta para o questionário..."
+                  placeholder={modalMode === "novo" ? "Como você avalia essa nova barreira... ?" : "Digite a pergunta para o questionário..."}
                   rows={4}
                   required
                 />
