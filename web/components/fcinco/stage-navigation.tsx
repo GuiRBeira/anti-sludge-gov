@@ -12,9 +12,8 @@ const STAGES = [
   { ordem: 2, label: "Jornada planejada", path: "jornada-planejada" },
   { ordem: 3, label: "Participantes e observação", path: "observacoes" },
   { ordem: 4, label: "Jornadas individuais", path: "jornadas-individuais" },
-  { ordem: 5, label: "Jornada padrão", path: "jornada-padrao" },
-  { ordem: 6, label: "Questionários", path: "jornadas-individuais" },
-  { ordem: 7, label: "Resultados e gráficos", path: "resultados" },
+  { ordem: 5, label: "Questionários", path: "jornadas-individuais" },
+  { ordem: 6, label: "Resultados e gráficos", path: "resultados" },
 ];
 
 /**

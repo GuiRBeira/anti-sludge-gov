@@ -73,7 +73,7 @@ export default async function ResultadosPage({
               ← {processo.nome}
             </Link>
             <div className="mt-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-              etapa 07 de 07
+              etapa 06 de 06
             </div>
             <div className="mt-4">
               <SketchFrame seed={5} padX={24} padY={12}>
@@ -251,7 +251,7 @@ export default async function ResultadosPage({
         )}
       </Secao>
 
-      <StageNavigation currentStage={7} processoId={id} />
+      <StageNavigation currentStage={6} processoId={id} />
     </div>
   );
 }

@@ -79,21 +79,7 @@ export default async function ProcessoPage({
   const qtdIndividuais = jornadasIndividuais?.length ?? 0;
   const qtdValidadas = jornadasIndividuais?.filter((j) => j.validada).length ?? 0;
 
-  const { data: jornadaPadrao } = await supabase
-    .from("jornada")
-    .select("id")
-    .eq("processo_id", id)
-    .eq("tipo_jornada", "padrao")
-    .maybeSingle();
 
-  let qtdPassosPadrao = 0;
-  if (jornadaPadrao) {
-    const { count } = await supabase
-      .from("passo_jornada")
-      .select("*", { count: "exact", head: true })
-      .eq("jornada_id", jornadaPadrao.id);
-    qtdPassosPadrao = count ?? 0;
-  }
 
   // Conta respostas concluídas
   const { count: qtdQuestionariosConcluidos } = await supabase
@@ -188,17 +174,6 @@ export default async function ProcessoPage({
     },
     {
       ordem: 5,
-      titulo: "Jornada padrão",
-      descricao: "Síntese normalizada das jornadas individuais.",
-      href: `/processos/${id}/jornada-padrao`,
-      status: qtdPassosPadrao > 0 ? "em_progresso" : "pendente",
-      detalhe:
-        qtdPassosPadrao === 0
-          ? "Não iniciada"
-          : `${qtdPassosPadrao} passo${qtdPassosPadrao === 1 ? "" : "s"}`,
-    },
-    {
-      ordem: 6,
       titulo: "Questionários",
       descricao: "Avaliação 1-5 por critério em cada jornada.",
       href: `/processos/${id}/jornadas-individuais`,
@@ -213,7 +188,7 @@ export default async function ProcessoPage({
           : `${qtdItens} item${qtdItens === 1 ? "" : "ns"} respondido${qtdItens === 1 ? "" : "s"} · ${qtdQuestionariosConcluidos ?? 0} concluído${(qtdQuestionariosConcluidos ?? 0) === 1 ? "" : "s"}`,
     },
     {
-      ordem: 7,
+      ordem: 6,
       titulo: "Resultados e gráficos",
       descricao: "Médias por critério, tempo, ranking de sludge.",
       href: `/processos/${id}/resultados`,
@@ -271,7 +246,7 @@ export default async function ProcessoPage({
         </div>
 
           <div className="grid grid-cols-3 gap-4 text-right">
-            <HubStat label="etapas concluídas" value={`${concluidas}/7`} />
+            <HubStat label="etapas concluídas" value={`${concluidas}/6`} />
             <HubStat label="em andamento" value={emProgresso} />
             <HubStat label="participantes" value={qtdParticipantes ?? 0} />
             {!canEdit && (
@@ -341,9 +316,6 @@ export default async function ProcessoPage({
         </Link>
         <Link href={`/processos/${id}/jornadas-individuais`}>
           <Button variant="outline" size="sm">Jornadas individuais</Button>
-        </Link>
-        <Link href={`/processos/${id}/jornada-padrao`}>
-          <Button variant="outline" size="sm">Jornada padrão</Button>
         </Link>
         <Link href={`/processos/${id}/resultados`}>
           <Button variant="outline" size="sm">Resultados</Button>

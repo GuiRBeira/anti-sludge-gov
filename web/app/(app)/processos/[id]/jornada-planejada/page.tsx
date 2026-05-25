@@ -51,7 +51,7 @@ export default async function JornadaPlanejadaPage({
             ← {processo.nome}
           </Link>
           <div className="mt-3 font-mono text-xs uppercase text-muted-foreground">
-            etapa 02 de 07
+            etapa 02 de 06
           </div>
           <h1 className="font-hand text-4xl leading-tight">Jornada planejada</h1>
           <SketchUnderline width={190} variant="long" color="hsl(var(--accent))" />
@@ -108,7 +108,7 @@ export default async function JornadaPlanejadaPage({
               ← {processo.nome}
             </Link>
             <div className="mt-3 font-mono text-xs uppercase text-muted-foreground">
-              etapa 02 de 07 · planejada
+              etapa 02 de 06 · planejada
             </div>
             <h1 className="font-hand text-4xl leading-tight">
               A trilha ideal do serviço

@@ -94,7 +94,7 @@ export default async function JornadaIndividualPage({
                 ← Jornadas individuais
               </Link>
               <div className="mt-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-                etapa 04 de 07 · participante anonimizado
+                etapa 04 de 06 · participante anonimizado
               </div>
               <h1 className="font-hand text-4xl leading-tight">
                 Caminho real de {participante?.codigo ?? "participante"}

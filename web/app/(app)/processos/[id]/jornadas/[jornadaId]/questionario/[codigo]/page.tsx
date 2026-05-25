@@ -170,7 +170,7 @@ export default async function QuestionarioPage({
               ← {processo.nome}
             </Link>
             <div className="mt-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-              etapa 06 de 07 · questionário
+              etapa 05 de 06 · questionário
             </div>
             <div className="mt-4">
               <SketchFrame seed={9} padX={22} padY={10}>

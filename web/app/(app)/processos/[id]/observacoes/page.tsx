@@ -74,7 +74,7 @@ export default async function ObservacoesPage({
               ← {processo.nome}
             </Link>
             <div className="mt-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-              etapa 03 de 07 · observação
+              etapa 03 de 06 · observação
             </div>
             <h1 className="mt-1 font-hand text-4xl leading-tight">
               Planejamento da observação

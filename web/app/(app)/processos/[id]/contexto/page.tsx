@@ -49,7 +49,7 @@ export default async function EditarContextoPage({
               ← {processo.nome}
             </Link>
             <div className="mt-3 font-mono text-xs uppercase tracking-wider text-muted-foreground">
-              etapa 01 de 07
+              etapa 01 de 06
             </div>
             <h1 className="mt-1 font-hand text-4xl leading-tight">
               Compreensão do contexto

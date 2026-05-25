@@ -113,7 +113,7 @@ function stepsForRole(role: PapelGlobal, canManageTeam: boolean): TourStep[] {
       {
         eyebrow: "Método F5",
         title: "Leia o processo como uma trilha",
-        body: "Abra um processo e avance por contexto, jornada planejada, participantes, jornadas individuais, jornada padrão, questionários e resultados.",
+        body: "Abra um processo e avance por contexto, jornada planejada, participantes, jornadas individuais, questionários e resultados.",
         concept:
           "Desvio, repetição, barreira e print não são decoração: eles marcam onde a experiência pública acumula esforço desnecessário.",
         href: "/processos",
@@ -169,8 +169,8 @@ function stepsForRole(role: PapelGlobal, canManageTeam: boolean): TourStep[] {
       },
       {
         eyebrow: "Validação",
-        title: "Compare planejado, individual e padrão",
-        body: "A jornada planejada descreve o ideal; as individuais revelam a realidade; a padrão organiza o que se repete no serviço.",
+        title: "Compare planejado e individual",
+        body: "A jornada planejada descreve o ideal; as individuais revelam a realidade de uso do cidadão.",
         concept:
           "Repetições e desvios são sinais: ajudam a localizar sludge antes de virar recomendação.",
         href: "/processos",
