@@ -6,14 +6,16 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/fcinco/alert";
+import { X } from "lucide-react";
 import {
   upsertItemResposta,
   concluirQuestionario,
   reabrirQuestionario,
 } from "@/features/questionnaires/actions";
+import { associarCriterioComPerguntaCustomizada } from "@/features/catalog/actions";
 import type { PerguntaComCriterio } from "@/features/questionnaires/queries";
 import type { PassoComTipo } from "@/features/journeys/queries";
-import type { RespostaItem } from "@/types/database";
+import type { RespostaItem, CriterioTemplate } from "@/types/database";
 import { BarreiraIcon } from "@/components/fcinco/barreira-icon";
 import { NumeroEtapa } from "@/components/fcinco/numero-etapa";
 import { StatusPill } from "@/components/fcinco/status-pill";
@@ -81,6 +83,8 @@ export default function QuestionarioForm({
   textoNotaMax,
   voltarHref,
   passosSemClassificacao,
+  templateId,
+  criteriosBarreira = [],
 }: {
   respostaId: string;
   blocos: Bloco[];
@@ -91,6 +95,8 @@ export default function QuestionarioForm({
   textoNotaMax: string;
   voltarHref: string;
   passosSemClassificacao: number;
+  templateId?: string;
+  criteriosBarreira?: CriterioTemplate[];
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -111,6 +117,56 @@ export default function QuestionarioForm({
   });
 
   const readOnly = concluido || !canEdit;
+
+  // State control for custom barrier inline modal
+  const [selectedPasso, setSelectedPasso] = useState<PassoComTipo | null>(null);
+  const [selectedCriterioId, setSelectedCriterioId] = useState<string>("");
+  const [customQuestionText, setCustomQuestionText] = useState<string>("");
+  const [modalError, setModalError] = useState<string | null>(null);
+  const [isModalPending, startModalTransition] = useTransition();
+
+  function onAddBarrierClick(passo: PassoComTipo) {
+    setSelectedPasso(passo);
+    setSelectedCriterioId(criteriosBarreira[0]?.id ?? "");
+    setCustomQuestionText(criteriosBarreira[0]?.pergunta_padrao ?? "");
+    setModalError(null);
+  }
+
+  function handleCriterioChange(criterioId: string) {
+    setSelectedCriterioId(criterioId);
+    const crit = criteriosBarreira.find((c) => c.id === criterioId);
+    if (crit) {
+      setCustomQuestionText(crit.pergunta_padrao ?? "");
+    }
+  }
+
+  function handleAddBarrierSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedPasso || !selectedPasso.tipo_comportamento_id || !templateId) return;
+    if (!selectedCriterioId) {
+      setModalError("Selecione um critério de barreira.");
+      return;
+    }
+    if (!customQuestionText.trim()) {
+      setModalError("Digite o texto da pergunta.");
+      return;
+    }
+
+    startModalTransition(async () => {
+      try {
+        await associarCriterioComPerguntaCustomizada({
+          tipoComportamentoId: selectedPasso.tipo_comportamento_id!,
+          criterioTemplateId: selectedCriterioId,
+          questionarioTemplateId: templateId,
+          textoPergunta: customQuestionText,
+        });
+        router.refresh();
+        setSelectedPasso(null);
+      } catch (err) {
+        setModalError(err instanceof Error ? err.message : "Erro ao adicionar barreira");
+      }
+    });
+  }
 
   function getItem(perguntaId: string, passoId: string | null): LocalItem {
     return estado[keyOf(perguntaId, passoId)] ?? emptyItem();
@@ -247,6 +303,7 @@ export default function QuestionarioForm({
           setItem={setItem}
           persistItem={persistItem}
           voltarHref={voltarHref}
+          onAddBarrierClick={onAddBarrierClick}
         />
       ))}
 
@@ -264,6 +321,72 @@ export default function QuestionarioForm({
           </Button>
         )}
       </div>
+
+      {/* Custom overlay modal for inline barrier creation */}
+      {selectedPasso && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-lg border bg-card text-card-foreground p-6 shadow-xl relative animate-in fade-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setSelectedPasso(null)}
+              className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="flex flex-col space-y-1.5 text-center sm:text-left mb-4">
+              <h3 className="text-lg font-semibold leading-none tracking-tight">
+                Adicionar Nova Barreira ao Passo
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Vincule um critério do catálogo e personalize a pergunta para o comportamento <strong>{selectedPasso.tipo_comportamento?.nome}</strong>.
+              </p>
+            </div>
+            <form onSubmit={handleAddBarrierSubmit} className="space-y-4">
+              {modalError && (
+                <div className="p-3 text-xs bg-destructive/10 text-destructive rounded border border-destructive/20 font-medium">
+                  {modalError}
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Critério de Barreira</label>
+                <select
+                  value={selectedCriterioId}
+                  onChange={(e) => handleCriterioChange(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                >
+                  {criteriosBarreira.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Pergunta Personalizada</label>
+                <Textarea
+                  value={customQuestionText}
+                  onChange={(e) => setCustomQuestionText(e.target.value)}
+                  placeholder="Digite a pergunta para o questionário..."
+                  rows={4}
+                  required
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setSelectedPasso(null)}
+                  disabled={isModalPending}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={isModalPending}>
+                  {isModalPending ? "Adicionando..." : "Adicionar Barreira"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -276,6 +399,7 @@ function BlocoSection({
   setItem,
   persistItem,
   voltarHref,
+  onAddBarrierClick,
 }: {
   bloco: Bloco;
   ordem: number;
@@ -284,6 +408,7 @@ function BlocoSection({
   setItem: (pid: string, passoId: string | null, p: Partial<LocalItem>) => void;
   persistItem: (pid: string, passoId: string | null) => Promise<void>;
   voltarHref: string;
+  onAddBarrierClick: (passo: PassoComTipo) => void;
 }) {
   // Necessidade: renderiza perguntas direto, sem header de passo nem expander.
   if (bloco.kind === "necessidade") {
@@ -348,6 +473,7 @@ function BlocoSection({
         )}
       </summary>
 
+
       <div className="border-t bg-background/60">
         {!classificado ? (
           <div className="flex flex-col gap-3 p-5 text-sm text-muted-foreground">
@@ -370,48 +496,66 @@ function BlocoSection({
               </Link>
             </div>
           </div>
-        ) : perguntas.length === 0 ? (
-          <div className="p-5 text-sm text-muted-foreground">
-            Nenhuma pergunta-B mapeada para este tipo de comportamento na
-            planilha F5. Você pode prosseguir mesmo assim — esse passo
-            entrará nos resultados apenas via as perguntas de impacto.
-          </div>
         ) : (
-          <div className="divide-y">
-            {perguntas.map((p) => {
-              const it = getItem(p.id, passo.id);
-              return (
-                <div key={p.id} className="grid gap-3 px-4 py-3">
-                  <div className="text-sm">
-                    <span className="font-medium">
-                      {p.criterio?.nome ? `${p.criterio.nome}: ` : ""}
-                      {p.texto}
-                    </span>
-                    {p.criterio?.dimensao === "impacto" &&
-                      p.criterio.subdimensao_impacto && (
-                        <span className="ml-2 text-xs uppercase tracking-wider text-muted-foreground">
-                          ({p.criterio.subdimensao_impacto.replace("_", " ")})
+          <>
+            {perguntas.length === 0 ? (
+              <div className="p-5 text-sm text-muted-foreground">
+                Nenhuma pergunta-B mapeada para este tipo de comportamento na
+                planilha F5. Você pode prosseguir mesmo assim — esse passo
+                entrará nos resultados apenas via as perguntas de impacto.
+              </div>
+            ) : (
+              <div className="divide-y">
+                {perguntas.map((p) => {
+                  const it = getItem(p.id, passo.id);
+                  return (
+                    <div key={p.id} className="grid gap-3 px-4 py-3">
+                      <div className="text-sm">
+                        <span className="font-medium">
+                          {p.criterio?.nome ? `${p.criterio.nome}: ` : ""}
+                          {p.texto}
                         </span>
-                      )}
-                  </div>
-                  <CompactRow
-                    item={it}
-                    disabled={readOnly}
-                    onChangeNota={(n) => setItem(p.id, passo.id, { nota: n })}
-                    onToggleNA={(v) =>
-                      setItem(p.id, passo.id, { nao_se_aplica: v })
-                    }
-                    onChangeObs={(s) =>
-                      setItem(p.id, passo.id, { observacao: s })
-                    }
-                    onBlur={() => persistItem(p.id, passo.id)}
-                  />
-                </div>
-              );
-            })}
-          </div>
+                        {p.criterio?.dimensao === "impacto" &&
+                          p.criterio.subdimensao_impacto && (
+                            <span className="ml-2 text-xs uppercase tracking-wider text-muted-foreground">
+                              ({p.criterio.subdimensao_impacto.replace("_", " ")})
+                            </span>
+                          )}
+                      </div>
+                      <CompactRow
+                        item={it}
+                        disabled={readOnly}
+                        onChangeNota={(n) => setItem(p.id, passo.id, { nota: n })}
+                        onToggleNA={(v) =>
+                          setItem(p.id, passo.id, { nao_se_aplica: v })
+                        }
+                        onChangeObs={(s) =>
+                          setItem(p.id, passo.id, { observacao: s })
+                        }
+                        onBlur={() => persistItem(p.id, passo.id)}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {!readOnly && bloco.kind === "barreira" && (
+              <div className="border-t p-4 flex justify-end bg-card/40">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onAddBarrierClick(passo)}
+                >
+                  + Adicionar nova barreira a este passo
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
+
     </details>
   );
 }

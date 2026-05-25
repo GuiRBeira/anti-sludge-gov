@@ -9,6 +9,7 @@ import {
 } from "@/features/journeys/queries";
 import { ensureJornadaPlanejada } from "@/features/journeys/actions";
 import { listQuestionariosAplicaveis } from "@/features/questionnaires/queries";
+import { StageNavigation } from "@/components/fcinco/stage-navigation";
 import JornadaPlanejadaEditor from "./editor";
 import { Button } from "@/components/ui/button";
 import { SketchUnderline } from "@/components/fcinco/sketch-underline";
@@ -155,6 +156,8 @@ export default async function JornadaPlanejadaPage({
           ))}
         </ul>
       </section>
+
+      <StageNavigation currentStage={2} processoId={id} />
     </div>
   );
 }

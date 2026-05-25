@@ -14,6 +14,7 @@ import { SketchFrame } from "@/components/fcinco/sketch-frame";
 import { SketchUnderline } from "@/components/fcinco/sketch-underline";
 import { StatusPill } from "@/components/fcinco/status-pill";
 import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
+import { StageNavigation } from "@/components/fcinco/stage-navigation";
 
 export default async function ResultadosPage({
   params,
@@ -123,7 +124,7 @@ export default async function ResultadosPage({
 
       <Secao
         titulo="Tempo total por jornada"
-        descricao="Soma dos tempos por passo cadastrados em cada jornada."
+        descricao="Soma dos tempos por passo cadastrados in cada jornada."
       >
         <GraficoTempoJornadas data={tempos} />
       </Secao>
@@ -249,6 +250,8 @@ export default async function ResultadosPage({
           </div>
         )}
       </Secao>
+
+      <StageNavigation currentStage={7} processoId={id} />
     </div>
   );
 }

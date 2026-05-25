@@ -15,6 +15,7 @@ import {
 } from "@/features/journeys/actions";
 import { listQuestionariosAplicaveis } from "@/features/questionnaires/queries";
 import { Button } from "@/components/ui/button";
+import { StageNavigation } from "@/components/fcinco/stage-navigation";
 import JornadaIndividualEditor from "../jornadas-individuais/[jornadaId]/editor";
 import { createClient } from "@/lib/supabase/server";
 import { SketchUnderline } from "@/components/fcinco/sketch-underline";
@@ -97,9 +98,12 @@ export default async function JornadaPadraoPage({
           readOnly={!canEdit}
         />
       )}
+
+      <StageNavigation currentStage={5} processoId={id} />
     </div>
   );
 }
+
 
 async function PadraoEditor({
   processoId,

@@ -15,6 +15,7 @@ import {
   listItensResposta,
   type PerguntaComCriterio,
 } from "@/features/questionnaires/queries";
+import { listCriteriosBarreira } from "@/features/catalog/queries";
 import { ensureRespostaQuestionario } from "@/features/questionnaires/actions";
 import { Button } from "@/components/ui/button";
 import QuestionarioForm, { type Bloco } from "./form";
@@ -30,10 +31,11 @@ export default async function QuestionarioPage({
 }) {
   const { id, jornadaId, codigo } = await params;
 
-  const [processo, jornada, template] = await Promise.all([
+  const [processo, jornada, template, criteriosBarreira] = await Promise.all([
     getProcesso(id),
     getJornadaById(jornadaId),
     getQuestionarioByCodigo(codigo),
+    listCriteriosBarreira(),
   ]);
 
   if (!processo || !jornada || !template) notFound();
@@ -111,42 +113,47 @@ export default async function QuestionarioPage({
       }),
     );
   } else {
-    // impacto universal (3 perguntas iguais para todos os passos)
+    // impacto (Carga Cognitiva, Emoção, Conseqüência)
     const perguntas = await listPerguntas(template.id);
-    blocos = passos.map(
-      (passo: PassoComTipo): Bloco => ({
+    blocos = passos.map((passo): Bloco => {
+      return {
         kind: "impacto",
         passo,
         perguntas,
-        classificado: true,
-      }),
-    );
+        classificado: !!passo.tipo_comportamento_id,
+      };
+    });
   }
 
-  const voltarHref =
-    jornada.tipo_jornada === "planejada"
-      ? `/processos/${id}/jornada-planejada`
-      : jornada.tipo_jornada === "padrao"
-        ? `/processos/${id}/jornada-padrao`
-        : `/processos/${id}/jornadas-individuais/${jornadaId}`;
+  const totalPerguntas = blocos.reduce((acc, b) => acc + b.perguntas.length, 0);
 
-  // Sanity para o caso de não existir passo nenhum (e a dimensão exigir).
+  const voltarHref =
+    jornada.tipo_jornada === "individual"
+      ? `/processos/${id}/jornadas-individuais/${jornadaId}`
+      : `/processos/${id}/jornada-planejada`;
+
+  // Textos explicativos conforme o código do questionário
+  let textoNotaMin = "Muito Baixo";
+  let textoNotaMax = "Muito Alto";
+
+  if (codigo === "carga_cognitiva") {
+    textoNotaMin = "Sem Esforço";
+    textoNotaMax = "Esforço Extremo";
+  } else if (codigo === "impacto_emocional") {
+    textoNotaMin = "Positivo / Neutro";
+    textoNotaMax = "Frustração Extrema";
+  } else if (codigo === "consequencias") {
+    textoNotaMin = "Impacto Mínimo";
+    textoNotaMax = "Impacto Severo";
+  } else if (codigo === "necessidade") {
+    textoNotaMin = "Sem Utilidade";
+    textoNotaMax = "Indispensável";
+  }
+
   const semPassos = !ehNecessidade && passos.length === 0;
-  const totalPerguntas = blocos.reduce(
-    (acc: number, b: Bloco) => acc + b.perguntas.length,
-    0,
-  );
-  const textoNotaMin =
-    template.dimensao === "barreira"
-      ? "1 - sem barreiras"
-      : "1 - sem prejuízo";
-  const textoNotaMax =
-    template.dimensao === "barreira"
-      ? "5 - barreiras impeditivas"
-      : "5 - com prejuízos";
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pb-12">
       <header className="relative overflow-hidden rounded-lg border bg-card p-6">
         <WatercolorSplatter
           className="absolute -right-20 -top-24"
@@ -224,6 +231,8 @@ export default async function QuestionarioPage({
           textoNotaMax={textoNotaMax}
           voltarHref={voltarHref}
           passosSemClassificacao={passosSemClassificacao}
+          templateId={template.id}
+          criteriosBarreira={criteriosBarreira}
         />
       )}
     </div>

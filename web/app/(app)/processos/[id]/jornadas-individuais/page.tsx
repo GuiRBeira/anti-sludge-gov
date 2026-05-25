@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/fcinco/empty-state";
 import { SketchUnderline } from "@/components/fcinco/sketch-underline";
 import { StatusPill } from "@/components/fcinco/status-pill";
 import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
+import { StageNavigation } from "@/components/fcinco/stage-navigation";
 import {
   Table,
   TableBody,
@@ -161,6 +162,9 @@ export default async function JornadasIndividuaisPage({
           </Table>
         </div>
       )}
+
+      <StageNavigation currentStage={4} processoId={id} />
     </div>
   );
 }
+

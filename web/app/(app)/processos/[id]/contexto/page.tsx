@@ -5,6 +5,7 @@ import { getProcessoPermissions } from "@/lib/auth/processo-permissions";
 import { SketchUnderline } from "@/components/fcinco/sketch-underline";
 import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
 import { StatusPill } from "@/components/fcinco/status-pill";
+import { StageNavigation } from "@/components/fcinco/stage-navigation";
 import ContextoForm from "./form";
 
 export default async function EditarContextoPage({
@@ -70,6 +71,8 @@ export default async function EditarContextoPage({
       </header>
 
       <ContextoForm processoId={id} initial={processo} canEdit={canEdit} />
+      <StageNavigation currentStage={1} processoId={id} />
     </div>
   );
 }
+

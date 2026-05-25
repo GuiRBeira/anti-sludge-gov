@@ -15,6 +15,7 @@ import { EmptyState } from "@/components/fcinco/empty-state";
 import { SketchUnderline } from "@/components/fcinco/sketch-underline";
 import { StatusPill } from "@/components/fcinco/status-pill";
 import { WatercolorSplatter } from "@/components/fcinco/watercolor-splatter";
+import { StageNavigation } from "@/components/fcinco/stage-navigation";
 import type { EntrevistaPosObservacao } from "@/types/database";
 
 function toDateTimeLocal(value: string | null): string {
@@ -291,6 +292,8 @@ export default async function ObservacoesPage({
           })}
         </section>
       )}
+
+      <StageNavigation currentStage={3} processoId={id} />
     </div>
   );
 }
