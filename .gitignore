@@ -57,3 +57,14 @@ pywrapcl/
 
 # Infrastructure and SSL
 infra/certbot/
+
+# Obsidian
+**/.obsidian/workspace.json
+**/.obsidian/workspace-mobile.json
+
+# Legacy / Temp folders
+apps/web-legacy/
+web/
+
+# Temporary documents
+docs/*.pdf
